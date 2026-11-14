@@ -9,6 +9,7 @@ import './kinds_nature.js';
 import './kinds_built.js';
 import './kinds_modern.js';
 import './kinds_china.js';
+import './kinds_modern_china.js';
 import { makeFx, hang2, glyph, crack, SEIS_DRAGONS, TEAR, burst } from './sky_china.js';
 import { BlurSheet } from './engine.js';
 import { EV, DURATION } from './timeline.js';
@@ -56,16 +57,19 @@ const cam = monotone([
   [486, 1916], [489, 1928], [492, 1942], [495, 1950], [498, 1960], [501, 1972], [504, 1979], [507, 1987], [510, 2000], [513, 2006], [516, 2012], [519, 2020], [522, 2026],
   // 13. opening up
   [525.5, 2064], [528.5, 2071], [531.5, 2080], [534, 2096], [537, 2104], [540, 2112], [542.5, 2130], [546, 2138], [549.5, 2148], [552.5, 2172], [555.5, 2180], [558.5, 2186], [561.5, 2208], [564, 2218], [567, 2228], [570, 2236], [573, 2244],
-  // 14. today, 15. the long thread
-  [576, 2280], [579, 2290], [582, 2304], [585, 2318], [588, 2330], [591, 2342], [594, 2352], [597, 2358], [600, 2362], [604, 2368], [607, 2382], [610, 2394], [613, 2408], [616, 2418], [619, 2434], [622, 2446], [625, 2458], [628, 2472], [631, 2484], [640, 2498], [650, 2512], [662, 2526], [800, 2666],
+  // 14. today, breakthroughs, 15. the long thread
+  [576, 2280], [579, 2290], [582, 2306], [585, 2318], [588, 2330], [591, 2342], [594, 2353], [596.5, 2357], [600, 2360], [604, 2364], [607, 2370],
+  [610, 2378], [613, 2387], [616, 2395], [619, 2401], [622, 2416], [625, 2428], [628, 2440], [631, 2450], [634, 2466], [637, 2472], [640, 2476],
+  [643, 2492], [647, 2499], [652, 2502], [656, 2505], [659.5, 2512], [662, 2526], [666, 2531], [670, 2534], [673.5, 2546], [676, 2555], [679, 2566], [682, 2578],
+  [685, 2594], [689, 2602], [693, 2608], [696, 2618], [699, 2628], [702, 2642], [705, 2652], [708, 2668], [711, 2678], [714, 2688], [717, 2698], [720, 2708], [730, 2722], [740, 2736], [750, 2750], [900, 2900],
 ]);
 
 // ------------------------------------------------- paint and shape of land --
 const ZONES = [
   [-200, 28, [148, 134, 86]], [33, 50, [196, 164, 104]], [56, 76, [112, 140, 82]], [80, 110, [104, 132, 76]],
-  [116, 182, [150, 132, 92]], [186, 214, [128, 120, 88]], [222, 272, [150, 104, 78]], [280, 704, [176, 150, 108]], [710, 772, [214, 182, 122]], [778, 1196, [168, 150, 104]], [1200, 1288, [176, 160, 120]], [1290, 1312, [44, 86, 126]], [1316, 1352, [168, 150, 104]], [1356, 1384, [150, 150, 96]], [1390, 1476, [168, 150, 104]], [1480, 1526, [44, 86, 126]], [1530, 1544, [204, 178, 120]], [1548, 1668, [168, 150, 104]], [1672, 1700, [44, 86, 126]], [1704, 1740, [120, 100, 84]], [1744, 1802, [168, 150, 104]], [1804, 1858, [120, 116, 110]], [1860, 2060, [168, 150, 104]], [2062, 2092, [140, 136, 128]], [2094, 2130, [130, 130, 128]], [2134, 2166, [150, 140, 110]], [2170, 2196, [150, 146, 140]], [2200, 2268, [110, 130, 84]], [2272, 2316, [110, 110, 116]], [2318, 2378, [130, 140, 96]], [2382, 2404, [130, 124, 112]], [2406, 2430, [214, 186, 128]], [2434, 2470, [208, 182, 124]], [2476, 9999, [204, 170, 124]],
+  [116, 182, [150, 132, 92]], [186, 214, [128, 120, 88]], [222, 272, [150, 104, 78]], [280, 704, [176, 150, 108]], [710, 772, [214, 182, 122]], [778, 1196, [168, 150, 104]], [1200, 1288, [176, 160, 120]], [1290, 1312, [44, 86, 126]], [1316, 1352, [168, 150, 104]], [1356, 1384, [150, 150, 96]], [1390, 1476, [168, 150, 104]], [1480, 1526, [44, 86, 126]], [1530, 1544, [204, 178, 120]], [1548, 1668, [168, 150, 104]], [1672, 1700, [44, 86, 126]], [1704, 1740, [120, 100, 84]], [1744, 1802, [168, 150, 104]], [1804, 1858, [120, 116, 110]], [1860, 2060, [168, 150, 104]], [2062, 2092, [140, 136, 128]], [2094, 2130, [130, 130, 128]], [2134, 2166, [150, 140, 110]], [2170, 2196, [150, 146, 140]], [2200, 2268, [110, 130, 84]], [2272, 2316, [110, 110, 116]], [2318, 2356, [130, 140, 96]], [2358, 2360, [196, 178, 128]], [2362, 2372, [44, 86, 126]], [2376, 2414, [112, 120, 90]], [2417, 2462, [44, 86, 126]], [2464, 2480, [120, 120, 98]], [2484, 2548, [110, 112, 116]], [2550, 2586, [96, 96, 102]], [2588, 2620, [70, 70, 76]], [2622, 2640, [130, 124, 112]], [2642, 2664, [214, 186, 128]], [2666, 2694, [208, 182, 124]], [2698, 9999, [204, 170, 124]],
 ];
-const SEAS = [[1290, 1312], [1480, 1526], [1672, 1700]];
+const SEAS = [[1290, 1312], [1480, 1526], [1672, 1700], [2362, 2372], [2417, 2462]];
 function zoneColor(a) {
   for (let i = 0; i < ZONES.length; i++) {
     const [a0, a1, c] = ZONES[i];
@@ -85,7 +89,7 @@ function ground(layer, a) {
 }
 const profile = {
   far: (a) => (1 - water(a)) * (noise(a * 0.07, 5) * 14 + noise(a * 0.31, 6) * 4 + 12) + band(a, -60, 26) * 8 + band(a, 728, 790, 6) * (Math.abs(noise(a * 0.5, 41)) * 70 + 40),
-  mid: (a) => (1 - water(a)) * (noise(a * 0.33, 3) * 8 + noise(a * 0.1, 4) * 13) + band(a, 30, 50, 4) * (16 + noise(a * 0.8, 9) * 4) + band(a, 710, 772, 4) * (Math.sin(a * 0.9) * 10 + 14) + band(a, 1440, 1476, 4) * (Math.abs(noise(a * 0.4, 51)) * 70 + 30) - water(a) * 6,
+  mid: (a) => (1 - water(a)) * (noise(a * 0.33, 3) * 8 + noise(a * 0.1, 4) * 13) + band(a, 30, 50, 4) * (16 + noise(a * 0.8, 9) * 4) + band(a, 710, 772, 4) * (Math.sin(a * 0.9) * 10 + 14) + band(a, 1440, 1476, 4) * (Math.abs(noise(a * 0.4, 51)) * 70 + 30) + band(a, 2376, 2412, 4) * 40 + band(a, 2460, 2484, 4) * 50 - water(a) * 6,
   main: (a) => (1 - water(a)) * (noise(a * 0.9, 1) * 1.6 + noise(a * 0.21, 2) * 3.5) - band(a, 9, 21, 1.5) * 3 - band(a, 58, 73, 1) * 2.5 - water(a) * 4,
   front: (a) => noise(a * 0.5, 7) * 4 + noise(a * 0.13, 17) * 6,
   core: (a) => noise(a * 0.2, 8) * 8,
@@ -988,7 +992,7 @@ const SPARK = [[2214, 150], [2220, 150], [2226, 150], [2232, 150], [2238, 150], 
   // Shenzhen: a fishing village, then a city
   for (const [a, v] of [[2096, 0], [2102, 1], [2108, 0]]) add('hut', 'main', a, { v, z: 0.4, scale: 0.9, foldAt: SZ + 0.4 + (a - 2096) * 0.05 });
   add('person', 'main', 2099.4, { v: 'fisher80', z: 2, scale: P2, foldAt: SZ + 0.6 });
-  [[2094, 4], [2099, 1], [2104, 5], [2109, 0], [2114, 3], [2119, 4], [2124, 1]].forEach(([a, v], i) => add('tower', 'main', a, { v, z: 0.2, scale: 0.9, popAt: SZ + 0.7 + i * 0.28, loud: 1.4, winOn: (t, w) => (hash(w + i * 9) < 0.5 ? 0 : sramp(t, 551 + hash(w) * 4, 551.4 + hash(w) * 4) * 0.7) }));
+  [[2095, 'tower', 4, 0.8], [2100, 'kk100', 0, 0.72], [2106, 'pingan', 0, 0.66], [2112, 'bamboo400', 0, 0.72], [2117, 'tower', 5, 0.8], [2122, 'tower', 1, 0.75]].forEach(([a, k, v, sc], i) => add(k, 'main', a, { v, z: 0.2, scale: sc, popAt: SZ + 0.7 + i * 0.3, loud: 1.4, wide: 6, winOn: (t, w) => (hash(w + i * 9) < 0.5 ? 0 : sramp(t, 551 + hash(w) * 4, 551.4 + hash(w) * 4) * 0.7) }));
   for (let a = 2090, i = 0; a < 2132; a += 3.2, i++) add('tower', 'mid', a, { v: i % 7, scale: 0.55, popAt: SZ + 1 + i * 0.12, loud: 0.5 });
   for (let a = 2088, i = 0; a < 2136; a += 2.6, i++) add('tower', 'far', a, { v: (i * 3) % 7, scale: 0.42, popAt: SZ + 1.4 + i * 0.08, loud: 0.3 });
   add('crane', 'main', 2112, { z: 0.1, scale: 0.9, popAt: SZ + 0.4 });
@@ -1052,108 +1056,264 @@ Object.assign(LOOKS, {
   cityC: { skin: 6, top: 'dress', topCol: '#2f6f6a', legs: 'skirt', legCol: '#2f6f6a', sleeve: '#2f6f6a', hair: 'long', pose: 'stand', item: 'phone' },
   cityD: { skin: 4, top: 'shirt', topCol: '#e9e4d8', sleeve: '#e9e4d8', legs: 'trousers', legCol: '#3a3a40', hair: 'bald', beard: 1, beardCol: '#cfc6b8', pose: 'stand', item: 'phone' },
   cityKid: { skin: 4, top: 'hoodie', topCol: '#e3b341', sleeve: '#e3b341', legs: 'trousers', legCol: '#34507a', hair: 'bob', pose: 'stand', small: 0.66, item: 'phone' },
+  engineer: { skin: 4, top: 'coat', topCol: '#e8e6e0', sleeve: '#e8e6e0', legs: 'trousers', legCol: '#2a3a4a', hat: 'helmet', hatCol: '#e8c040', pose: 'stand' },
+  physicist: { skin: 4, top: 'coat', topCol: '#efece4', sleeve: '#efece4', legs: 'trousers', legCol: '#3a3a40', hair: 'short', pose: 'stand' },
+  physicist2: { skin: 3, top: 'coat', topCol: '#efece4', sleeve: '#efece4', legs: 'trousers', legCol: '#3a3a40', hair: 'bob', pose: 'stand' },
+  runner: { skin: 4, top: 'shirt', topCol: '#d8282a', sleeve: '#d8282a', legs: 'trousers', legCol: '#2a2a30', hair: 'short', pose: 'walk' },
   planter: { skin: 3, top: 'coat', topCol: '#3a5a3a', sleeve: '#3a5a3a', legs: 'trousers', legCol: '#3a3a30', hat: 'wide', hatCol: '#c9a86a', pose: 'stand', item: 'shovel' },
 });
-const GANTRY_A = 2352;
+const GANTRY_A = 2356, DAM = [2389.6, 2393.2, 2396.8, 2400.4, 2404, 2407.6], DECK0 = 2419, DECK1 = 2447, PYL = [[2424, 0], [2431.4, 1], [2438.6, 2]], ISLE = 2450.4, TUBE1 = 2460;
+const CANYON = 2472, TOK = 2502, QS = [2519, 2546], STAGE = 2556, FACT = 2603;
 {
-  const NOW = ev('today'), TR = ev('hsr'), LA = ev('launch'), COAL = ev('coal'), SOL = ev('solar'), TREE = ev('trees');
-  // a city at night: the Pearl, towers, people and their screens
-  add('pearl', 'main', 2290, { z: 0, scale: 0.85, wide: 10, winOn: () => 0.9, winCol: [255, 220, 240] });
-  add('twist', 'main', 2298, { v: 0, z: 0, scale: 0.9, winOn: (t, w) => (hash(w * 7) < 0.4 ? 0 : 0.7) });
-  for (const [a, v] of [[2282, 4], [2304, 5], [2310, 1]]) add('tower', 'main', a, { v, z: 0, scale: 0.85, winOn: (t, w) => (hash(w * 3 + a) < 0.45 ? 0 : 0.65) });
-  for (let a = 2276, i = 0; a < 2320; a += 3.2, i++) add('tower', 'mid', a, { v: i % 7, scale: 0.55, winOn: (t, w) => (hash(w * 5 + i) < 0.5 ? 0 : 0.55) });
-  [['cityA', 2284], ['cityB', 2287], ['cityKid', 2292.6], ['cityC', 2295], ['cityD', 2301.4], ['cityB', 2306]].forEach(([v, a], i) => add('person', 'main', a, { v, z: 2.4, scale: P2, flip: i % 2 === 1, screenAt: NOW + 0.3 + i * 0.25, pace: 4.2, move: v === 'cityA' ? (t) => clamp((t - 574) * 0.5, 0, 6) : undefined }));
-  for (const a of [2280, 2296.4, 2312]) add('lamp', 'main', a, { v: 1, z: 1, lit: () => 1 });
-  // the high-speed line on its viaduct, through the karst
-  for (let a = 2314; a < 2350; a += 3.3) add('viaduct', 'main', a, { z: 1, scale: 1 });
-  add('bullet', 'main', 2312, { z: 1.4, scale: 0.75, y: 84 * 1 - 4, ground: false, wide: 30, from: TR - 0.6, to: TR + 9, prof: () => 0, move: (t) => Math.max(0, t - TR + 0.5) * 6.4 });
-  for (const [a, v, s] of [[2318, 1, 0.9], [2328, 4, 1], [2338, 2, 0.85], [2346, 0, 0.95]]) add('karst', 'far', a, { v, scale: s });
-  for (const [a, v] of [[2322, 2], [2336, 0]]) add('karst', 'mid', a, { v, scale: 0.5 });
-  // a rocket from the gantry
-  add('gantry', 'main', GANTRY_A, { z: 1, popAt: LA - 2.2, loud: 1 });
-  // coal, and the sun and wind
-  for (const [a, L, s] of [[2384, 'mid', 0.6], [2390, 'main', 0.9], [2396, 'main', 0.8]]) add('coolingtower', L, a, { z: 0.5, scale: s, popAt: COAL - 0.4 + (a - 2384) * 0.04 });
-  add('factory', 'main', 2401, { v: 1, z: 0.4, popAt: COAL });
-  for (let a = 2407, i = 0; a < 2428; a += 3.2, i++) add('solar', 'main', a, { z: 1, scale: 1.1, popAt: SOL + i * 0.12, loud: 0.6 });
-  for (let a = 2405, i = 0; a < 2432; a += 2.4, i++) add('solar', 'mid', a, { scale: 0.7, popAt: SOL + 0.3 + i * 0.07, loud: 0.3 });
-  for (const [a, sp, sc, i] of [[2410, 0.6, 0.85, 0], [2416, 0.75, 0.75, 1], [2422, 0.5, 0.9, 2], [2428, 0.7, 0.8, 3]]) add('turbine', 'mid', a, { speed: sp, scale: sc, popAt: SOL + 0.6 + i * 0.25, loud: 0.6 });
-  add('car', 'main', 2404, { z: 3, scale: 0.9, from: SOL - 1, move: (t) => (t - SOL) * 2.4, lit: () => 0 });
-  // trees against the desert, row after row
-  for (let a = 2436, i = 0; a < 2466; a += 2.6, i++) add('poplar', 'main', a, { v: i % 3, z: 1, popAt: TREE + i * 0.16, loud: 0.5 });
-  for (let a = 2434, i = 0; a < 2470; a += 1.9, i++) add('poplar', 'mid', a, { v: i % 3, scale: 0.6, popAt: TREE + 0.3 + i * 0.1, loud: 0.3 });
-  for (let a = 2432, i = 0; a < 2474; a += 1.5, i++) add('poplar', 'far', a, { v: i % 3, scale: 0.5, popAt: TREE + 0.6 + i * 0.07, loud: 0.2 });
-  add('person', 'main', 2448.6, { v: 'planter', z: 2, scale: P2, popAt: TREE + 0.4, act: (t) => { const k = Math.max(0, Math.sin(t * 3)); return { lean: 14 + k * 12, front: [-60 + k * 40, -30], back: [-50 + k * 40, -30] }; } });
-  add('bamboo', 'main', 2468, { v: 1, z: 0 });
-  add('panda', 'main', 2466.4, { z: 1.6, scale: 1.1 });
-  grassRun(2350, 2404, 3.6, 'main', { skip: (a) => a > 2382 && a < 2404 });
-  grassRun(2276, 2474, 7, 'front', { s: 2 });
+  const NOW = ev('today'), TR = ev('hsr'), LA = ev('launch');
+  // Lujiazui at night: the Pearl, Jin Mao, the bottle opener and the twisting Shanghai Tower; people and their screens
+  add('jinmao', 'main', 2281, { z: 0, wide: 6, scale: 0.68, winOn: (t, w) => (hash(w * 3 + 1) < 0.35 ? 0 : 0.7), winCol: [255, 214, 150] });
+  add('pearl', 'main', 2288, { z: 0.2, scale: 0.72, wide: 8, winOn: () => 0.9, winCol: [255, 220, 240] });
+  add('swfc', 'main', 2295.4, { z: 0, wide: 6, scale: 0.66, winOn: (t, w) => (hash(w * 5 + 2) < 0.4 ? 0 : 0.6), winCol: [210, 230, 255] });
+  add('shtower', 'main', 2302.6, { z: 0, wide: 6, scale: 0.62, winOn: (t, w) => (hash(w * 7 + 3) < 0.45 ? 0 : 0.6), winCol: [200, 236, 230] });
+  for (let a = 2274, i = 0; a < 2318; a += 3, i++) add('tower', 'mid', a, { v: [4, 5, 1, 4, 0, 5, 3][i % 7], scale: 0.5, winOn: (t, w) => (hash(w * 5 + i) < 0.55 ? 0 : 0.5) });
+  [['cityA', 2283.6], ['cityB', 2285.8], ['cityKid', 2291.4], ['cityC', 2293.2], ['cityD', 2299], ['cityB', 2306.4]].forEach(([v, a], i) => add('person', 'main', a, { v, z: 2.4, scale: P2, flip: i % 2 === 1, screenAt: NOW + 0.3 + i * 0.25, pace: 4.2, move: v === 'cityA' ? (t) => clamp((t - 574) * 0.5, 0, 6) : undefined }));
+  for (const a of [2279, 2296.4, 2310]) add('lamp', 'main', a, { v: 1, z: 1, lit: () => 1 });
+  // the line through the karst, on piers, under its wire
+  for (let a = 2312; a < 2352; a += 3.4) add('hsrpier', 'main', a, { z: 1 });
+  add('fuxing', 'main', 2306, { z: 1.4, scale: 0.72, y: 96 * 1 - 2, ground: false, wide: 34, cars: 5, from: TR - 0.6, to: TR + 10, prof: () => 0, move: (t) => Math.max(0, t - TR + 0.5) * 6.8 });
+  for (const [a, v, s] of [[2318, 1, 0.95], [2326, 4, 1.05], [2336, 2, 0.9], [2346, 0, 1]]) add('karst', 'far', a, { v, scale: s });
+  for (const [a, v] of [[2322, 2], [2338, 0], [2348, 4]]) add('karst', 'mid', a, { v, scale: 0.5 });
+  // Wenchang: the pad by the sea, a Long March 5
+  add('lm5', 'main', GANTRY_A, { z: 1, popAt: LA - 2.6, loud: 1.4, launch: LA, wide: 6 });
+  for (const a of [2350.6, 2362, 2365.4]) add('palm', 'main', a, { v: 1, z: 0.6, scale: 0.8 });
+  grassRun(2312, 2370, 3.6, 'main', { skip: (a) => a > 2352 && a < 2360 });
+
+  // ========== Breakthroughs ==========
+  // the Three Gorges at sunrise: the dam across the river, the ship lift, the gates opening one by one
+  const TG = ev('gorges');
+  DAM.forEach((a, i) => add('damseg', 'main', a, { v: i === 5 ? 2 : i % 2, z: 1, scale: 1.15, wide: 4, spill: (t) => sramp(t, TG + 0.3 + Math.abs(i - 2.5) * 0.35, TG + 0.9 + Math.abs(i - 2.5) * 0.35) }));
+  add('shiplift', 'main', 2411.6, { z: 0.8, scale: 0.9, rise: (t) => sramp(t, TG + 0.6, TG + 4.4) });
+  for (const [a, v] of [[2417.6, 0], [2424, 1]]) add('uhv', 'main', a, { v, z: 0.4, scale: 0.8 });
+  for (const [a, v, s] of [[2378, 1, 0.9], [2392, 3, 1.1], [2402, 0, 1], [2412, 4, 0.9]]) add('karst', 'far', a, { v, scale: s });
+  for (const [a, v] of [[2382, 2], [2408, 0]]) add('karst', 'mid', a, { v, scale: 0.55 });
+  ['engineer'].forEach((v) => add('person', 'main', 2415.4, { v, z: 2.2, scale: P2, flip: true, act: (t) => ({ head: -12, front: [-150, -10] }) }));
+  // the sea bridge: piers, three towers, an island, and the road diving under the waves
+  for (let a = DECK0 + 0.8; a < DECK1; a += 1.7) if (!PYL.some(([p]) => Math.abs(p - a) < 0.9)) add('seapier', 'main', a, { z: 1, over: true, ground: false, y: -6 });
+  PYL.forEach(([a, v]) => add('hzpylon', 'main', a, { v, z: 1.2, over: true, ground: false, y: -6, scale: 0.9, popAt: ev('hzmb') - 0.4 + v * 0.5, loud: 1.4 }));
+  add('hzisland', 'main', ISLE, { z: 1.5, over: true, ground: false, y: 2, scale: 0.85, winOn: () => 0 });
+  for (let a = DECK0 - 2; a < TUBE1 + 4; a += 4.2) add('wave', 'main', a, { v: (R() * 4) | 0, z: 4, loud: 0.2, ground: false, y: -2 });
+  for (let a = DECK0 - 4; a < TUBE1 + 6; a += 6) add('wave', 'front', a, { v: (R() * 4) | 0, scale: 1.6, ground: false, loud: 0.2 });
+  // the canyon, and the highest bridge in the world across it
+    for (const a of [CANYON - 8.4, CANYON + 8.4]) add('sbtower', 'main', a, { z: 1.4, popAt: ev('huajiang') - 0.6 + (a > CANYON ? 0.4 : 0), loud: 1.4 });
+  for (const [a, v] of [[CANYON - 13, 0], [CANYON + 13, 1]]) add('pine', 'main', a, { v, z: 0.3, scale: 0.8 });
+  for (const [a, v, s] of [[CANYON - 6, 2, 0.8], [CANYON + 4, 0, 0.9], [CANYON + 12, 3, 0.8]]) add('karst', 'far', a, { v, scale: s });
+  // Hefei: the artificial sun, the people who run it, the clock
+  add('tokamak', 'main', TOK, { z: 0.8, scale: 0.8, wide: 14, popAt: ev('tokamak') - 1.2, loud: 2.4, plasma: (t) => sramp(t, ev('plasma'), ev('plasma') + 1.4) * (1 - sramp(t, 661, 663)) });
+  add('controldesk', 'main', TOK - 12.4, { z: 1.6, scale: 1.1, plasma: (t) => sramp(t, ev('plasma'), ev('plasma') + 1.4), clock: (t) => clamp((t - ev('seventeen')) / 4) * 1066 });
+  [['physicist', TOK - 15.8, false], ['physicist2', TOK - 9.6, true]].forEach(([v, a, f]) => add('person', 'main', a, { v, z: 2, scale: P2, flip: f, act: (t) => (t > ev('plasma') && t < ev('plasma') + 3 ? { head: -12, front: [-150, -10] } : { head: 10, front: [-40, -50] }) }));
+  // quantum: two observatories a world apart, the satellite between them; the golden machine; the supercomputers
+  QS.forEach((a, i) => add('qstation', 'main', a, { z: 1, scale: 1.1, aim: (t) => 50 + sramp(t, ev('quantum') - 1, ev('quantum')) * (i ? -10 : 18) + (i ? 70 : 0) }));
+  add('supercomp', 'main', 2533, { z: 0.9, scale: 0.9, popAt: ev('qcomputer') - 0.3, loud: 1 });
+  [['physicist', 2529.6, false]].forEach(([v, a, f]) => add('person', 'main', a, { v, z: 2, scale: P2, flip: f, act: (t) => ({ head: -24, lean: -4 }) }));
+  // robots: the New Year stage, then the half-marathon
+  add('galastage', 'main', STAGE, { z: 0.4, scale: 0.85, wide: 12, popAt: ev('robots') - 1.2, loud: 1.6 });
+  for (let i = 0; i < 5; i++) add('humanoid', 'main', STAGE - 7.2 + i * 3.6, { v: i % 2, z: 1 + i * 0.01, scale: 1.25, y: 30 * 0.85, popAt: ev('robots') - 0.6 + i * 0.12, loud: 0.8, ph: i * 0.15, dance: (t) => sramp(t, ev('robots'), ev('robots') + 0.6) });
+  add('finisharch', 'main', 2581, { z: 0.6, scale: 1.1 });
+  const RUN = ev('marathon');
+  [[2563, 0, 'humanoid'], [2566.4, 1, 'humanoid'], [2569.6, 0, 'humanoid']].forEach(([a, v, k], i) => add(k, 'main', a, { v, z: 2 + i * 0.1, scale: 1.2, popAt: RUN - 1.2 + i * 0.2, ph: i * 1.3, run: (t) => (i === 1 && t > RUN + 1.6 && t < RUN + 3.2 ? 0 : 1), fall: i === 1 ? (t) => sramp(t, RUN + 1.6, RUN + 2.0) * (1 - sramp(t, RUN + 2.6, RUN + 3.2)) : undefined, move: (t) => Math.max(0, t - RUN + 1) * 1.6 - (i === 1 ? clamp(t - RUN - 1.6, 0, 1.6) * 1.6 : 0) }));
+  add('person', 'main', 2561, { v: 'runner', z: 2.3, scale: P2, popAt: RUN - 0.8, pace: 9, move: (t) => Math.max(0, t - RUN + 0.6) * 1.7 });
+  for (const a of [2560, 2576]) add('lamp', 'main', a, { v: 1, z: 0.5, lit: () => 1 });
+  // the dark factory
+  const DF = ev('factory');
+  add('factoryhall', 'main', FACT, { z: 0, scale: 0.95, wide: 16 });
+  [2593, 2600, 2607].forEach((a, i) => add('robotarm', 'main', a, { z: 1, scale: 1.25, flip: i % 2 === 1, ph: i * 1.7, popAt: DF - 0.8 + i * 0.25, loud: 1 }));
+  for (let i = 0; i < 4; i++) add('carbody', 'main', 2588 + i * 6, { v: i % 2, z: 1.1, scale: 0.7, move: (t) => ((t - 680) * 0.9) % 24 });
+  add('agv', 'main', 2596, { z: 2, scale: 1, move: (t) => Math.sin((t - 680) * 0.5) * 6 });
+  for (let a = 2588, i = 0; a < 2618; a += 2.2, i++) add('robotarm', 'mid', a, { scale: 0.62, ph: i * 0.9, popAt: ev('robotsMany') + i * 0.08, foldAt: ev('coal') - 2.4 + i * 0.05, loud: 0.3 });
+  for (let a = 2586, i = 0; a < 2620; a += 1.7, i++) add('robotarm', 'far', a, { scale: 0.5, ph: i * 1.3, popAt: ev('robotsMany') + 0.4 + i * 0.05, foldAt: ev('coal') - 2.2 + i * 0.04, loud: 0.2 });
+  // coal and steam; then sun and wind across the desert
+  const COAL = ev('coal'), SOL = ev('solar');
+  for (const [a, L, s] of [[2622, 'mid', 0.6], [2627, 'main', 0.9], [2633, 'main', 0.8]]) add('coolingtower', L, a, { z: 0.5, scale: s, popAt: COAL - 0.6 + (a - 2622) * 0.04 });
+  add('stack', 'main', 2638.4, { z: 0.4, popAt: COAL - 0.2, loud: 1.2 }); add('stack', 'mid', 2630, { scale: 0.6, popAt: COAL });
+  for (let a = 2643, i = 0; a < 2662; a += 3, i++) add('solar', 'main', a, { z: 1, scale: 1.15, popAt: SOL + i * 0.12, loud: 0.6 });
+  for (let a = 2641, i = 0; a < 2666; a += 2.2, i++) add('solar', 'mid', a, { scale: 0.72, popAt: SOL + 0.3 + i * 0.07, loud: 0.3 });
+  for (const [a, sp, sc, i] of [[2646, 0.6, 0.9, 0], [2652, 0.75, 0.8, 1], [2658, 0.5, 0.95, 2], [2664, 0.7, 0.85, 3]]) add('turbine', 'mid', a, { speed: sp, scale: sc, popAt: SOL + 0.6 + i * 0.25, loud: 0.6 });
+  add('uhv', 'main', 2662, { v: 0, z: 0.6, scale: 0.8, popAt: SOL + 1 });
+  add('car', 'main', 2638, { z: 3, scale: 0.9, from: SOL - 1, move: (t) => (t - SOL) * 2.6, lit: () => 0 });
+  // trees against the desert, row after row; and a panda, unbothered
+  const TREE = ev('trees');
+  for (let a = 2668, i = 0; a < 2690; a += 2.4, i++) add('poplar', 'main', a, { v: i % 3, z: 1, popAt: TREE + i * 0.16, loud: 0.5 });
+  for (let a = 2666, i = 0; a < 2694; a += 1.8, i++) add('poplar', 'mid', a, { v: i % 3, scale: 0.6, popAt: TREE + 0.3 + i * 0.1, loud: 0.3 });
+  for (let a = 2664, i = 0; a < 2698; a += 1.4, i++) add('poplar', 'far', a, { v: i % 3, scale: 0.5, popAt: TREE + 0.6 + i * 0.07, loud: 0.2 });
+  add('person', 'main', 2676.6, { v: 'planter', z: 2, scale: P2, popAt: TREE + 0.4, act: (t) => { const k = Math.max(0, Math.sin(t * 3)); return { lean: 14 + k * 12, front: [-60 + k * 40, -30], back: [-50 + k * 40, -30] }; } });
+  add('bamboo', 'main', 2690.6, { v: 1, z: 0 });
+  add('panda', 'main', 2689, { z: 1.6, scale: 1.1 });
+  grassRun(2370, 2388, 3.6, 'main');
+  grassRun(2462, 2486, 3.6, 'main', { skip: (a) => Math.abs(a - CANYON) < 10.5 });
+  grassRun(2486, 2618, 3.8, 'main', { skip: (a) => (a > 2486 && a < 2516) || (a > 2546 && a < 2616) });
+  grassRun(2370, 2694, 7, 'front', { s: 2, skip: (a) => (a > DECK0 - 4 && a < TUBE1 + 6) || Math.abs(a - CANYON) < 9 });
 }
 
 // ======================================================= 15. The long thread ===
-const THREAD_END = 2477;
+const THREAD_END = 2695;
 {
-  // the uncut board ahead, and a needle waiting at the end of the thread
-  for (let a = 2482, i = 0; a < 2580; a += 4.5 + R() * 5, i++) { const tilt = (R() - 0.5) * 7; add('blank', 'main', a, { v: (R() * 5) | 0, z: R() < 0.5 ? 0 : 2, scale: 0.7 + R() * 0.7, loud: 0.9, rot: () => tilt }); }
-  for (let a = 2480; a < 2590; a += 7) add('blank', 'mid', a, { v: (R() * 5) | 0, scale: 0.55 });
-  for (let a = 2580, i = 0; a < 2700; a += 3.6 + R() * 4.2, i++) { const tilt = (R() - 0.5) * 8; add('blank', 'main', a, { v: (R() * 5) | 0, z: R() < 0.5 ? 0 : 2, scale: 0.55 + R() * 0.75, popAt: ev('pull', 630.6) + 4.5 + (a - 2580) * 0.035 + R() * 0.3, loud: 0.25, rot: () => tilt }); }
-  for (let a = 2590; a < 2700; a += 8) add('blank', 'mid', a, { v: (R() * 5) | 0, scale: 0.5, popAt: ev('pull', 630.6) + 5 + (a - 2590) * 0.035 });
-  for (let a = 2486; a < 2590; a += 14) add('blank', 'far', a, { v: (R() * 5) | 0, scale: 0.3 });
+  for (let a = 2700, i = 0; a < 2800; a += 4.5 + R() * 5, i++) { const tilt = (R() - 0.5) * 7; add('blank', 'main', a, { v: (R() * 5) | 0, z: R() < 0.5 ? 0 : 2, scale: 0.7 + R() * 0.7, loud: 0.9, rot: () => tilt }); }
+  for (let a = 2698; a < 2810; a += 7) add('blank', 'mid', a, { v: (R() * 5) | 0, scale: 0.55 });
+  for (let a = 2800, i = 0; a < 2920; a += 3.6 + R() * 4.2, i++) { const tilt = (R() - 0.5) * 8; add('blank', 'main', a, { v: (R() * 5) | 0, z: R() < 0.5 ? 0 : 2, scale: 0.55 + R() * 0.75, popAt: ev('pull', 718.6) + 4.5 + (a - 2800) * 0.035 + R() * 0.3, loud: 0.25, rot: () => tilt }); }
+  for (let a = 2810; a < 2920; a += 8) add('blank', 'mid', a, { v: (R() * 5) | 0, scale: 0.5, popAt: ev('pull', 718.6) + 5 + (a - 2810) * 0.035 });
+  for (let a = 2704; a < 2810; a += 14) add('blank', 'far', a, { v: (R() * 5) | 0, scale: 0.3 });
 }
 hook({
-  lights(t, c, L) {
-    if (t > 573 && t < 609 && near(2296, c, 80)) { for (const a of [2280, 2296.4, 2312]) L.push({ a, h: 120, r: 300, k: 0.75, color: [235, 240, 255] }); L.push({ a: 2290, h: 200, r: 600, k: 0.5, color: [255, 180, 220] }); }
-    if (t > ev('hsr') - 1 && t < ev('hsr') + 9) L.push({ a: 2312 + Math.max(0, t - ev('hsr') + 0.5) * 6.4 + 7, h: 90, r: 420, k: 0.7, color: [255, 240, 210] });
-    const LA = ev('launch'); if (t > LA && t < LA + 3) L.push({ a: GANTRY_A + 0.9, h: 40, r: 900, k: 1.4 * Math.exp(-(t - LA) * 0.8), color: [255, 200, 130] });
+  lights(t, c, L, Em, Sm, st) {
+    if (t > 573 && t < 609 && near(2294, c, 80)) { for (const a of [2279, 2296.4, 2310]) L.push({ a, h: 120, r: 300, k: 0.75, color: [235, 240, 255] }); L.push({ a: 2288, h: 200, r: 600, k: 0.5, color: [255, 180, 220] }); L.push({ a: 2302, h: 300, r: 700, k: 0.35, color: [180, 230, 230] }); }
+    if (t > ev('hsr') - 1 && t < ev('hsr') + 10) L.push({ a: 2306 + Math.max(0, t - ev('hsr') + 0.5) * 6.8 + 6, h: 100, r: 460, k: 0.8, color: [255, 240, 210] });
+    const LA = ev('launch'); if (t > LA - 0.4 && t < LA + 4) { L.push({ a: GANTRY_A, h: 30 + Math.max(0, t - LA) ** 2 * 70, r: 1100, k: 1.6 * Math.exp(-Math.max(0, t - LA) * 0.6), color: [255, 200, 130] }); for (let k = 0; k < 3; k++) Sm.push({ a: GANTRY_A + (k - 1) * 3, h: 6, t0: LA - 0.2, t1: LA + 2.5, size: 2.4, life: 5, every: 0.12, rise: 70, drift: (k - 1) * 8, alpha: 0.85 }); }
+    // the tokamak's glow on everything around it; the dark factory's arc-lights; the stage
+    if (near(TOK, c, 50) && t > ev('plasma')) L.push({ a: TOK, h: 140, r: 900, k: 0.9 * sramp(t, ev('plasma'), ev('plasma') + 1.4) * (1 - sramp(t, 661, 663)), color: [230, 130, 255] });
+    if (near(STAGE, c, 50) && t > 672) L.push({ a: STAGE, h: 160, r: 800, k: 0.8, color: [255, 200, 160] });
+    if (near(FACT, c, 50) && t > 681) for (let i = 0; i < 3; i++) { const a = [2593, 2600, 2607][i], w = Math.sin(t * 1.3 + i * 1.7) < -0.35; if (w) L.push({ a: a + 4, h: 120, r: 380, k: 0.9, color: [170, 210, 255] }); }
+    if (near(2627, c, 60) && t > ev('coal') - 1) for (const [a, L2, h] of [[2622, 'mid', 120], [2627, 'main', 170], [2633, 'main', 150]]) Sm.push({ a, layer: L2, h, t0: ev('coal') - 1, size: 1.6, life: 6, every: 0.45, rise: 200, drift: 5, alpha: 0.5 });
+    if (near(2634, c, 60) && t > ev('coal') - 0.4) for (const [a, L2, h, sz] of [[2638.4, 'main', 344, 0.9], [2630, 'mid', 206, 0.6]]) Sm.push({ a, layer: L2, h, t0: ev('coal') - 0.4, size: sz, life: 5, every: 0.35, rise: 160, drift: 6, alpha: 0.55 });
   },
   ground(g, st, t, S, G) {
-    // green creeping out over the sand as the trees go in
+    const radC = (a, R0) => { const rel = (a - G.c) * DEG; return [Math.sin(rel) * R0, -Math.cos(rel) * R0]; };
+    const line = (pts, w, col, dash, off) => { g.save(); g.strokeStyle = col; g.lineWidth = w; if (dash) { g.setLineDash(dash); g.lineDashOffset = off || 0; } g.beginPath(); pts.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.stroke(); g.restore(); };
+    // ---- the Three Gorges: the reservoir high behind the dam, the river churning out below it, power leaving along the lines
+    if (near(2398, G.c, 60)) {
+      // the reservoir, held up behind the dam: a lake standing high above the valley floor
+      G.run(2373, DAM[0] - 1.6, (a0, a1) => { const top = [], bot = []; for (let a = a0; a <= a1 + 0.001; a += 0.3) { const e = sramp(a, 2373, 2376.5); top.push(G.rad(a, 4 + 150 * e)); bot.push(G.rad(a, -8)); }
+        g.save(); const gr = g.createLinearGradient(0, top[top.length - 1][1], 0, bot[0][1]); gr.addColorStop(0, 'rgba(80,130,150,.95)'); gr.addColorStop(1, 'rgba(40,80,100,.95)'); g.fillStyle = gr; g.beginPath(); top.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); for (let i = bot.length - 1; i >= 0; i--) g.lineTo(bot[i][0], bot[i][1]); g.closePath(); g.fill(); g.restore();
+        line(top, 2.4, 'rgba(220,240,250,.8)'); line(top.map(([x, y]) => [x, y + 10]), 1.2, 'rgba(220,240,250,.4)', [10, 16], -t * 6); });
+      G.river(DAM[0] - 2, 2418, -6, 16, 'rgba(70,110,120,.95)', 'rgba(240,250,250,.7)');
+      const TG = ev('gorges'); if (t > TG) { const k = sramp(t, TG + 0.6, TG + 2); for (let i = 0; i < 18; i++) { const a = DAM[1] + hash(i) * 12, ph = ((t * 0.7 + hash(i * 3)) % 1), [x, y] = G.rad(a + ph * 6, -2 + Math.sin(ph * 6) * 3); g.fillStyle = `rgba(250,252,255,${0.6 * k * (1 - ph)})`; g.beginPath(); g.ellipse(x, y, 6 + ph * 8, 2.4, 0, 0, 7); g.fill(); } }
+      const tipsA = [2417.6, 2424];
+      for (const dy of [214, 264]) { const p0 = G.rad(tipsA[0], dy * 0.8 - 26), p1 = G.rad(tipsA[1], dy * 0.8 - 26), p2 = G.rad(2440, dy * 0.8 - 40); g.strokeStyle = 'rgba(40,40,44,.7)'; g.lineWidth = 0.9; g.beginPath(); g.moveTo(p0[0], p0[1]); g.quadraticCurveTo((p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2 + 14, p1[0], p1[1]); g.quadraticCurveTo((p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2 + 18, p2[0], p2[1]); g.stroke(); }
+    }
+    // ---- the sea bridge: the deck on its piers, the cables from each tower, the cars, the tunnel under the sea
+    if (near(2436, G.c, 60)) {
+      const DY = 1000 - 6 + 72 * 0.9, deck = []; for (let a = DECK0; a <= DECK1 + 0.01; a += 0.25) deck.push(radC(a, DY));
+      line(deck, 7, 'rgba(200,196,188,1)'); line(deck.map(([x, y]) => [x * (DY + 3.5) / DY, y * (DY + 3.5) / DY]), 1.6, 'rgba(120,120,120,.9)');
+      line(deck.map(([x, y]) => [x * (DY - 3) / DY, y * (DY - 3) / DY]), 1.2, 'rgba(90,90,94,.7)');
+      for (const [a, v] of PYL) { const top = radC(a, 1000 - 6 + (v === 2 ? 270 : 252) * 0.9); g.strokeStyle = 'rgba(70,70,74,.6)'; g.lineWidth = 0.7; for (let k = 1; k <= 7; k++) for (const s of [-1, 1]) { const p = radC(a + s * k * 0.55, DY); g.beginPath(); g.moveTo(top[0], top[1]); g.lineTo(p[0], p[1]); g.stroke(); } }
+      // the ramp down from the island into the sea, then the tube under the sea floor's water, lit inside
+      const RAMP0 = ISLE + 1, ramp = []; for (let a = DECK1; a <= RAMP0 + 1.5; a += 0.25) { const f = (a - DECK1) / (RAMP0 + 1.5 - DECK1); ramp.push(radC(a, DY - smooth(f) * (DY - 1000 + 16))); }
+      line(ramp, 6, 'rgba(190,186,178,1)');
+      // cars on the deck, then down the ramp toward the island
+      const path = [...deck, ...ramp]; const n = path.length;
+      for (let i = 0; i < 9; i++) { const f = ((t * 0.06 + i / 9) % 1), j = Math.floor(f * (n - 1)), [x, y] = path[j], [x2, y2] = path[Math.min(n - 1, j + 1)], ang = Math.atan2(y2 - y, x2 - x); g.save(); g.translate(x, y); g.rotate(ang); g.fillStyle = ['#c8322a', '#e8e6e0', '#2a4a8a', '#3a3a40'][i % 4]; g.fillRect(-7, -9, 14, 5); g.fillStyle = 'rgba(255,240,200,.9)'; g.fillRect(6, -7, 2, 2); g.restore(); }
+    }
+    // ---- quantum: the robots' road, the factory's line
+    if (near(2572, G.c, 50)) { G.run(2558, 2586, (a0, a1) => { G.arc(a0, a1, -8, 14, 'rgba(60,60,64,.85)'); G.arc(a0, a1, -8, 1.4, 'rgba(240,240,240,.7)', [10, 10]); }); }
+    if (near(FACT, G.c, 50)) G.run(2586, 2620, (a0, a1) => { G.arc(a0, a1, 4, 3, 'rgba(70,72,80,.95)'); G.arc(a0, a1, -6, 10, 'rgba(40,42,48,.9)'); });
+    // ---- green creeping out over the sand as the trees go in
     const TREE = ev('trees'), k = sramp(t, TREE, TREE + 5);
-    if (k > 0) G.run(2434, 2470, (a0, a1) => { const e = lerp(2434, 2470, k); if (e > a0) G.arc(a0, Math.min(a1, e), -8, 14, 'rgba(96,130,70,.55)'); });
-    // the needle at the end of the thread
+    if (k > 0) G.run(2666, 2694, (a0, a1) => { const e = lerp(2666, 2694, k); if (e > a0) G.arc(a0, Math.min(a1, e), -8, 14, 'rgba(96,130,70,.55)'); });
+    // ---- the needle at the end of the thread
     if (near(THREAD_END, G.c, 60)) { const [x, y] = G.rad(THREAD_END + 0.4, -6), rel = (THREAD_END - G.c) * DEG; g.save(); g.translate(x, y); g.rotate(rel + 0.6); g.fillStyle = '#c8ccd2'; g.beginPath(); g.moveTo(-1.6, 0); g.lineTo(0, -62); g.lineTo(1.6, 0); g.lineTo(0, 10); g.closePath(); g.fill(); g.strokeStyle = 'rgba(60,64,70,.8)'; g.lineWidth = 0.8; g.stroke(); g.fillStyle = 'rgba(40,40,44,.9)'; g.beginPath(); g.ellipse(0, -54, 0.8, 3.4, 0, 0, 7); g.fill(); g.restore(); }
   },
   sky(g, st, t, S) {
-    const { W, H } = st, LA = ev('launch');
-    if (t > LA - 0.3 && t < LA + 3.4) {
-      const [gx, gy] = st.place('main', GANTRY_A + 0.9, 0, t), k = clamp((t - LA) / 3.2) ** 1.6, rx = gx + k * W * 0.1, ry = lerp(gy - 20 * st.eu, -H * 0.2, k);
-      g.globalCompositeOperation = 'screen'; st.stamp(g, st.dot(255, 200, 120, '255,240,210'), rx, ry + 40 * st.eu, 60 * st.eu, 0.9); g.globalCompositeOperation = 'source-over';
-      g.save(); g.translate(rx, ry); g.scale(st.eu * 0.9, st.eu * 0.9); g.rotate(k * 0.12); put(g, st.fx.rocket, 0); g.restore();
-    }
+    // the Micius satellite, high over the two observatories
+    const Q = ev('quantum');
+    if (t > Q - 1.5 && t < 676) { const k = drop(t, Q - 1.2, 674), por = st.aspectK > 0.4 ? 0 : 1; st.hang(g, st.fx.micius, st.W * 0.5, st.H * lerp(-0.2, por ? 0.14 : 0.12, k), por ? 0.9 : 1.2, Math.sin(t * 0.4) * 1.4 * DEG, 1, Math.sin(t * 0.3) * 0.08); }
   },
   over(g, st, t, S) {
-    const { W, H } = st, FS = ev('farside'), C6 = ev('change6'), OUT = ev('farsideOut');
-    if (t < FS - 0.2 || t > OUT + 1.6) return;
-    const up = clamp(spring(t - FS, 5.0, 0.6), 0, 1.25), out = sramp(t, OUT, OUT + 1.3), veil = clamp(up) * (1 - out);
-    g.fillStyle = `rgba(4,5,10,${0.78 * veil})`; g.fillRect(0, 0, W, H);
-    g.globalCompositeOperation = 'lighter';
-    for (let i = 0; i < 110; i++) { const x = hash(i * 17 + 3) * W, y = hash(i * 29 + 7) * H * 0.62, tw = 0.6 + 0.4 * Math.sin(t * (1 + hash(i)) + i), rr = (0.8 + hash(i * 3) * 1.3) * st.dpr * 0.6; g.fillStyle = `rgba(230,236,255,${0.75 * veil * tw * (0.3 + hash(i * 5) * 0.7)})`; g.fillRect(x, y, rr, rr); }
-    g.globalCompositeOperation = 'source-over';
-    // no Earth in this sky: from the far side it can never be seen. Only the relay satellite, hanging out beyond the Moon.
-    if (t > FS + 0.5) st.hang(g, st.fx.sat, W * 0.72, H * lerp(-0.2, 0.15, drop(t, FS + 0.6, OUT - 0.3)), 0.9, Math.sin(t * 0.4) * 2 * DEG, 1, Math.sin(t * 0.3) * 0.3);
-    const por = W < H, base = por ? W * 1.5 / 470 : Math.max(W / 760, H * 0.95 / 470);
-    const cx = W * 0.5 - (por ? 60 : 30) * base, cy = H * (por ? 0.64 : 0.68) + (1 - Math.min(1, up)) * H * 0.9 + out * H * 0.9;
-    g.save(); g.translate(cx, cy); g.rotate((1 - Math.min(1, up)) * 0.2); g.scale(base, base);
-    put(g, st.fx.lunar, 0.6, 8, 12);
-    const ys = (x) => -40 + (x / 440) ** 2 * 70, land = FS + 1.4, lk = smooth(clamp((t - (land - 1.4)) / 1.4));
-    // Chang'e 4 comes down; Yutu-2 rolls off and away, leaving two tracks
-    const lx = 10, ly = ys(lx) + 2 - (1 - lk) * 760;
-    g.strokeStyle = `rgba(210,205,195,${0.35 * (1 - out)})`; g.lineWidth = 0.8; g.beginPath(); g.moveTo(lx, ly - 80); g.lineTo(lx, -900); g.stroke();
-    if (t < land + 0.2) { g.globalCompositeOperation = 'screen'; st.stamp(g, st.dot(255, 200, 140, '255,230,190'), lx, ly + 4, 40, 0.6 * clamp((land + 0.2 - t) * 3)); g.globalCompositeOperation = 'source-over'; }
-    const rx = lx + 30 + clamp((t - land - 1) / 4) * 120;
-    if (t > land + 0.8) { g.strokeStyle = 'rgba(70,66,62,.6)'; g.lineWidth = 2; for (const dy of [3, 7]) { g.beginPath(); for (let x = lx + 30; x <= rx; x += 4) { const y = ys(x) + dy; x === lx + 30 ? g.moveTo(x, y) : g.lineTo(x, y); } g.stroke(); } g.save(); g.translate(rx, ys(rx) + 4); g.scale(1.2, 1.2 * clamp(spring(t - land - 0.8, 9, 0.5), 0, 1.3)); put(g, st.fx.yutu, 0.4, 2, 3); g.restore(); }
-    g.save(); g.translate(lx, ly); g.scale(1.25, 1.25); put(g, st.fx.c4, 0.5, 4, 6); g.restore();
-    // 2024: Chang'e 6 scoops up rock, and its ascender lifts off for home
-    if (t > C6 - 0.6) {
-      const kx = -200, k6 = smooth(clamp((t - (C6 - 0.6)) / 1.2)), ky = ys(kx) + 2 - (1 - k6) * 760;
-      g.strokeStyle = `rgba(210,205,195,${0.35 * (1 - out)})`; g.lineWidth = 0.8; g.beginPath(); g.moveTo(kx, ky - 80); g.lineTo(kx, -900); g.stroke();
-      g.save(); g.translate(kx, ky); g.scale(1.2, 1.2); put(g, st.fx.c4, 0.5, 4, 6);
-      const arm = sramp(t, C6 + 0.8, C6 + 1.6) * (1 - sramp(t, C6 + 2.4, C6 + 3)); g.strokeStyle = '#8c8a86'; g.lineWidth = 2; g.beginPath(); g.moveTo(26, -30); g.lineTo(26 + arm * 22, -30 + arm * 26); g.stroke(); g.restore();
-      const asc = t - (C6 + 3.2); if (asc > 0) { const ay = ky - 46 * 1.2 - asc * asc * 160; g.globalCompositeOperation = 'screen'; st.stamp(g, st.dot(255, 200, 140, '255,240,210'), kx, ay + 30, 30, Math.min(1, asc * 3)); g.globalCompositeOperation = 'source-over'; g.save(); g.translate(kx, ay); g.scale(1.2, 1.2); put(g, st.fx.ascender, 0.3, 2, 3); g.restore(); }
-      else { g.save(); g.translate(kx, ky - 46 * 1.2); g.scale(1.2, 1.2); put(g, st.fx.ascender, 0.3, 2, 3); g.restore(); }
+    const { W, H } = st, u = st.eu, por = st.aspectK > 0.4 ? 0 : 1;
+    // ---- far side of the Moon: Chang'e 4 and Yutu-2; then Chang'e 6 takes rock and lifts off
+    const FS = ev('farside'), C6 = ev('change6'), OUT = ev('farsideOut');
+    if (t > FS - 0.2 && t < OUT + 1.6) {
+      const up = clamp(spring(t - FS, 5.0, 0.6), 0, 1.25), out = sramp(t, OUT, OUT + 1.3), veil = clamp(up) * (1 - out);
+      g.fillStyle = `rgba(4,5,10,${0.78 * veil})`; g.fillRect(0, 0, W, H);
+      g.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 110; i++) { const x = hash(i * 17 + 3) * W, y = hash(i * 29 + 7) * H * 0.62, tw = 0.6 + 0.4 * Math.sin(t * (1 + hash(i)) + i), rr = (0.8 + hash(i * 3) * 1.3) * st.dpr * 0.6; g.fillStyle = `rgba(230,236,255,${0.75 * veil * tw * (0.3 + hash(i * 5) * 0.7)})`; g.fillRect(x, y, rr, rr); }
+      g.globalCompositeOperation = 'source-over';
+      if (t > FS + 0.5) st.hang(g, st.fx.sat, W * 0.72, H * lerp(-0.2, 0.15, drop(t, FS + 0.6, OUT - 0.3)), 0.9, Math.sin(t * 0.4) * 2 * DEG, 1, Math.sin(t * 0.3) * 0.3);
+      const base = por ? W * 1.5 / 470 : Math.max(W / 760, H * 0.95 / 470);
+      const cx = W * 0.5 - (por ? 60 : 30) * base, cy = H * (por ? 0.64 : 0.68) + (1 - Math.min(1, up)) * H * 0.9 + out * H * 0.9;
+      g.save(); g.translate(cx, cy); g.rotate((1 - Math.min(1, up)) * 0.2); g.scale(base, base);
+      put(g, st.fx.lunar, 0.6, 8, 12);
+      const ys = (x) => -40 + (x / 440) ** 2 * 70, land = FS + 1.4, lk = smooth(clamp((t - (land - 1.4)) / 1.4));
+      const lx = 10, ly = ys(lx) + 2 - (1 - lk) * 760;
+      g.strokeStyle = `rgba(210,205,195,${0.35 * (1 - out)})`; g.lineWidth = 0.8; g.beginPath(); g.moveTo(lx, ly - 80); g.lineTo(lx, -900); g.stroke();
+      if (t < land + 0.2) { g.globalCompositeOperation = 'screen'; st.stamp(g, st.dot(255, 200, 140, '255,230,190'), lx, ly + 4, 40, 0.6 * clamp((land + 0.2 - t) * 3)); g.globalCompositeOperation = 'source-over'; }
+      const rx = lx + 30 + clamp((t - land - 1) / 4) * 120;
+      if (t > land + 0.8) { g.strokeStyle = 'rgba(70,66,62,.6)'; g.lineWidth = 2; for (const dy of [3, 7]) { g.beginPath(); for (let x = lx + 30; x <= rx; x += 4) { const y = ys(x) + dy; x === lx + 30 ? g.moveTo(x, y) : g.lineTo(x, y); } g.stroke(); } g.save(); g.translate(rx, ys(rx) + 4); g.scale(1.2, 1.2 * clamp(spring(t - land - 0.8, 9, 0.5), 0, 1.3)); put(g, st.fx.yutu, 0.4, 2, 3); g.restore(); }
+      g.save(); g.translate(lx, ly); g.scale(1.25, 1.25); put(g, st.fx.c4, 0.5, 4, 6); g.restore();
+      if (t > C6 - 0.6) {
+        const kx = -200, k6 = smooth(clamp((t - (C6 - 0.6)) / 1.2)), ky = ys(kx) + 2 - (1 - k6) * 760;
+        g.strokeStyle = `rgba(210,205,195,${0.35 * (1 - out)})`; g.lineWidth = 0.8; g.beginPath(); g.moveTo(kx, ky - 80); g.lineTo(kx, -900); g.stroke();
+        g.save(); g.translate(kx, ky); g.scale(1.2, 1.2); put(g, st.fx.c4, 0.5, 4, 6);
+        const arm = sramp(t, C6 + 0.8, C6 + 1.6) * (1 - sramp(t, C6 + 2.4, C6 + 3)); g.strokeStyle = '#8c8a86'; g.lineWidth = 2; g.beginPath(); g.moveTo(26, -30); g.lineTo(26 + arm * 22, -30 + arm * 26); g.stroke(); g.restore();
+        const asc = t - (C6 + 3.2); if (asc > 0) { const ay = ky - 46 * 1.2 - asc * asc * 160; g.globalCompositeOperation = 'screen'; st.stamp(g, st.dot(255, 200, 140, '255,240,210'), kx, ay + 30, 30, Math.min(1, asc * 3)); g.globalCompositeOperation = 'source-over'; g.save(); g.translate(kx, ay); g.scale(1.2, 1.2); put(g, st.fx.ascender, 0.3, 2, 3); g.restore(); }
+        else { g.save(); g.translate(kx, ky - 46 * 1.2); g.scale(1.2, 1.2); put(g, st.fx.ascender, 0.3, 2, 3); g.restore(); }
+      }
+      g.restore();
     }
-    g.restore();
+    // ---- under the sea: the tunnel tube, lit inside, cars running through it
+    if (near(ISLE, cam(t), 50)) {
+      const A0 = ISLE + 2.6, pts = []; for (let a = A0; a <= TUBE1; a += 0.25) pts.push(st.place('main', a, -18 - Math.sin(((a - A0) / (TUBE1 - A0)) * Math.PI) * 30, t));
+      const L = (w, c, dash, off) => { g.save(); g.strokeStyle = c; g.lineWidth = w * u; if (dash) { g.setLineDash(dash.map((d) => d * u)); g.lineDashOffset = off * u; } g.lineCap = 'round'; g.beginPath(); pts.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.stroke(); g.restore(); };
+      L(20, 'rgba(70,74,82,.95)'); L(14, 'rgba(26,28,34,1)'); L(2, 'rgba(255,220,150,.8)', [4, 6], -t * 40);
+      // the sea over it, so the tube is seen down through the water
+      const top = [], bot = []; for (let a = A0 - 1; a <= TUBE1 + 1; a += 0.3) { top.push(st.place('main', a, -3, t)); bot.push(st.place('main', a, -62, t)); }
+      g.save(); g.fillStyle = 'rgba(44,90,120,.42)'; g.beginPath(); top.forEach(([px, py], i) => (i ? g.lineTo(px, py) : g.moveTo(px, py))); for (let i = bot.length - 1; i >= 0; i--) g.lineTo(bot[i][0], bot[i][1]); g.closePath(); g.fill(); g.restore();
+      g.globalCompositeOperation = 'lighter'; for (let i = 0; i < 5; i++) { const f = ((t * 0.12 + i / 5) % 1), j = Math.floor(f * (pts.length - 1)), [x, y] = pts[j]; st.stamp(g, st.dot(255, 230, 180, '255,250,230'), x, y, 7 * u, 0.9); } g.globalCompositeOperation = 'source-over';
+    }
+    // ---- the canyon card, and the bridge drawn across it
+    if (near(CANYON, cam(t), 45)) {
+      const [x, y, rel] = st.place('main', CANYON, 0, t); g.save(); g.translate(x, y); g.rotate(rel); g.scale(u, u); put(g, st.fx.gorge, 0); g.restore();
+      const H0 = ev('huajiang'), T0 = CANYON - 8.4, T1 = CANYON + 8.4, hk = sramp(t, H0 - 0.4, H0 + 1.4), mid = CANYON;
+      const P = (a, h) => st.place('main', a, h, t), line = (pts, w, c) => { g.strokeStyle = c; g.lineWidth = w * u; g.beginPath(); pts.forEach(([px, py], i) => (i ? g.lineTo(px, py) : g.moveTo(px, py))); g.stroke(); };
+      if (t > H0 - 0.6) {
+        // the main cables, hung from the tower tops; the hangers; the deck growing out from both sides to meet
+        const topH = 316, cab = []; for (let a = T0; a <= T1 + 0.01; a += 0.25) { const f = (a - T0) / (T1 - T0); cab.push(P(a, topH - Math.sin(f * Math.PI) * 286)); }
+        g.save(); g.lineCap = 'round'; line(cab, 2.2, 'rgba(50,50,56,.95)');
+        g.strokeStyle = 'rgba(50,50,56,.55)'; g.lineWidth = Math.max(0.6, 0.7 * u); for (let a = T0 + 0.6; a < T1; a += 0.6) { const f = (a - T0) / (T1 - T0), [x0, y0] = P(a, topH - Math.sin(f * Math.PI) * 286), [x1, y1] = P(a, 16); g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke(); }
+        for (const [a, s] of [[T0 - 4, -1], [T1 + 4, 1]]) line([P(s < 0 ? T0 : T1, topH), P(a, 0)], 2.2, 'rgba(50,50,56,.9)');
+        for (const s of [-1, 1]) { const end = lerp(s < 0 ? T0 - 4 : T1 + 4, mid, hk), d = []; for (let a = s < 0 ? T0 - 4 : end; a <= (s < 0 ? end : T1 + 4) + 0.001; a += 0.2) d.push(P(a, 14)); if (d.length > 1) { line(d, 9, 'rgba(196,60,50,1)'); line(d.map(([px, py]) => [px, py - 4 * u]), 1.4, 'rgba(255,255,255,.6)'); } }
+        if (hk > 0.99) for (let i = 0; i < 4; i++) { const f = ((t * 0.09 + i / 4) % 1), a = lerp(T0 - 4, T1 + 4, i % 2 ? f : 1 - f), [cx2, cy2, r2] = st.place('main', a, 20, t); g.save(); g.translate(cx2, cy2); g.rotate(r2); g.scale(u, u); g.fillStyle = ['#e8e6e0', '#2a4a8a'][i % 2]; g.fillRect(-6, -5, 12, 5); g.restore(); }
+        g.restore();
+      }
+    }
+    // ---- power leaving the Three Gorges along the wires: pulses of light
+    const TG = ev('gorges'); if (t > TG + 1 && t < 624) { g.globalCompositeOperation = 'lighter'; for (let i = 0; i < 8; i++) { const f = ((t - TG) * 0.5 + i / 8) % 1, a = lerp(2417.6, 2440, f), [x, y] = st.place('main', a, 214 * 0.8 - 26 - Math.sin(f * Math.PI * 2) * 4, t); st.stamp(g, st.dot(255, 230, 150, '255,250,220'), x, y, 9 * u, 0.9); } g.globalCompositeOperation = 'source-over'; }
+    // ---- mist rising out of the canyon
+    if (t > 630 && t < 644) { const k = sramp(t, 631, 633) * (1 - sramp(t, 641, 643)); for (let i = 0; i < 8; i++) { const a = CANYON - 4 + hash(i * 3) * 8 + Math.sin(t * 0.2 + i) * 0.6, [x, y] = st.place('main', a, -160 + i * 18 + Math.sin(t * 0.3 + i) * 6, t); st.stamp(g, st.dot(230, 236, 240), x, y, (50 + hash(i) * 40) * u, 0.18 * k); } }
+    // ---- seventeen minutes, and more: a stopwatch runs through them
+    const SV = ev('seventeen');
+    if (t > SV - 0.4 && t < SV + 6.4) {
+      const k = drop(t, SV - 0.2, SV + 5.4), x = W * (por ? 0.5 : 0.72), y = H * lerp(-0.3, por ? 0.22 : 0.2, k), sc = por ? 1.0 : 1.35, sw = Math.sin(t * 0.6) * 1.5 * DEG;
+      st.hang(g, st.fx.stopwatch, x, y, sc, sw);
+      const len = y + 20, cx = x - Math.sin(sw) * len, cy = -20 + Math.cos(sw) * len, secs = clamp((t - SV) / 4) * 1066;
+      g.save(); g.translate(cx, cy); g.rotate(sw); g.scale(u * sc, u * sc);
+      const hand = (a, L, w, col) => { g.save(); g.rotate(a); g.strokeStyle = col; g.lineWidth = w; g.lineCap = 'round'; g.beginPath(); g.moveTo(0, 6); g.lineTo(0, -L); g.stroke(); g.restore(); };
+      g.save(); g.translate(0, 16); hand((secs / 60) / 30 * Math.PI * 2, 10, 1.6, '#c8282a'); g.restore();
+      hand((secs % 60) / 60 * Math.PI * 2, 40, 1.4, '#2a2a30'); g.fillStyle = '#2a2a30'; g.beginPath(); g.arc(0, 0, 2.6, 0, 7); g.fill();
+      g.restore();
+    }
+    // ---- quantum keys: beams from the satellite down to the two observatories, keys riding them
+    const Q = ev('quantum');
+    if (t > Q - 0.2 && t < 676) {
+      const k = drop(t, Q - 1.2, 674), sy = H * lerp(-0.2, por ? 0.14 : 0.12, k) + 34 * u * (por ? 0.9 : 1.2), sx = W * 0.5, beam = sramp(t, Q, Q + 0.8) * (1 - sramp(t, 673, 675));
+      g.globalCompositeOperation = 'lighter';
+      QS.forEach((a, i) => {
+        const [x, y] = st.place('main', a + 0.4, 130 * 1.1, t); if (beam < 0.01) return;
+        const col = i ? '255,80,90' : '90,255,140';
+        g.strokeStyle = `rgba(${col},${0.5 * beam})`; g.lineWidth = Math.max(1.4, 2.4 * u); g.beginPath(); g.moveTo(sx, sy); g.lineTo(x, y); g.stroke();
+        g.strokeStyle = `rgba(${col},${0.18 * beam})`; g.lineWidth = 10 * u; g.beginPath(); g.moveTo(sx, sy); g.lineTo(x, y); g.stroke();
+        for (let j = 0; j < 3; j++) { const f = ((t - Q) * 0.45 + j / 3) % 1; if (t < Q + 0.6) continue; const px = lerp(sx, x, f), py = lerp(sy, y, f); g.save(); g.globalCompositeOperation = 'source-over'; g.translate(px, py); g.scale(u * 1.1, u * 1.1); put(g, st.fx.qkey, 0); g.restore(); st.stamp(g, st.dot(200, 255, 230), px, py, 14 * u, 0.5 * beam); }
+      });
+      g.globalCompositeOperation = 'source-over';
+    }
+    // ---- the quantum computer: a golden chandelier lowered on its thread, its chip glowing cold blue
+    const QC = ev('qcomputer');
+    if (t > QC - 0.4 && t < 676) {
+      const k = drop(t, QC, 674), x = W * (por ? 0.5 : 0.3), y = H * lerp(-0.7, por ? 0.04 : 0.03, k), sc = por ? 0.85 : 1.25, sw = Math.sin(t * 0.5) * 1.2 * DEG;
+      st.hang(g, st.fx.qfridge, x, y, sc, sw);
+      const len = y + 20, cx = x - Math.sin(sw) * (len + 236 * u * sc), cy = -20 + Math.cos(sw) * (len + 236 * u * sc), win = sramp(t, ev('beat'), ev('beat') + 0.8);
+      g.globalCompositeOperation = 'lighter'; st.stamp(g, st.dot(120, 200, 255, '230,250,255'), cx, cy, (26 + 30 * win) * u * sc, 0.8 + 0.2 * Math.sin(t * 6)); g.globalCompositeOperation = 'source-over';
+    }
+    // ---- Datong's panda, made of solar panels
+    const PF = ev('pandafarm');
+    if (t > PF - 0.3 && t < PF + 6) st.hang(g, st.fx.pandafarm, W * (por ? 0.5 : 0.7), H * lerp(-0.3, por ? 0.24 : 0.2, drop(t, PF, PF + 5)), por ? 1.0 : 1.4, Math.sin(t * 0.6) * 1.5 * DEG);
   },
 });
+
 // the thread of silk: unwound from the reel, it runs on, stitched into the world, through everything
 const THREAD0 = 94.6;
 const threadEnd = (t) => (t < 40.4 ? -1e9 : t < 46.5 ? THREAD0 + (t - 40.4) * 9 : 1e9);
@@ -1167,14 +1327,14 @@ const NIGHT = ['#0a102b', '#11193c', '#1a2650', '#2e3a66'], DUSK = ['#141b3c', '
 const W_ = [255, 252, 244];
 const skyK = track([
   [0, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [5, ['#262f5a', '#57497c', '#b0627a', '#e08f5e']], [9, DUSK], [13, ['#0c1230', '#131c42', '#1e2a56', '#35426e']],
-  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [48.5, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [51, DUSK], [54, NIGHT], [95, NIGHT], [99, DAWN], [103, DAY], [107, DAY], [109, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [113, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [116, DAY], [238, DAY], [241, ['#6a8ab0', '#a8b0c0', '#e8d0b0', '#f6c890']], [256, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [260, DAY], [290, DAY], [294, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [297.5, DUSK], [300, NIGHT], [315, NIGHT], [318.5, DAWN], [321, DAY], [328, DAY], [330.5, DUSK], [332.5, NIGHT], [338, NIGHT], [340.5, DAWN], [343, DAY], [427, DAY], [430, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [438, ['#4a3a3a', '#6a4a40', '#8a5a48', '#a87a5a']], [446, ['#4a3a3a', '#6a4a40', '#8a5a48', '#a87a5a']], [449, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [457, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [462, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [465, ['#3a2a2a', '#5a3a32', '#8a4a3a', '#a86a4a']], [471, ['#2a2224', '#3a2a2a', '#5a3a34', '#6a4a40']], [474, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [478, DAY], [490, DAY], [493, ['#8a8a90', '#a8a49c', '#c8b8a0', '#d8c4a0']], [497, ['#5a5a66', '#7a7680', '#9a9090', '#a89a90']], [507, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [510, DUSK], [512.5, NIGHT], [522, NIGHT], [525.5, DAWN], [528, DAY], [550, DAY], [553, ['#5a5a6a', '#7a7078', '#a08a80', '#b89a88']], [558.5, DUSK], [561.5, NIGHT], [574, ['#05081a', '#0a1028', '#121c3c', '#1e2c50']], [606, ['#05081a', '#0a1028', '#121c3c', '#1e2c50']], [610, DAWN], [613, DAY], [625, DAY], [628.5, DUSK], [632, ['#101a3c', '#2a3060', '#6a5a7a', '#a87a7a']], [642, ['#101a3c', '#2a3060', '#6a5a7a', '#a87a7a']], [650, ['#2c3a6a', '#6c6a96', '#e3a07a', '#f7c98a']], [662, ['#3f6aa0', '#7aa0c8', '#e2c8b0', '#f8d8a8']],
+  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [48.5, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [51, DUSK], [54, NIGHT], [95, NIGHT], [99, DAWN], [103, DAY], [107, DAY], [109, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [113, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [116, DAY], [238, DAY], [241, ['#6a8ab0', '#a8b0c0', '#e8d0b0', '#f6c890']], [256, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [260, DAY], [290, DAY], [294, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [297.5, DUSK], [300, NIGHT], [315, NIGHT], [318.5, DAWN], [321, DAY], [328, DAY], [330.5, DUSK], [332.5, NIGHT], [338, NIGHT], [340.5, DAWN], [343, DAY], [427, DAY], [430, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [438, ['#4a3a3a', '#6a4a40', '#8a5a48', '#a87a5a']], [446, ['#4a3a3a', '#6a4a40', '#8a5a48', '#a87a5a']], [449, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [457, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [462, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [465, ['#3a2a2a', '#5a3a32', '#8a4a3a', '#a86a4a']], [471, ['#2a2224', '#3a2a2a', '#5a3a34', '#6a4a40']], [474, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [478, DAY], [490, DAY], [493, ['#8a8a90', '#a8a49c', '#c8b8a0', '#d8c4a0']], [497, ['#5a5a66', '#7a7680', '#9a9090', '#a89a90']], [507, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [510, DUSK], [512.5, NIGHT], [522, NIGHT], [525.5, DAWN], [528, DAY], [550, DAY], [553, ['#5a5a6a', '#7a7078', '#a08a80', '#b89a88']], [558.5, DUSK], [561.5, NIGHT], [574, ['#05081a', '#0a1028', '#121c3c', '#1e2c50']], [606, ['#05081a', '#0a1028', '#121c3c', '#1e2c50']], [609.5, DAWN], [614, DAY], [639, DAY], [643, DUSK], [646, ['#0a0c22', '#121434', '#1e1c44', '#2e2a56']], [690, ['#05060e', '#08091a', '#0e1024', '#161a30']], [695, NIGHT], [698, DAWN], [702, DAY], [713, DAY], [717, DUSK], [721, ['#101a3c', '#2a3060', '#6a5a7a', '#a87a7a']], [730, ['#101a3c', '#2a3060', '#6a5a7a', '#a87a7a']], [740, ['#2c3a6a', '#6c6a96', '#e3a07a', '#f7c98a']], [750, ['#3f6aa0', '#7aa0c8', '#e2c8b0', '#f8d8a8']],
 ]);
-const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [48.5, [244, 200, 180]], [51, [130, 110, 140]], [54, [66, 72, 116]], [95, [66, 72, 116]], [99, [200, 180, 175]], [103, W_], [107, W_], [109, [210, 200, 196]], [113, [210, 200, 196]], [116, W_], [238, W_], [241, [255, 236, 214]], [256, [240, 200, 180]], [260, W_], [290, W_], [294, [244, 200, 180]], [297.5, [110, 104, 140]], [300, [60, 70, 116]], [315, [60, 70, 116]], [318.5, [200, 180, 175]], [321, W_], [328, W_], [330.5, [110, 104, 140]], [332.5, [56, 64, 108]], [338, [56, 64, 108]], [340.5, [200, 180, 175]], [343, W_], [427, W_], [430, [210, 200, 196]], [438, [180, 140, 126]], [446, [180, 140, 126]], [449, [236, 230, 224]], [457, [236, 230, 224]], [462, [236, 230, 224]], [465, [190, 140, 120]], [471, [120, 96, 92]], [474, [240, 210, 196]], [478, W_], [490, W_], [493, [226, 214, 200]], [497, [176, 170, 176]], [507, [196, 190, 190]], [510, [110, 104, 140]], [512.5, [60, 68, 112]], [522, [60, 68, 112]], [525.5, [200, 180, 175]], [528, W_], [550, W_], [553, [176, 166, 170]], [558.5, [100, 96, 128]], [561.5, [50, 58, 100]], [574, [36, 42, 76]], [606, [36, 42, 76]], [610, [200, 180, 175]], [613, W_], [625, W_], [628.5, [150, 130, 150]], [632, [90, 90, 130]], [642, [90, 90, 130]], [650, [200, 182, 176]], [662, [255, 250, 240]]]);
+const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [48.5, [244, 200, 180]], [51, [130, 110, 140]], [54, [66, 72, 116]], [95, [66, 72, 116]], [99, [200, 180, 175]], [103, W_], [107, W_], [109, [210, 200, 196]], [113, [210, 200, 196]], [116, W_], [238, W_], [241, [255, 236, 214]], [256, [240, 200, 180]], [260, W_], [290, W_], [294, [244, 200, 180]], [297.5, [110, 104, 140]], [300, [60, 70, 116]], [315, [60, 70, 116]], [318.5, [200, 180, 175]], [321, W_], [328, W_], [330.5, [110, 104, 140]], [332.5, [56, 64, 108]], [338, [56, 64, 108]], [340.5, [200, 180, 175]], [343, W_], [427, W_], [430, [210, 200, 196]], [438, [180, 140, 126]], [446, [180, 140, 126]], [449, [236, 230, 224]], [457, [236, 230, 224]], [462, [236, 230, 224]], [465, [190, 140, 120]], [471, [120, 96, 92]], [474, [240, 210, 196]], [478, W_], [490, W_], [493, [226, 214, 200]], [497, [176, 170, 176]], [507, [196, 190, 190]], [510, [110, 104, 140]], [512.5, [60, 68, 112]], [522, [60, 68, 112]], [525.5, [200, 180, 175]], [528, W_], [550, W_], [553, [176, 166, 170]], [558.5, [100, 96, 128]], [561.5, [50, 58, 100]], [574, [36, 42, 76]], [606, [36, 42, 76]], [609.5, [200, 180, 175]], [614, W_], [639, W_], [643, [110, 104, 140]], [646, [40, 44, 80]], [688, [40, 44, 80]], [690, [14, 16, 30]], [694.5, [14, 16, 30]], [696, [60, 68, 112]], [698, [200, 180, 175]], [702, W_], [713, W_], [717, [150, 130, 150]], [721, [90, 90, 130]], [730, [90, 90, 130]], [740, [200, 182, 176]], [750, [255, 250, 240]]]);
 const moteK = track([[0, [255, 222, 170]], [12, [255, 190, 120]], [26, [255, 222, 170]], [46, [255, 222, 170]], [52, [255, 190, 120]], [98, [255, 222, 170]]]);
 const gradeK = track([[0, [255, 170, 95, 0.16]], [24, [255, 170, 95, 0.16]], [30, [255, 205, 150, 0.1]], [46, [255, 205, 150, 0.1]], [52, [255, 160, 90, 0.18]], [96, [255, 160, 90, 0.16]], [102, [255, 205, 150, 0.1]], [107, [255, 205, 150, 0.1]], [109, [150, 140, 130, 0.22]], [113, [150, 140, 130, 0.22]], [116, [255, 210, 160, 0.1]]]);
-const SUNS = [[-1, 11, -430, -78, 170], [24, 31, 430, 170, -60], [45, 52, -430, -40, 170], [96, 103, 430, 170, -60], [607, 614, 430, 170, -60], [624, 630, -430, -40, 170]];
-const NIGHTS = [[7, 27], [50, 99], [296, 319], [330, 341], [510, 526], [559, 612], [628, 654]];
-const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3], [146.5, 148.5, 150.5, 152.5, 0.22], [168, 170.5, 173, 175, 0.12], [175.5, 177.5, 180.5, 182.5, 0.42], [287, 289, 292.5, 294.5, 0.2], [299, 303, 314, 317, 0.45], [325, 326.5, 328.5, 330, 0.3], [369, 371, 373.5, 375.5, 0.25], [396, 398, 401.5, 403.5, 0.12], [448, 450, 455, 457.5, 0.4], [467, 469, 471.5, 473.5, 0.15], [511, 513, 520, 522.5, 0.2], [553, 555, 558, 560, 0.3], [596, 597, 606, 607, 0], [619, 621, 624, 626, 0.12]];
+const SUNS = [[-1, 11, -430, -78, 170], [24, 31, 430, 170, -60], [45, 52, -430, -40, 170], [96, 103, 430, 170, -60], [607, 616, 430, 170, -60], [638, 645, -430, -40, 170], [696, 704, 430, 170, -60], [713, 720, -430, -40, 170]];
+const NIGHTS = [[7, 27], [50, 99], [296, 319], [330, 341], [510, 526], [559, 610], [642, 699], [716, 744]];
+const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3], [146.5, 148.5, 150.5, 152.5, 0.22], [168, 170.5, 173, 175, 0.12], [175.5, 177.5, 180.5, 182.5, 0.42], [287, 289, 292.5, 294.5, 0.2], [299, 303, 314, 317, 0.45], [325, 326.5, 328.5, 330, 0.3], [369, 371, 373.5, 375.5, 0.25], [396, 398, 401.5, 403.5, 0.12], [448, 450, 455, 457.5, 0.4], [467, 469, 471.5, 473.5, 0.15], [511, 513, 520, 522.5, 0.2], [553, 555, 558, 560, 0.3], [613, 615.5, 619, 621, 0.12], [633, 635, 639, 641, -0.14], [644, 646, 657, 659, 0.32], [674, 676, 679, 681, 0.18], [683, 685, 692, 694, 0.12]];
 
 function state(t, stage) {
   const c = cam(t), lights = [], emitters = [], smoke = [];
@@ -1182,13 +1342,14 @@ function state(t, stage) {
   let nightK = 0; for (const [a0, a1] of NIGHTS) nightK = Math.max(nightK, sramp(t, a0, a0 + 5) * (1 - sramp(t, a1 - 4, a1)));
   let sun = null;
   for (const [t0, t1, x, y0, y1] of SUNS) if (t > t0 && t < t1) sun = { x, y: lerp(y0, y1, smooth((t - t0) / (t1 - t0))), k: 1 };
-  const pull = sramp(t, ev('pull', 631), ev('pull', 631) + 12);
+  if (t > ev('pull', 718) + 20) sun = { x: 380, y: lerp(190, -90, smooth((t - ev('pull', 718) - 20) / 14)), k: 1 };
+  const pull = sramp(t, ev('pull', 718), ev('pull', 718) + 12);
   let zoom = 1;
   for (const [a0, a1, b0, b1, k] of ZOOM) zoom *= 1 + k * sramp(t, a0, a1) * (1 - sramp(t, b0, b1));
   return {
     fire: { lit: 0, reach: 0, blow: 0 }, lights, emitters, smoke,
     sky: skyK(t), ambient: ambK(t), ground: null,
-    stars: nightK + pull * lerp(1, 0.22, sramp(t, 640, 652)),
+    stars: nightK + pull * lerp(1, 0.22, sramp(t, ev('pull', 718) + 10, ev('pull', 718) + 22)),
     sun, cloud: 1 - nightK * 0.4, snow: 0,
     motes: 0.4 + 0.25 * nightK, moteColor: moteK(t),
     emit: true, screen: 0, blink: sramp(t, 573, 575) * (1 - sramp(t, 607, 610)), bloom: 0.16 + 0.34 * nightK, grade: gradeK(t), rays: 1,
@@ -1218,7 +1379,7 @@ function sky(g, st, t, S) {
     st.hang(g, st.fx.moon, x, y, 1, Math.sin(t * 0.5) * 1.6 * DEG, 1, -0.35);
   }
   // in the long days a paper sun hangs on its thread
-  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186], [188, 226], [262, 290], [344, 356], [358, 402], [404, 426], [480, 490], [528, 550], [614, 626]]) {
+  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186], [188, 226], [262, 290], [344, 356], [358, 402], [404, 426], [480, 490], [528, 550], [614, 640], [702, 714]]) {
     if (t < t0 - 0.5 || t > t1 + 3) continue;
     const k = drop(t, t0, t1), sx = W * (st.aspectK > 0.4 ? 0.16 : 0.2), sy = H * lerp(-0.25, 0.13, k);
     g.globalCompositeOperation = 'screen'; const gl = g.createRadialGradient(sx, sy, 0, sx, sy, 300 * u); gl.addColorStop(0, `rgba(255,236,190,${0.35 * clamp(k)})`); gl.addColorStop(1, 'rgba(255,230,180,0)'); g.fillStyle = gl; g.fillRect(sx - 300 * u, sy - 300 * u, 600 * u, 600 * u); g.globalCompositeOperation = 'source-over';
@@ -1261,9 +1422,42 @@ function groundFx(g, st, t, S) {
   });
 }
 
+// The pull-back: the whole timeline, seven and a half laps of the globe, wound up into one ball of red thread.
+function threadBall(g, st, t, S) {
+  const t0 = ev('pull', 718.6) + 2.6, R = st.eR * 0.972, cx = st.cx, cy = st.ecy, spin = t * 0.16, LAPS = 7.6;
+  const shown = sramp(t, t0, t0 + 0.6); if (shown < 0.01) return;
+  const lw = Math.max(1.4, R * 0.022), glow = 0.5 + 0.5 * Math.sin(t * 1.3);
+  const loops = [];
+  for (let k = 0; k < Math.ceil(LAPS); k++) {
+    const th = k * 2.39996 + spin, ph = 0.62 + 0.75 * hash(k * 17 + 3), n = [Math.sin(ph) * Math.cos(th), Math.cos(ph) * 0.9, Math.sin(ph) * Math.sin(th)];
+    const nl = Math.hypot(...n); n[0] /= nl; n[1] /= nl; n[2] /= nl;
+    const a = Math.abs(n[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0], u = [a[1] * n[2] - a[2] * n[1], a[2] * n[0] - a[0] * n[2], a[0] * n[1] - a[1] * n[0]], ul = Math.hypot(...u); u[0] /= ul; u[1] /= ul; u[2] /= ul;
+    const v = [n[1] * u[2] - n[2] * u[1], n[2] * u[0] - n[0] * u[2], n[0] * u[1] - n[1] * u[0]];
+    const wind = clamp((t - t0 - k * 0.8) / 1.0) * Math.min(1, LAPS - k), off = k * 1.3;
+    loops.push({ u, v, wind, off });
+  }
+  const pt = (L, q) => { const c = Math.cos(q + L.off), s = Math.sin(q + L.off); return [L.u[0] * c + L.v[0] * s, L.u[1] * c + L.v[1] * s, L.u[2] * c + L.v[2] * s]; };
+  const stroke = (L, col, w, dy, front) => {
+    const N = 96, end = L.wind * Math.PI * 2; if (end <= 0) return; g.strokeStyle = col; g.lineWidth = w; let on = false; g.beginPath();
+    for (let i = 0; i <= N; i++) { const q = Math.min(end, (i / N) * Math.PI * 2), p = pt(L, q); if (p[2] * front < 0.02) { on = false; if (q >= end) break; continue; } const x = cx + p[0] * R, y = cy + p[1] * R + dy; on ? g.lineTo(x, y) : g.moveTo(x, y); on = true; if (q >= end) break; }
+    g.stroke();
+  };
+  g.save(); g.globalAlpha = shown; g.lineCap = 'round'; g.lineJoin = 'round';
+  // a soft shade on the board under the thread, then the thread, then its sheen
+  for (const L of loops) stroke(L, 'rgba(20,8,6,.35)', lw * 1.5, lw * 0.7, 1);
+  for (const L of loops) stroke(L, '#a8241e', lw, 0, 1);
+  for (const L of loops) stroke(L, 'rgba(255,170,140,.45)', lw * 0.35, -lw * 0.25, 1);
+  g.globalCompositeOperation = 'lighter'; g.globalAlpha = shown * (0.05 + 0.035 * glow);
+  for (const L of loops) stroke(L, 'rgba(255,150,80,1)', lw * 3, 0, 1);
+  // the needle, still threaded, riding the newest loop
+  const last = loops[loops.length - 1], q = last.wind * Math.PI * 2, p = pt(last, q);
+  if (last.wind > 0 && p[2] > 0) { g.globalCompositeOperation = 'source-over'; g.globalAlpha = shown; const x = cx + p[0] * R, y = cy + p[1] * R, p2 = pt(last, q - 0.08), ang = Math.atan2(y - (cy + p2[1] * R), x - (cx + p2[0] * R)); g.translate(x, y); g.rotate(ang); g.fillStyle = '#d4d8de'; g.beginPath(); g.moveTo(-R * 0.09, 0); g.lineTo(0, -R * 0.006); g.lineTo(R * 0.012, 0); g.lineTo(0, R * 0.006); g.closePath(); g.fill(); }
+  g.restore();
+}
 function overFx(g, st, t, S) {
   const { W, H } = st, u = st.eu, c = cam(t);
   g.setTransform(1, 0, 0, 1, 0, 0);
+  if (S.pull > 0.02) threadBall(g, st, t, S);
   // It can still be played: the flute itself, as it was found
   if (t > 20 && t < 27) {
     const k = drop(t, 20.3, 25.2), por = st.aspectK > 0.4 ? 0 : 1;
@@ -1350,4 +1544,4 @@ function bake(mk, mkSoft, stage) {
   return makeFx(mk, mkSoft, mkBig, stage);
 }
 
-export const film = { titleT: 15.2, keepFull: (a) => a > 2492, duration: DURATION, cam, state, entities: E, byLayer, profile, ground, clouds, bake, shadowDx, body: [110, 80, 52], fx: { sky, ground: groundFx, over: overFx } };
+export const film = { titleT: 15.2, keepFull: (a) => a > 2706, duration: DURATION, cam, state, entities: E, byLayer, profile, ground, clouds, bake, shadowDx, body: [110, 80, 52], fx: { sky, ground: groundFx, over: overFx } };

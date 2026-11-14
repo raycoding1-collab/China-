@@ -432,7 +432,7 @@ KINDS.banner = {
   },
 };
 // A horse in profile; e.gait 'walk' | 'gallop' | 'stand'; e.col for coat.
-function bakeHorse(mk, id, col) {
+export function bakeHorse(mk, id, col) {
   const P = {}, r = rng(2300 + id.length), cd = shade(col, -0.18);
   for (const s of ['F', 'B']) P['leg' + s] = mk('horse-leg' + s + id, [-6, -6, 8, 60]).piece([[-5, -4], [5, -4], [4, 26], [3, 50], [5, 56], [-4, 56], [-3, 26]], s === 'B' ? cd : col, { round: 2 }).piece([[-4, 52], [5, 52], [5.5, 57], [-4.5, 57]], '#2a2220', { round: 1, lift: 0.5 }).finish({ shadowBlur: 2 });
   P.body = mk('horse-body' + id, [-66, -44, 52, 14]).piece([[-56, -18], [-48, -36], [-12, -40], [26, -38], [44, -26], [46, -6], [32, 8], [-40, 8], [-56, -2]], col, { round: 10, rough: 0.8, paint: (g) => { g.fillStyle = rgb(shade(col, 0.18), 0.4); g.beginPath(); g.ellipse(-20, -30, 26, 6, 0, 0, 7); g.fill(); } })
@@ -441,7 +441,7 @@ function bakeHorse(mk, id, col) {
     .piece([[-4, -20], [6, -48], [18, -60], [16, -52], [6, -36], [2, -16]], shade(col, -0.4), { round: 2, rough: 1.4, lift: 0.8 }).piece([[20, -60], [22, -68], [26, -60]], col, { round: 1, lift: 0.6 }).finish({ shadowBlur: 2 });
   return P;
 }
-function drawHorse(g, P, t, e, env, gait = 'walk', ph0 = 0) {
+export function drawHorse(g, P, t, e, env, gait = 'walk', ph0 = 0) {
   const pace = gait === 'gallop' ? 11 : gait === 'walk' ? 4.4 : 0, ph = t * pace + ph0, amp = gait === 'gallop' ? 30 : gait === 'walk' ? 14 : 0;
   g.save(); g.translate(0, -56 - (gait === 'gallop' ? Math.abs(Math.sin(ph)) * 6 : 0));
   for (const [x, o, s] of [[-38, 0, 'B'], [30, Math.PI * (gait === 'gallop' ? 0.3 : 1), 'B'], [-30, Math.PI * (gait === 'gallop' ? 0.5 : 1), 'F'], [38, gait === 'gallop' ? 0.2 : 0, 'F']]) { g.save(); g.translate(x, 0); g.rotate(Math.sin(ph + o) * amp * DEG); put(g, P['leg' + s], env.sh, 2, 3); g.restore(); }
@@ -547,7 +547,7 @@ const HALLS = [
   { tile: '#3f6a52', col: '#a8282a', wall: '#d8c8a8', base: '#b0a898', w: 96, h: 84, eave: 26, dbl: 0, trim: '#e0a438' },
   { tile: '#4a4a50', col: '#5a4434', wall: '#e8e2d4', base: '#9a9488', w: 80, h: 70, eave: 20, dbl: 0, trim: '#3a3a40' },
 ];
-function roofPts(w, y0, rise, eave, tip) {
+export function roofPts(w, y0, rise, eave, tip) {
   const pts = [];
   // underside: an eave line that sweeps up at both corners
   for (let i = 0; i <= 12; i++) { const f = i / 12, x = -w - eave + f * (w + eave) * 2, up = Math.pow(Math.abs(f * 2 - 1), 3); pts.push([x, y0 - up * tip]); }

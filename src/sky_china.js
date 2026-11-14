@@ -3,7 +3,7 @@
 import { ellipse, strip, KRAFT, put } from './paper.js';
 import { bakeFlames, bakeSky } from './cutouts.js';
 import { TEMPLATE_FX } from './sky_borrowed.js';
-import { rng, shade, rgb, mix, clamp, smooth, sramp, DEG } from './util.js';
+import { rng, shade, rgb, mix, clamp, smooth, sramp, lerp, DEG } from './util.js';
 
 export const rect = (x0, y0, x1, y1) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
 // [names, maker] groups added by the chapters (see the bottom of this file and src/sky_cards.js)
@@ -284,3 +284,56 @@ fxGroup(['c4', 'yutu', 'ascender'], (mk) => ({
     .piece(ellipse(-14, -6, 4, 4, 8), '#5a5a5e', { round: 1, lift: 1 }).piece(ellipse(0, -6, 4, 4, 8), '#5a5a5e', { round: 1, lift: 1 }).piece(ellipse(14, -6, 4, 4, 8), '#5a5a5e', { round: 1, lift: 1 }).finish({ shadowBlur: 2 }),
   ascender: mk('ascender', [-16, -30, 16, 4], { pad: 4 }).piece([[-12, 2], [-12, -18], [-6, -26], [6, -26], [12, -18], [12, 2]], '#c9a24a', { round: 2 }).piece(rect(-14, -12, -10, -4), '#2a3a6a', { round: 0.5, lift: 0.6 }).piece(rect(10, -12, 14, -4), '#2a3a6a', { round: 0.5, lift: 0.6 }).finish({ shadowBlur: 2 }),
 }));
+
+// ------------------------------------------------------------ breakthroughs ---
+fxGroup(['stopwatch', 'micius', 'qkey', 'qfridge', 'pandafarm'], (mk) => {
+  const S = {};
+  S.stopwatch = mk('stopwatch', [-56, -74, 56, 56], { pad: 6 }).piece(rect(-8, -62, 8, -52), '#8a8e96', { round: 2 }).piece(ellipse(0, -66, 10, 5, 10), '#9aa0a8', { round: 2, lift: 0.8 })
+    .piece(ellipse(0, 0, 52, 52, 36), '#c8ccd2', { round: 6, lift: 1.4 }).piece(ellipse(0, 0, 45, 45, 36), '#f4f1e8', { round: 6, lift: 1, paint: (g) => { g.strokeStyle = 'rgba(30,30,34,.8)'; for (let k = 0; k < 60; k++) { const a = k * Math.PI / 30, r0 = k % 5 ? 40 : 35; g.lineWidth = k % 5 ? 0.8 : 2; g.beginPath(); g.moveTo(Math.cos(a) * r0, Math.sin(a) * r0); g.lineTo(Math.cos(a) * 43, Math.sin(a) * 43); g.stroke(); } g.lineWidth = 1; g.beginPath(); g.arc(0, 16, 12, 0, 7); g.stroke(); for (let k = 0; k < 30; k += 5) { const a = k * Math.PI / 15 - Math.PI / 2; g.beginPath(); g.moveTo(Math.cos(a) * 9, 16 + Math.sin(a) * 9); g.lineTo(Math.cos(a) * 12, 16 + Math.sin(a) * 12); g.stroke(); } } }).finish({ shadowBlur: 4 });
+  S.micius = mk('micius', [-80, -30, 80, 30], { pad: 6 }).piece(rect(-74, -10, -20, 10), '#2a3a6a', { round: 1, paint: (g) => { g.strokeStyle = 'rgba(160,190,230,.6)'; g.lineWidth = 0.7; for (let x = -70; x < -20; x += 6) { g.beginPath(); g.moveTo(x, -10); g.lineTo(x, 10); g.stroke(); } } }).piece(rect(20, -10, 74, 10), '#2a3a6a', { round: 1, paint: (g) => { g.strokeStyle = 'rgba(160,190,230,.6)'; g.lineWidth = 0.7; for (let x = 24; x < 74; x += 6) { g.beginPath(); g.moveTo(x, -10); g.lineTo(x, 10); g.stroke(); } } })
+    .piece(rect(-20, -18, 20, 18), '#d8b04a', { round: 2, lift: 1.4, paint: (g) => { g.strokeStyle = 'rgba(140,100,30,.6)'; g.lineWidth = 0.8; for (let i = 0; i < 6; i++) { g.beginPath(); g.moveTo(-20, -14 + i * 6); g.lineTo(20, -12 + i * 6); g.stroke(); } } })
+    .piece(rect(-10, 18, 10, 30), '#e8e6e0', { round: 2, lift: 1.4, paint: (g) => { g.fillStyle = '#1a1e26'; g.beginPath(); g.ellipse(0, 30, 8, 2.4, 0, 0, 7); g.fill(); } }).finish({ shadowBlur: 4 });
+  S.qkey = mk('qkey', [-8, -14, 8, 14], { pad: 3 }).piece([[-5, -12], [5, -12], [5, -2], [2, -2], [2, 10], [5, 10], [5, 13], [-1, 13], [-1, -2], [-5, -2]], '#e8f8ff', { round: 1.5, thick: 0.4, paint: (g) => { g.fillStyle = 'rgba(40,80,120,.8)'; g.beginPath(); g.arc(0, -7, 2, 0, 7); g.fill(); } }).finish({ shadowBlur: 1.5 });
+  // the quantum computer, a golden chandelier: a dilution refrigerator, each plate colder than the one above, the chip at the bottom
+  const f = mk('qfridge', [-70, -6, 70, 250], { pad: 8 });
+  const plates = [[0, 64], [56, 56], [104, 46], [146, 36], [184, 26], [216, 18]];
+  for (let i = 0; i < plates.length - 1; i++) { const [y0, w0] = plates[i], [y1] = plates[i + 1]; for (const x of [-w0 * 0.7, -w0 * 0.25, w0 * 0.25, w0 * 0.7]) f.piece(strip(x * (i ? 0.8 : 0.8), y0 + 4, x * 0.6, y1, 2.4, 2), '#c9a24a', { round: 0.5, lift: 0.6 }); }
+  for (let i = 0; i < 9; i++) { const x0 = -40 + i * 10; f.piece(strip(x0, 8, x0 * 0.2, 228, 1.2, 1.2), i % 3 ? '#b8bcc4' : '#6a8ab0', { round: 0.4, lift: 0.8, rough: 0.2 }); }
+  plates.forEach(([y, w], i) => f.piece([[-w, y - 4], [w, y - 4], [w - 3, y + 4], [-w + 3, y + 4]], i % 2 ? '#e0b84a' : '#d8a838', { round: 2, lift: 1.4, paint: (g) => { g.fillStyle = 'rgba(255,240,180,.55)'; g.fillRect(-w + 4, y - 3, w * 2 - 8, 2); g.fillStyle = 'rgba(120,80,20,.35)'; for (let x = -w + 6; x < w - 4; x += 8) { g.beginPath(); g.arc(x, y + 1, 1, 0, 7); g.fill(); } } }));
+  f.piece(rect(-10, 222, 10, 240), '#c9a24a', { round: 2, lift: 1.2, paint: (g) => { g.fillStyle = '#2a3a6a'; g.fillRect(-6, 230, 12, 8); } });
+  S.qfridge = f.finish({ shadowBlur: 6 });
+  // Datong's solar farm, seen from the air: thousands of panels laid out as a panda
+  S.pandafarm = mk('pandafarm', [-76, -60, 76, 60], { pad: 6 }).piece(rect(-72, -56, 72, 56), '#c8b888', { round: 2, paint: (g) => {
+    const cell = (x, y, c) => { g.fillStyle = c; g.fillRect(x, y, 4.2, 2.6); };
+    for (let y = -50; y < 52; y += 3.4) for (let x = -66; x < 66; x += 5) {
+      const dx = x / 40, dy = (y + 4) / 34, inHead = dx * dx + dy * dy < 1, ear = (Math.hypot(x + 30, y + 34) < 12) || (Math.hypot(x - 30, y + 34) < 12);
+      const eye = (Math.hypot((x + 15) / 9, (y + 2) / 12) < 1) || (Math.hypot((x - 15) / 9, (y + 2) / 12) < 1), nose = Math.hypot(x / 6, (y - 14) / 4) < 1;
+      if (ear || eye || nose) cell(x, y, '#1e2638'); else if (inHead) cell(x, y, '#9aa8bc'); else if (Math.abs(y) < 44) cell(x, y, '#3a4a6a');
+    }
+    g.fillStyle = '#f4f2ec'; for (const s of [-1, 1]) { g.beginPath(); g.arc(s * 15, -2, 2.6, 0, 7); g.fill(); }
+  } }).finish({ shadowBlur: 4 });
+  return S;
+});
+// The Beipan river canyon, painted in depth on one card: misty far walls, nearer walls, the river at the bottom.
+// Its top edge follows the curve of the world, so it sits flush in the ground.
+fxGroup(['gorge'], (mk) => {
+  const r = rng(4400), W = 132, D = 290, top = (x) => (x * x) / 2000;
+  const sh = mk('gorge', [-W - 6, -16, W + 6, D + 8], { pad: 8 });
+  const rim = (x0, x1) => { const p = []; for (let i = 0; i <= 14; i++) { const x = x0 + (x1 - x0) * (i / 14); p.push([x, top(x) - 2 + (r() - 0.5) * 3]); } return p; };
+  // the depth: dark at the bottom, a little lighter where the mist hangs
+  sh.piece([...rim(-W, W), [W, D], [-W, D]], '#46545a', { round: 2, rough: 0.4, rim: 0, paint: (g) => { const gr = g.createLinearGradient(0, 0, 0, D); gr.addColorStop(0, '#8a9aa0'); gr.addColorStop(0.35, '#6a7a80'); gr.addColorStop(1, '#232c30'); g.fillStyle = gr; g.fillRect(-W - 6, -16, W * 2 + 12, D + 24); } });
+  // three pairs of walls, far to near, closing in to a slot at the bottom
+  const wall = (s, x0, x1, col, lift, light) => {
+    const pts = [[s * (W + 2), top(W) - 2]]; for (let i = 0; i <= 18; i++) { const f = i / 18, y = f * D, x = s * (lerp(x0, x1, f ** 0.8) + Math.sin(i * 1.9 + s * 2) * 7 + (r() - 0.5) * 6); pts.push([x, y]); } pts.push([s * (W + 2), D]);
+    sh.piece(pts, col, { round: 2.5, rough: 1.8, seg: 12, lift, paint: (g) => {
+      for (let y = 6; y < D; y += 10 + r() * 9) { g.strokeStyle = `rgba(20,24,20,${0.25 + r() * 0.2})`; g.lineWidth = 1.4 + r() * 1.4; g.beginPath(); g.moveTo(s * (W + 2), y); g.lineTo(s * x1 * 0.8, y + (r() - 0.5) * 5); g.stroke(); }
+      g.fillStyle = `rgba(255,255,240,${light})`; for (let i = 0; i < 18; i++) { const y = r() * D; g.fillRect(s > 0 ? x1 - 4 : -x1, y, 4, 6 + r() * 14); }
+      dab(g, r, 30, s > 0 ? [x1, 0, W, D * 0.7] : [-W, 0, -x1, D * 0.7], ['rgba(60,100,56,.75)', 'rgba(90,130,70,.6)'], 6, 3);
+    } });
+  };
+  for (const s of [-1, 1]) { wall(s, 70, 26, '#8c9890', 0.6, 0.18); wall(s, 98, 30, '#68746a', 1.4, 0.14); wall(s, 124, 40, '#4a544c', 2.2, 0.1); }
+  // the river at the very bottom, a thread of green water
+  sh.piece([[-24, D - 16], [24, D - 16], [20, D - 2], [-20, D - 2]], '#3f8a84', { round: 4, lift: 0.8, paint: (g) => { g.strokeStyle = 'rgba(230,250,245,.55)'; g.lineWidth = 1; for (let k = 0; k < 3; k++) { g.beginPath(); g.moveTo(-18 + k * 13, D - 10); g.lineTo(-12 + k * 13, D - 9); g.stroke(); } } });
+  return { gorge: sh.finish({ shadowBlur: 0 }) };
+});
+const dab = (g, r, n, box, cols, len = 6, w = 2) => { g.lineCap = 'round'; for (let i = 0; i < n; i++) { const x = box[0] + r() * (box[2] - box[0]), y = box[1] + r() * (box[3] - box[1]), a = (r() - 0.5) * 1.2; g.strokeStyle = cols[(r() * cols.length) | 0]; g.lineWidth = w * (0.6 + r() * 0.8); g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * len * (0.5 + r()), y + Math.sin(a) * len * 0.4); g.stroke(); } };

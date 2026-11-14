@@ -1,6 +1,6 @@
 {
  "name": "film",
- "duration": 662,
+ "duration": 750,
  "voice": {
   "blend": {
    "bm_lewis": 0.55,
@@ -530,13 +530,27 @@
   "farside": 596.8,
   "change6": 601.0,
   "farsideOut": 606.6,
-  "coal": 609.4,
-  "solar": 612.6,
-  "trees": 619.4,
-  "thread": 629.3,
-  "pull": 630.6,
-  "blank": 639.1,
-  "title": 647.6,
-  "end": 662.0
+  "gorges": 615.4,
+  "hzmb": 622.6,
+  "huajiang": 633.4,
+  "tokamak": 643.4,
+  "plasma": 646.6,
+  "seventeen": 653.4,
+  "quantum": 661.6,
+  "qcomputer": 666.4,
+  "beat": 669.4,
+  "robots": 675.0,
+  "marathon": 678.4,
+  "factory": 682.0,
+  "robotsMany": 683.4,
+  "coal": 697.2,
+  "solar": 700.6,
+  "pandafarm": 701.8,
+  "trees": 707.2,
+  "thread": 717.3,
+  "pull": 718.6,
+  "blank": 727.0,
+  "title": 735.6,
+  "end": 750.0
  }
 }
