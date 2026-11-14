@@ -655,3 +655,71 @@ KINDS.cart = {
     const d = e.move ? e.move(t) * DEG * 1000 : 0; g.save(); g.translate(-6, -24); g.rotate(d / 24); put(g, P.wheel, env.sh * 0.5); g.restore();
   },
 };
+
+// ======================================================= Han and the Silk Road ===
+// Que: a pair of gate towers either side of a palace road.
+KINDS.que = {
+  bake(mk, v = 0) {
+    const sh = mk('que' + v, [-60, -230, 60, 6]), c = '#c8b896', tile = '#4a4a50';
+    sh.piece([[-36, 4], [-32, -150], [32, -150], [36, 4]], c, { round: 2, paint: (g) => { g.strokeStyle = 'rgba(80,60,40,.3)'; g.lineWidth = 1; for (let y = -10; y > -150; y -= 12) { g.beginPath(); g.moveTo(-34, y); g.lineTo(34, y); g.stroke(); } g.fillStyle = '#a8322a'; g.fillRect(-32, -150, 64, 8); } });
+    sh.piece(roofPts(34, -150, 22, 16, 8), tile, { round: 2, lift: 1.6 });
+    sh.piece(rect(-22, -176, 22, -196), c, { round: 1.5, lift: 1.2, paint: (g) => { g.fillStyle = '#a8322a'; g.fillRect(-22, -196, 44, 5); } });
+    sh.piece(roofPts(22, -196, 18, 12, 6), tile, { round: 2, lift: 1.6 });
+    return { spr: sh.finish({ shadowBlur: 5 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+};
+// A red paper lantern on a post; e.lit(t) 0..1.
+KINDS.redlantern = {
+  bake(mk) {
+    return { spr: mk('redlantern', [-24, -150, 24, 6]).piece(strip(0, 4, 0, -140, 4, 3), '#4a3423', { round: 1 }).piece(strip(0, -136, 18, -136, 2.4, 2), '#4a3423', { round: 0.6, lift: 0.8 })
+      .piece(ellipse(16, -112, 11, 14, 14), '#c8322a', { round: 3, lift: 1, paint: (g) => { g.strokeStyle = 'rgba(90,20,10,.5)'; g.lineWidth = 0.8; for (const x of [11, 16, 21]) { g.beginPath(); g.moveTo(x, -126); g.lineTo(x, -98); g.stroke(); } } })
+      .piece(rect(11, -128, 21, -125), '#c9a24a', { round: 0.5, lift: 0.6 }).piece(rect(11, -99, 21, -96), '#c9a24a', { round: 0.5, lift: 0.6 }).piece([[14, -96], [18, -96], [17, -88], [15, -88]], '#d8a040', { round: 0.4, lift: 0.4 })
+      .finish({ shadowBlur: 3 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh); },
+  glow(g, P, t, e, env, p) {
+    const k = e.lit ? e.lit(t) : 0; if (k < 0.01 || p < 0.6) return;
+    g.globalCompositeOperation = 'lighter';
+    const gr = g.createRadialGradient(16, -112, 0, 16, -112, 44); gr.addColorStop(0, `rgba(255,170,90,${0.95 * k})`); gr.addColorStop(0.25, `rgba(255,90,50,${0.5 * k})`); gr.addColorStop(1, 'rgba(255,60,30,0)');
+    g.fillStyle = gr; g.fillRect(-28, -156, 88, 88); g.globalCompositeOperation = 'source-over';
+  },
+};
+// A fortress gate of pounded earth on the edge of the desert (the Jade Gate).
+KINDS.yumen = {
+  bake(mk) {
+    const r = rng(3000), sh = mk('yumen', [-100, -150, 100, 6]);
+    sh.piece([[-90, 4], [-84, -120], [84, -120], [90, 4]], '#c4a272', { round: 3, rough: 1.6, paint: (g) => { g.strokeStyle = 'rgba(110,80,40,.35)'; g.lineWidth = 1.2; for (let y = 0; y > -120; y -= 6) { g.beginPath(); g.moveTo(-90, y); g.lineTo(90, y + (r() - 0.5)); g.stroke(); } g.fillStyle = 'rgba(40,26,14,.88)'; g.beginPath(); g.moveTo(-18, 4); g.lineTo(-18, -54); g.lineTo(0, -66); g.lineTo(18, -54); g.lineTo(18, 4); g.fill(); g.fillStyle = 'rgba(40,26,14,.6)'; g.fillRect(-60, -96, 10, 16); g.fillRect(50, -96, 10, 16); } });
+    sh.piece([[-88, -118], [-88, -136], [-72, -136], [-72, -126], [-48, -126], [-48, -136], [-32, -136], [-32, -126], [-8, -126], [-8, -136], [8, -136], [8, -126], [32, -126], [32, -136], [48, -136], [48, -126], [72, -126], [72, -136], [88, -136], [88, -118]], '#b8966a', { round: 1.5, lift: 1.2 });
+    return { spr: sh.finish({ shadowBlur: 6 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 4, 5); },
+};
+// Making paper: a vat of pulp, a mould lifted out with a wet sheet on it; and a wall of drying sheets.
+KINDS.papervat = {
+  bake(mk) {
+    return { spr: mk('papervat', [-60, -60, 60, 6]).piece([[-54, 4], [-50, -46], [50, -46], [54, 4]], '#7a5a3a', { round: 3, paint: (g) => { g.strokeStyle = 'rgba(40,24,12,.5)'; g.lineWidth = 1.4; for (const y of [-34, -12]) { g.beginPath(); g.moveTo(-52, y); g.lineTo(52, y); g.stroke(); } } })
+      .piece(ellipse(0, -46, 50, 6, 16), '#d8d0b8', { round: 2, lift: 0.8, paint: (g) => { g.fillStyle = 'rgba(160,150,120,.4)'; for (let i = 0; i < 20; i++) { g.beginPath(); g.arc(-44 + Math.random() * 88, -48 + Math.random() * 4, 1.4, 0, 7); g.fill(); } } }).finish({ shadowBlur: 4 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+};
+KINDS.dryingwall = {
+  bake(mk, v = 0) {
+    const r = rng(3100 + v), sh = mk('dryingwall' + v, [-90, -140, 90, 6]);
+    sh.piece([[-86, 4], [-84, -110], [84, -110], [86, 4]], '#b8a888', { round: 2, paint: (g) => { g.strokeStyle = 'rgba(80,60,40,.3)'; g.lineWidth = 1; for (let y = -10; y > -110; y -= 10) { g.beginPath(); g.moveTo(-86, y); g.lineTo(86, y); g.stroke(); } } });
+    sh.piece(roofPts(84, -110, 14, 10, 5), '#5a5a5e', { round: 2, lift: 1.4 });
+    for (let i = 0; i < 6; i++) for (let j = 0; j < 2; j++) { const x = -70 + i * 26, y = -96 + j * 46; sh.piece([[x, y], [x + 22, y + (r() - 0.5) * 2], [x + 22, y + 36], [x, y + 36]], '#f2eadb', { round: 1, rough: 0.5, lift: 1.2, thick: 0.6, rim: 0.3 }); }
+    return { spr: sh.finish({ shadowBlur: 4 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+};
+// Someone dipping a bamboo mould into the vat and lifting out a sheet.
+KINDS.papermaker = {
+  bake(mk) { const P = KINDS.person.bake(mk, 'papermaker'); P.mould = mk('mould', [-30, -4, 30, 4], { pad: 4 }).piece(rect(-28, -3, 28, 3), '#8a6a3a', { round: 1 }).piece(rect(-25, -2.6, 25, 0.4), '#f4eedf', { round: 0.4, lift: 0.4 }).finish({ shadowBlur: 2 }); return P; },
+  draw(g, P, t, e, env) {
+    const cyc = ((t - (e.t0 ?? 0)) % 4) / 4, dip = Math.sin(cyc * Math.PI * 2) * 0.5 + 0.5, hold = e.hold ? e.hold(t) : 0;
+    const my = lerp(-30 + dip * 18, -64, hold), mx = 26;
+    const [b1, b2] = reach(mx - 20 + 3, my + 35), [a1, a2] = reach(mx + 14 - 2, my + 34.5);
+    drawPerson(g, P, t, e, env, { lean: 18 - hold * 14 + dip * 6, head: 18 - hold * 14, back: [b1, b2], front: [a1, a2], held: (g2) => { g2.save(); g2.rotate(-a2 * DEG); g2.translate(0, -19); g2.rotate(-a1 * DEG); g2.translate(-2, 34.5); g2.translate(mx, my); g2.rotate(hold * -1.2); put(g2, P.mould, env.sh * 0.4); g2.restore(); } });
+  },
+};

@@ -409,6 +409,19 @@
   "army": 167.0,
   "faces": 170.6,
   "found": 176.8,
-  "qinEnd": 183.0
+  "qinEnd": 183.0,
+  "han": 188.6,
+  "hanAll": 193.6,
+  "envoy": 199.0,
+  "road": 201.4,
+  "silkW": 207.4,
+  "east": 209.4,
+  "dharma": 212.2,
+  "paper": 216.4,
+  "sheet": 219.6,
+  "rustle": 221.7,
+  "seismo": 227.2,
+  "quake": 233.0,
+  "seismoOut": 237.6
  }
 }

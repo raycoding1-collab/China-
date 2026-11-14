@@ -153,3 +153,28 @@ fxGroup(['qinslip', 'knifecoin', 'spadecoin', 'banliang', 'weight', 'faces'], (m
   S.faces = f.finish({ shadowBlur: 4 });
   return S;
 });
+
+// ------------------------------------------------------------ the Silk Road ---
+fxGroup(['horseIcon', 'grapes', 'glass'], (mk) => ({
+  horseIcon: mk('ic-horse', [-22, -20, 22, 16], { pad: 4 }).piece([[-16, 4], [-14, -6], [4, -8], [12, -16], [18, -14], [14, -6], [12, 4], [10, 14], [7, 14], [6, 6], [-8, 6], [-10, 14], [-13, 14], [-14, 6], [-20, 2]], '#8a5a3a', { round: 2 }).finish({ shadowBlur: 2 }),
+  grapes: mk('ic-grapes', [-14, -18, 14, 18], { pad: 4 }).piece([[-2, -16], [2, -16], [1, -10], [-1, -10]], '#5a6a2a', { round: 0.5 }).piece([[0, -14], [10, -18], [8, -12]], '#6a8a3a', { round: 1, lift: 0.6 }).piece([[-12, -8], [12, -8], [8, 6], [0, 16], [-8, 6]], '#6a3a6a', { round: 4, paint: (g) => { g.fillStyle = 'rgba(160,110,170,.6)'; for (const [x, y] of [[-6, -4], [2, -4], [8, -3], [-3, 3], [4, 3], [0, 10]]) { g.beginPath(); g.arc(x, y, 3, 0, 7); g.fill(); } } }).finish({ shadowBlur: 2 }),
+  glass: mk('ic-glass', [-16, -14, 16, 12], { pad: 4 }).piece([[-14, -10], [14, -10], [10, 4], [4, 8], [-4, 8], [-10, 4]], '#5a8ab0', { round: 3, paint: (g) => { g.fillStyle = 'rgba(220,240,255,.5)'; g.fillRect(-10, -8, 4, 10); g.strokeStyle = 'rgba(30,60,90,.5)'; g.lineWidth = 1; g.beginPath(); g.arc(0, -2, 5, 0, 7); g.stroke(); } }).finish({ shadowBlur: 2 }),
+}));
+// Zhang Heng's earthquake jar: eight dragons, each with a ball in its mouth; eight toads waiting below.
+export const SEIS_DRAGONS = [-92, -50, 0, 50, 92];
+fxGroup(['seismo', 'seisball'], (mk, mkSoft, mkBig) => {
+  const c = '#6f8466', cd = shade(c, -0.25), S = {};
+  const sh = mkBig('seismo', [-130, -170, 130, 130], { pad: 14 });
+  sh.piece([[-110, 120], [110, 120], [104, 104], [-104, 104]], '#5a5a48', { round: 3 });
+  // the toads, mouths open
+  for (const x of SEIS_DRAGONS) sh.piece([[x - 18, 104], [x - 20, 92], [x - 12, 80], [x - 6, 84], [x, 76], [x + 6, 84], [x + 12, 80], [x + 20, 92], [x + 18, 104]], shade(c, Math.abs(x) > 60 ? -0.12 : 0), { round: 4, lift: 1.4, paint: (g) => { g.fillStyle = 'rgba(20,24,16,.9)'; g.beginPath(); g.ellipse(x, 82, 7, 4, 0, 0, 7); g.fill(); g.fillStyle = 'rgba(230,220,180,.8)'; for (const s of [-1, 1]) { g.beginPath(); g.arc(x + s * 11, 86, 2, 0, 7); g.fill(); } } });
+  // the jar
+  const jar = []; for (let i = 0; i <= 16; i++) { const f = i / 16, y = 70 - f * 190, w = 46 + Math.sin(f * Math.PI) ** 0.8 * 44 - (f > 0.85 ? (f - 0.85) * 120 : 0); jar.push([w, y]); }
+  sh.piece([...jar, ...jar.slice().reverse().map(([x, y]) => [-x, y])], c, { round: 6, lift: 2, paint: (g) => { g.strokeStyle = 'rgba(30,40,24,.45)'; g.lineWidth = 2; for (const y of [40, -6, -100]) { g.beginPath(); g.moveTo(-90, y); g.quadraticCurveTo(0, y + 10, 90, y); g.stroke(); } g.fillStyle = 'rgba(220,230,200,.12)'; g.fillRect(-60, -110, 18, 170); for (let i = 0; i < 18; i++) { g.strokeStyle = 'rgba(30,40,24,.25)'; g.beginPath(); g.arc(-70 + (i % 6) * 28, 0 + Math.floor(i / 6) * 22, 5, 0, 5); g.stroke(); } } });
+  sh.piece([[-40, -118], [40, -118], [30, -150], [0, -162], [-30, -150]], cd, { round: 6, lift: 1.6, paint: (g) => { g.fillStyle = 'rgba(200,210,180,.2)'; g.beginPath(); g.ellipse(0, -140, 16, 6, 0, 0, 7); g.fill(); } });
+  // the dragons, heads down, jaws open
+  for (const x of SEIS_DRAGONS) { const s = Math.sign(x) || 1, edge = Math.abs(x) > 60; sh.piece(edge ? [[x - s * 14, -84], [x + s * 4, -86], [x + s * 18, -70], [x + s * 20, -54], [x + s * 10, -50], [x + s * 6, -62], [x - s * 10, -66]] : [[x - 12, -88], [x + 12, -88], [x + 14, -66], [x + 9, -52], [x + 3, -60], [x - 3, -60], [x - 9, -52], [x - 14, -66]], shade(c, 0.08), { round: 3, lift: 1.8, paint: (g) => { g.fillStyle = 'rgba(20,24,16,.85)'; g.beginPath(); g.arc(x + (edge ? s * 4 : -6), -78, 1.8, 0, 7); g.fill(); if (!edge) { g.beginPath(); g.arc(x + 6, -78, 1.8, 0, 7); g.fill(); } g.strokeStyle = 'rgba(30,40,24,.5)'; g.lineWidth = 1.4; g.beginPath(); g.moveTo(x - 10, -96); g.quadraticCurveTo(x, -106, x + 10, -96); g.stroke(); } }); }
+  S.seismo = sh.finish({ shadowBlur: 10 });
+  S.seisball = mkBig('seisball', [-8, -8, 8, 8], { pad: 4 }).piece(ellipse(0, 0, 6, 6, 12), '#b8a050', { round: 2 }).finish({ shadowBlur: 3 });
+  return S;
+});

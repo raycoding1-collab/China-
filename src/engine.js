@@ -261,7 +261,7 @@ export class Stage {
     g.save();
     g.rotate(rel * DEG);
     g.translate(0, -(L.rf * 1000 + (e.ground === false ? 0 : prof ? prof(a) : 0) + (e.y || 0) + (e.lift ? e.lift(t) : 0)));
-    g.rotate((wob * (e.wob ?? 1) + (e.rot ? e.rot(t) : 0) + fbm(t * 0.3 + e.a * 1.3, 97) * 0.4) * DEG);
+    g.rotate((wob * (e.wob ?? 1) + (e.rot ? e.rot(t) : 0) + fbm(t * 0.3 + e.a * 1.3, 97) * 0.4 + (env.S.rustle ? env.S.rustle * Math.sin(t * 19 + e.a * 3.1) * 5 : 0)) * DEG);
     g.scale((e.flip ? -1 : 1) * (1 - (sy - 1) * 0.35), sy);
     if (e.scale) g.scale(e.scale, e.scale);
     env.sh = L.sh * clamp(p * 1.4);
@@ -310,7 +310,7 @@ export class Stage {
     const zoom = (S.zoom || 1) * this.zm, pull = S.pull || 0;
     const fit = Math.min(W * 0.36, H * 0.28) / this.R;
     const z = lerp(zoom, fit, smooth(pull));
-    const top = lerp(this.hy + breathe, H * 0.52 - this.R * z, smooth(pull));
+    const top = lerp(this.hy + breathe + (S.shake ? S.shake * Math.sin(t * 43) * H * 0.006 : 0), H * 0.52 - this.R * z, smooth(pull));
     const u = this.u * z, cy = top + this.R * z;
     this.eu = u; this.ecy = cy; this.eR = this.R * z; this.full = pull > 0.02; this.pullK = smooth(pull);
     this.visE = this.full ? 180 : Math.asin(Math.min(1, (W / 2) / this.eR)) / DEG;

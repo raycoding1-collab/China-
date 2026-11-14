@@ -9,7 +9,7 @@ import './kinds_nature.js';
 import './kinds_built.js';
 import './kinds_modern.js';
 import './kinds_china.js';
-import { makeFx, hang2, glyph, crack } from './sky_china.js';
+import { makeFx, hang2, glyph, crack, SEIS_DRAGONS } from './sky_china.js';
 import { BlurSheet } from './engine.js';
 import { EV, DURATION } from './timeline.js';
 
@@ -38,13 +38,15 @@ const cam = monotone([
   [99.5, 304], [102, 311], [106, 316], [108.5, 336], [111, 348], [113.5, 360], [116, 377], [118.7, 387], [121.5, 396], [124, 405], [126.5, 413], [129.5, 418], [132, 432], [135, 440], [137.5, 446],
   // 4. the First Emperor
   [141, 486], [144, 493], [147, 500], [150, 506], [152.5, 510], [155, 513], [157.5, 518], [160, 526], [162.5, 538], [165, 549], [167.5, 566], [170, 580], [173, 591], [175.5, 608], [178, 623], [181, 630], [184, 640], [187, 650],
-  [190, 690], [662, 2600], [800, 2740],
+  // 5. the Silk Road
+  [189.5, 685], [192, 693], [195, 700], [198, 712], [201, 726], [204, 742], [207.5, 756], [210.5, 764], [213.5, 772], [216, 784], [219, 790], [222, 795], [225, 806], [227.5, 818], [231, 822], [236, 826], [239, 840],
+  [241.5, 900], [662, 2600], [800, 2740],
 ]);
 
 // ------------------------------------------------- paint and shape of land --
 const ZONES = [
   [-200, 28, [148, 134, 86]], [33, 50, [196, 164, 104]], [56, 76, [112, 140, 82]], [80, 110, [104, 132, 76]],
-  [116, 182, [150, 132, 92]], [186, 214, [128, 120, 88]], [222, 272, [150, 104, 78]], [280, 9999, [176, 150, 108]],
+  [116, 182, [150, 132, 92]], [186, 214, [128, 120, 88]], [222, 272, [150, 104, 78]], [280, 704, [176, 150, 108]], [710, 772, [214, 182, 122]], [778, 9999, [168, 150, 104]],
 ];
 const SEAS = [];
 function zoneColor(a) {
@@ -60,13 +62,13 @@ function ground(layer, a) {
   const c = zoneColor(a), w = water(a);
   if (layer === 'main') return c;
   if (layer === 'mid') return w > 0.5 ? mix(c, [70, 110, 140], 0.3) : mix(mix(shade(c, 0.06), [196, 186, 172], 0.16), [214, 180, 112], band(a, 32, 50) * 0.35);
-  if (layer === 'far') return w > 0.5 ? [90, 120, 150] : mix(mix(c, [150, 150, 162], 0.55), [110, 140, 130], band(a, 56, 100) * 0.4);
+  if (layer === 'far') return w > 0.5 ? [90, 120, 150] : mix(mix(mix(c, [150, 150, 162], 0.55), [110, 140, 130], band(a, 56, 100) * 0.4), [236, 238, 244], band(a, 730, 790, 6) * 0.6);
   if (layer === 'front') return shade(c, w > 0.5 ? -0.25 : -0.32);
   return shade(c, -0.55);
 }
 const profile = {
-  far: (a) => (1 - water(a)) * (noise(a * 0.07, 5) * 14 + noise(a * 0.31, 6) * 4 + 12) + band(a, -60, 26) * 8,
-  mid: (a) => (1 - water(a)) * (noise(a * 0.33, 3) * 8 + noise(a * 0.1, 4) * 13) + band(a, 30, 50, 4) * (16 + noise(a * 0.8, 9) * 4) - water(a) * 6,
+  far: (a) => (1 - water(a)) * (noise(a * 0.07, 5) * 14 + noise(a * 0.31, 6) * 4 + 12) + band(a, -60, 26) * 8 + band(a, 728, 790, 6) * (Math.abs(noise(a * 0.5, 41)) * 70 + 40),
+  mid: (a) => (1 - water(a)) * (noise(a * 0.33, 3) * 8 + noise(a * 0.1, 4) * 13) + band(a, 30, 50, 4) * (16 + noise(a * 0.8, 9) * 4) + band(a, 710, 772, 4) * (Math.sin(a * 0.9) * 10 + 14) - water(a) * 6,
   main: (a) => (1 - water(a)) * (noise(a * 0.9, 1) * 1.6 + noise(a * 0.21, 2) * 3.5) - band(a, 9, 21, 1.5) * 3 - band(a, 58, 73, 1) * 2.5 - water(a) * 4,
   front: (a) => noise(a * 0.5, 7) * 4 + noise(a * 0.13, 17) * 6,
   core: (a) => noise(a * 0.2, 8) * 8,
@@ -381,6 +383,86 @@ KINDS.tchead = {
     },
   });
 }
+
+// ======================================================= 5. The Silk Road ===
+Object.assign(LOOKS, {
+  hanOfficial: { skin: 4, top: 'robe', topCol: '#8a2a24', legs: 'robe', legCol: '#8a2a24', sleeve: '#2a2228', hat: 'topknot', beard: 1, pose: 'stand' },
+  hanLady: { skin: 6, top: 'robe', topCol: '#c86a5a', legs: 'robe', legCol: '#3a2a2a', sleeve: '#3a2a2a', hair: 'bun', pose: 'stand', item: 'fan' },
+  zhangQian: { skin: 3, top: 'robe', topCol: '#6a5a44', legs: 'robe', legCol: '#6a5a44', sleeve: '#6a5a44', hat: 'topknot', beard: 1, pose: 'walk', item: 'jie' },
+  silkTrader: { skin: 5, top: 'coat', topCol: '#6a3a5a', sleeve: '#6a3a5a', legs: 'trousers', legCol: '#3a3040', hat: 'turban', hatCol: '#d8c8a8', beard: 1, pose: 'walk' },
+  papermaker: { skin: 3, top: 'tunic', topCol: '#8a9aa8', sleeve: '#8a9aa8', legs: 'trousers', legCol: '#4a4a50', hair: 'bun', apron: '#d8d0b8', pose: 'stand' },
+  zhangHeng: { skin: 4, top: 'robe', topCol: '#2a3a4a', legs: 'robe', legCol: '#2a3a4a', sleeve: '#2a3a4a', hat: 'topknot', beard: 1, beardCol: '#5a4a3a', pose: 'stand' },
+  modernMan: { skin: 4, top: 'shirt', topCol: '#e8e4d8', sleeve: '#e8e4d8', legs: 'trousers', legCol: '#2a3040', hair: 'short', pose: 'stand' },
+});
+const ROAD = [706, 730, 754, 778, 802];
+function threadLift(a, t) {
+  if (a < 703 || a > 805) return 0;
+  const on = sramp(t, ev('road') + (a - 706) * 0.035, ev('road') + 0.9 + (a - 706) * 0.035) * (1 - sramp(t, 238, 241.5));
+  if (on <= 0) return 0;
+  let i = 0; while (i < ROAD.length - 2 && a > ROAD[i + 1]) i++;
+  const f = clamp((a - ROAD[i]) / (ROAD[i + 1] - ROAD[i]));
+  return on * sramp(a, 703, 707) * (1 - sramp(a, 801, 805)) * (54 + Math.sin(f * Math.PI) * 120);
+}
+{
+  add('que', 'main', 678.6, { z: 0, popAt: ev('han') - 0.8, loud: 1.2 }); add('que', 'main', 701.6, { z: 0, popAt: ev('han') - 0.6, loud: 1.2 });
+  add('hall', 'main', 690, { v: 1, z: 0, wide: 20, popAt: ev('han') - 0.4, loud: 2 });
+  for (const a of [683.4, 697]) add('redlantern', 'main', a, { z: 1, scale: 1.1 });
+  add('person', 'main', 686.4, { v: 'hanOfficial', z: 2, scale: P2, popAt: ev('han') });
+  add('person', 'main', 693.4, { v: 'hanLady', z: 2, scale: P2, flip: true, popAt: ev('han') + 0.3 });
+  // two thousand years of Han, side by side
+  [['hanLady', 699.4], ['modernMan', 702.6], ['granny', 705.4], ['kid', 707.6], ['phoneC', 709.8]].forEach(([v, a], i) => add('person', 'main', a, { v, z: 2.5, scale: P2, popAt: ev('hanAll') + i * 0.22, flip: i % 2 === 1, loud: 0.8, screenAt: 1e9 }));
+  // west across the desert: the envoy with his staff, the caravans after him, the Jade Gate
+  add('yumen', 'main', 724, { z: 0, wide: 10 });
+  add('person', 'main', 716, { v: 'zhangQian', z: 2.5, scale: P2, popAt: ev('envoy'), pace: 4.4, move: (t) => clamp((t - ev('envoy') - 0.4) * 1.5, 0, 26) });
+  for (const [a, v, d] of [[708, 0, 1.4], [702.4, 1, 1.8], [697, 0, 2.2]]) add('camel', 'main', a, { v, z: 2, popAt: ev('envoy') + d, move: (t) => clamp((t - ev('envoy') - d - 0.2) * 1.4, 0, 26) });
+  add('person', 'main', 704.6, { v: 'silkTrader', z: 2.6, scale: P2, popAt: ev('envoy') + 1.6, pace: 4.4, move: (t) => clamp((t - ev('envoy') - 1.8) * 1.4, 0, 26) });
+  for (const [a, v] of [[742, 0], [760, 1], [770, 0]]) add('camel', 'mid', a, { v, scale: 0.6, flip: true, move: (t) => -(t - 195) * 0.2 });
+  add('horse', 'mid', 750, { v: 0, scale: 0.7, flip: true, gait: 'gallop', from: ev('east') - 1, move: (t) => -(t - ev('east')) * 2.2 });
+  for (const a of [764, 767.6]) add('palm', 'main', a, { v: 0, z: 1, scale: 0.75 });
+  add('stupa', 'mid', 776, { scale: 0.6 });
+  // paper: the vat, the mould, the drying wall
+  add('dryingwall', 'main', 790, { z: 0, wide: 8 });
+  add('papervat', 'main', 782.6, { z: 1.5, scale: 1.1 });
+  add('papermaker', 'main', 779.2, { z: 2, scale: P2, t0: 214, hold: (t) => sramp(t, ev('sheet'), ev('sheet') + 0.6) * (1 - sramp(t, ev('sheet') + 4.6, ev('sheet') + 5.4)) });
+  for (const [a, v] of [[774, 1], [797, 2]]) add('oak', 'main', a, { v, z: 0, scale: 0.85 });
+  // Zhang Heng's hall
+  add('hall', 'main', 826, { v: 1, z: 0, wide: 20 });
+  add('person', 'main', 816.6, { v: 'zhangHeng', z: 2, scale: P2, act: (t) => ({ head: t > ev('quake') - 0.4 && t < ev('quake') + 2 ? -14 : 6 }) });
+  for (const [a, v] of [[812, 0], [838, 1]]) add('pine', 'main', a, { v, z: 0, scale: 0.8 });
+  grassRun(672, 704, 3.6, 'main', { skip: (a) => a > 676 && a < 704 });
+  grassRun(772, 850, 3.6, 'main', { skip: (a) => (a > 777 && a < 795) || (a > 815 && a < 836) });
+  grassRun(672, 850, 7, 'front', { s: 2 });
+
+  hook({
+    ground(g, st, t, S, G) {
+      if (t < ev('silkW') - 0.5 || t > 216) return;
+      // what rode the road: silk going west, horses, grapes and glass coming east, and later the Buddha's teaching
+      const pos = (a) => G.rad(a, -12 + threadLift(a, t));
+      const ride = (icon, a0, a1, t0, dur, s = 1.3) => {
+        if (t < t0 || t > t0 + dur + 0.6) return; const k = clamp((t - t0) / dur), a = lerp(a0, a1, smooth(k)), [x, y] = pos(a), sc = sramp(t, t0, t0 + 0.4) * (1 - sramp(t, t0 + dur, t0 + dur + 0.5));
+        g.save(); g.translate(x, y + 16); g.rotate((a - G.c) * DEG + Math.sin(t * 3 + a0) * 0.08); g.scale(s * sc, s * sc); put(g, icon, 0.3, 2, 3); g.restore();
+      };
+      ride(st.fx.icons.silk, 740, 778, ev('silkW'), 3.4);
+      ride(st.fx.horseIcon, 784, 748, ev('east'), 3.4, 1.2); ride(st.fx.grapes, 788, 754, ev('east') + 0.5, 3.4); ride(st.fx.glass, 792, 758, ev('east') + 1, 3.4);
+      ride(st.fx.icons.dharma, 790, 762, ev('dharma'), 3.2, 1.4);
+    },
+    over(g, st, t, S) {
+      const { W, H } = st;
+      if (t < ev('seismo') - 0.2 || t > ev('seismoOut') + 1.6) return;
+      const up = clamp(spring(t - ev('seismo'), 5.2, 0.55), 0, 1.3), out = sramp(t, ev('seismoOut'), ev('seismoOut') + 1.1), veil = clamp(up) * (1 - out);
+      g.fillStyle = `rgba(10,8,6,${0.45 * veil})`; g.fillRect(0, 0, W, H);
+      const base = Math.min(W * 0.62, H * 0.56) / 270, Q = ev('quake'), shake = Math.exp(-(((t - Q + 0.3) / 0.6) ** 2));
+      g.save(); g.translate(W * 0.5 + Math.sin(t * 47) * shake * 6, H * 0.47 + (1 - Math.min(1, up)) * H * 0.9 + out * H * 0.9); g.rotate((1 - Math.min(1, up)) * 0.2 + Math.sin(t * 39) * shake * 0.02); g.scale(base * 1.05, base * 1.05);
+      put(g, st.fx.seismo, 0.6, 8, 12);
+      SEIS_DRAGONS.forEach((x, i) => {
+        const falls = i === 3, d = t - Q; let y = -50;
+        if (falls && d > 0) { const fall = Math.min(d, 0.5); y = -50 + 0.5 * 1000 * fall * fall; if (d > 0.5) y = 75 - Math.abs(Math.sin((d - 0.5) * 9)) * 10 * Math.exp(-(d - 0.5) * 4); y = Math.min(y, 75); }
+        g.save(); g.translate(x + (Math.abs(x) > 60 && !(falls && d > 0) ? Math.sign(x) * 14 : 0), y); put(g, st.fx.seisball, 0.3, 1, 2); g.restore();
+      });
+      g.restore();
+    },
+  });
+}
 // the thread of silk: unwound from the reel, it runs on, stitched into the world, through everything
 const THREAD0 = 94.6;
 const threadEnd = (t) => (t < 40.4 ? -1e9 : t < 46.5 ? THREAD0 + (t - 40.4) * 9 : 1e9);
@@ -419,7 +501,7 @@ function state(t, stage) {
     sun, cloud: 1 - nightK * 0.4, snow: 0,
     motes: 0.4 + 0.25 * nightK, moteColor: moteK(t),
     emit: true, screen: 0, blink: 0, bloom: 0.16 + 0.34 * nightK, grade: gradeK(t), rays: 1,
-    zoom, pull, rustle: 0,
+    zoom, pull, rustle: Math.exp(-(((t - ev('rustle', -9)) / 0.5) ** 2)) * 0.9, shake: Math.exp(-(((t - ev('quake', -9) + 0.3) / 0.6) ** 2)) * 1.2, threadLift: (a) => threadLift(a, t),
     fade: Math.max(1 - sramp(t, 0.1, 3.4), sramp(t, DURATION - 3.5, DURATION)),
   };
 }
@@ -445,7 +527,7 @@ function sky(g, st, t, S) {
     st.hang(g, st.fx.moon, x, y, 1, Math.sin(t * 0.5) * 1.6 * DEG, 1, -0.35);
   }
   // in the long days a paper sun hangs on its thread
-  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186]]) {
+  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186], [188, 226]]) {
     if (t < t0 - 0.5 || t > t1 + 3) continue;
     const k = drop(t, t0, t1), sx = W * (st.aspectK > 0.4 ? 0.16 : 0.2), sy = H * lerp(-0.25, 0.13, k);
     g.globalCompositeOperation = 'screen'; const gl = g.createRadialGradient(sx, sy, 0, sx, sy, 300 * u); gl.addColorStop(0, `rgba(255,236,190,${0.35 * clamp(k)})`); gl.addColorStop(1, 'rgba(255,230,180,0)'); g.fillStyle = gl; g.fillRect(sx - 300 * u, sy - 300 * u, 600 * u, 600 * u); g.globalCompositeOperation = 'source-over';
