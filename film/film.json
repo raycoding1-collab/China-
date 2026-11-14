@@ -387,7 +387,6 @@
   "kongzi": 118.6,
   "dao": 124.4,
   "sunzi": 131.2,
-  "home": 134.6,
   "conquer": [
    143.2,
    143.6,
@@ -425,6 +424,17 @@
   "seismoOut": 237.6,
   "novel": 240.2,
   "buddha": 249.0,
-  "root": 253.2
+  "root": 253.2,
+  "canal": 260.8,
+  "exam": 267.4,
+  "changan": 277.0,
+  "persia": 282.4,
+  "wu": 286.8,
+  "libai": 295.6,
+  "moonUp": 298.0,
+  "frost": 305.4,
+  "raise": 308.5,
+  "lower": 310.9,
+  "home": 311.3
  }
 }

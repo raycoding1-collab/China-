@@ -42,7 +42,9 @@ const cam = monotone([
   [189.5, 685], [192, 693], [195, 700], [198, 712], [201, 726], [204, 742], [207.5, 756], [210.5, 764], [213.5, 772], [216, 784], [219, 790], [222, 795], [225, 806], [227.5, 818], [231, 822], [236, 826], [239, 840],
   // 6. long divided
   [241.5, 900], [244, 905], [247.5, 911], [250, 926], [252.5, 935], [255.5, 942], [258, 952],
-  [260.5, 980], [662, 2600], [800, 2740],
+  // 7. the Tang
+  [260.5, 982], [263, 992], [266, 1001], [268.5, 1016], [272, 1023], [275, 1029], [277.5, 1044], [281, 1056], [285, 1066], [287.5, 1086], [291, 1093], [294, 1102], [297, 1116], [301, 1119], [306, 1121], [312, 1123], [315.5, 1128],
+  [318.5, 1200], [662, 2600], [800, 2740],
 ]);
 
 // ------------------------------------------------- paint and shape of land --
@@ -507,6 +509,72 @@ Object.assign(LOOKS, {
     },
   });
 }
+
+// ============================================================== 7. The Tang ===
+Object.assign(LOOKS, {
+  digger: { skin: 1, top: 'tunic', topCol: '#8a7a5a', legs: 'trousers', legCol: '#5a4a3a', hat: 'cone', hatCol: '#c9a86a', pose: 'stand', item: 'shovel' },
+  examiner: { skin: 4, top: 'robe', topCol: '#3a5a3a', legs: 'robe', legCol: '#3a5a3a', sleeve: '#3a5a3a', hat: 'tangcap', hatCol: '#1e1a1c', beard: 1, pose: 'stand', item: 'scroll' },
+  tangLady: { skin: 6, top: 'robe', topCol: '#d8642a', legs: 'robe', legCol: '#8a3a5a', sleeve: '#d8642a', hair: 'bun', hat: 'phoenix', pose: 'walk', item: 'fan' },
+  tangMan: { skin: 4, top: 'robe', topCol: '#4a6a8a', legs: 'robe', legCol: '#4a6a8a', sleeve: '#4a6a8a', hat: 'tangcap', hatCol: '#1e1a1c', pose: 'walk' },
+  persian: { skin: 5, top: 'coat', topCol: '#2f6a6a', sleeve: '#2f6a6a', legs: 'trousers', legCol: '#5a3a2a', hat: 'turban', hatCol: '#e8dcc0', beard: 1, beardCol: '#2a1c15', pose: 'walk' },
+  wuZetian: { skin: 6, top: 'robe', topCol: '#d8a838', legs: 'robe', legCol: '#a8322a', sleeve: '#d8a838', pattern: 'stripe', hair: 'bun', hat: 'phoenix', pose: 'stand' },
+  tangOfficial: { skin: 4, top: 'robe', topCol: '#8a2a2a', legs: 'robe', legCol: '#8a2a2a', sleeve: '#8a2a2a', hat: 'tangcap', hatCol: '#1e1a1c', pose: 'stand' },
+  tangOfficial2: { skin: 3, top: 'robe', topCol: '#3a6a4a', legs: 'robe', legCol: '#3a6a4a', sleeve: '#3a6a4a', hat: 'tangcap', hatCol: '#1e1a1c', beard: 1, pose: 'stand' },
+  liBai: { skin: 4, top: 'robe', topCol: '#e8e4da', legs: 'robe', legCol: '#e8e4da', sleeve: '#e8e4da', hat: 'tangcap', hatCol: '#2a2428', beard: 1, beardCol: '#2a2428', pose: 'sit' },
+});
+const LIBAI_A = 1122;
+{
+  // the Grand Canal: dug, then filled, then busy
+  const C0 = ev('canal');
+  add('barge', 'main', 984, { v: 0, z: 3.5, over: true, y: 2, from: C0 + 2.6, popAt: C0 + 2.8, move: (t) => (t - C0 - 2.8) * 1.6 });
+  add('barge', 'main', 1004, { v: 1, z: 3.5, flip: true, over: true, y: 2, from: C0 + 3.2, popAt: C0 + 3.4, move: (t) => -(t - C0 - 3.4) * 1.2 });
+  ['digger', 'digger'].forEach((v, i) => add('person', 'main', 989 + i * 9, { v, z: 2, scale: P2, flip: i === 1, foldAt: C0 + 2.4 + i * 0.3, act: (t) => { const k = Math.max(0, Math.sin(t * 3 + i)); return { lean: 16 + k * 14, front: [-60 + k * 50, -30], back: [-50 + k * 50, -30] }; } }));
+  for (const [a, v] of [[980, 0], [996, 1], [1010, 2]]) add('willow', 'main', a, { v, z: 0 });
+  for (const [a, v] of [[986, 1], [1002, 0]]) add('willow', 'mid', a, { v, scale: 0.55 });
+  // the examinations
+  add('examcells', 'main', 1024, { z: 0, wide: 14, popAt: ev('exam') - 0.3, loud: 1.6, winOn: (t, i) => 0.4 + 0.2 * Math.sin(t * 3 + i) });
+  add('person', 'main', 1014.2, { v: 'examiner', z: 2, scale: P2, popAt: ev('exam') + 0.4, pace: 3, act: (t) => ({ head: 10 + Math.sin(t * 0.7) * 4, back: [20, -10] }) });
+  // Chang'an
+  add('hall', 'main', 1050, { v: 2, z: 0, wide: 22, popAt: ev('changan') - 0.4, loud: 2.2 });
+  add('brickpagoda', 'main', 1068, { z: 0, wide: 10, popAt: ev('changan') + 0.4, loud: 2 });
+  for (const a of [1043, 1058]) add('redlantern', 'main', a, { z: 1, scale: 1.1 });
+  [['tangLady', 1046], ['tangMan', 1054]].forEach(([v, a], i) => add('person', 'main', a, { v, z: 2.2, scale: P2, flip: i === 1, pace: 4.2, move: (t) => (i ? -1 : 1) * clamp((t - 276) * 0.5, 0, 6) }));
+  add('camel', 'main', 1072, { v: 0, z: 2, flip: true, popAt: ev('persia') - 0.6, move: (t) => -clamp((t - ev('persia')) * 1.1, 0, 8) });
+  add('person', 'main', 1076.6, { v: 'persian', z: 2.3, scale: P2, flip: true, popAt: ev('persia') - 0.3, pace: 4.2, move: (t) => -clamp((t - ev('persia')) * 1.1, 0, 8) });
+  add('camel', 'mid', 1060, { v: 1, scale: 0.6, move: (t) => (t - 276) * 0.4 });
+  // Wu Zetian
+  add('dais', 'main', 1092, { z: 0.5, scale: 1.1, popAt: ev('wu') - 0.5, loud: 1.4 });
+  add('person', 'main', 1092, { v: 'wuZetian', z: 1, scale: P2 * 1.06, y: 44, popAt: ev('wu'), loud: 1.2, act: (t) => ({ head: -2 + Math.sin(t * 0.5) * 2, front: [-20, -30] }) });
+  [['tangOfficial', 1099.4], ['tangOfficial2', 1102.2], ['tangOfficial', 1105]].forEach(([v, a], i) => add('person', 'main', a, { v, z: 2, scale: P2, flip: true, popAt: ev('wu') + 0.6 + i * 0.2, act: (t) => { const b = sramp(t, ev('wu') + 1.4 + i * 0.25, ev('wu') + 1.9 + i * 0.25); return { lean: 6 + b * 30, head: 6 + b * 10, front: [-60 * b, -60 * b] }; } }));
+  // Li Bai, a bright moon, frost on the floor
+  const room = add('tangroom', 'main', LIBAI_A, { z: 0, wide: 12, scale: 1.1, moon: (t) => sramp(t, ev('moonUp'), ev('moonUp') + 2) * (1 - sramp(t, 316, 318)), frost: (t) => sramp(t, ev('frost'), ev('frost') + 1) * (1 - sramp(t, 314, 316)) });
+  add('person', 'main', LIBAI_A + 2.2, { inside: room, v: 'liBai', scale: 1.0, z: 2, y: 44, flip: true, act: (t) => { const up = sramp(t, ev('raise'), ev('raise') + 0.9) * (1 - sramp(t, ev('lower'), ev('lower') + 1.1)), down = sramp(t, ev('lower'), ev('lower') + 1.1); return { lean: 6 + down * 10, head: -up * 30 + down * 22, front: [-40 + down * 10, -60], back: [-30, -50] }; } });
+  for (const [a, v] of [[1112, 1], [1134, 2]]) add('willow', 'main', a, { v, z: 0, scale: 0.9 });
+  for (const [a, v, s] of [[1110, 1, 0.7], [1126, 3, 0.8], [1140, 0, 0.7]]) add('karst', 'far', a, { v, scale: s });
+  grassRun(976, 1150, 3.6, 'main', { skip: (a) => (a > 982 && a < 1008) || (a > 1012 && a < 1036) || (a > 1040 && a < 1108) || (a > 1116 && a < 1130) });
+  grassRun(976, 1150, 7, 'front', { s: 2 });
+  hook({
+    lights(t, c, L) {
+      if (near(LIBAI_A, c, 50) && t > 294) { const k = room.moon(t); L.push({ a: LIBAI_A - 1.4, h: 60, r: 380, k: 0.6 * k, color: [200, 215, 255] }); }
+      if (near(1050, c, 50) && t > 290) for (const a of [1043, 1058]) L.push({ a: a + 1, h: 120, r: 260, k: 0.7 * sramp(t, 292, 294), color: [255, 150, 90] });
+    },
+    ground(g, st, t, S, G) {
+      // the canal: cut into the ground, then the water runs in along it
+      const C0 = ev('canal'), fill = sramp(t, C0, C0 + 3.2);
+      G.run(981, 1009, (a0, a1) => { G.arc(a0, a1, -6, 16, 'rgba(110,84,56,.6)'); const e = lerp(981, 1009, fill); if (e > a0) { G.arc(a0, Math.min(a1, e), -6, 13, 'rgba(70,110,130,.92)'); G.arc(a0, Math.min(a1, e), -9, 1.4, 'rgba(220,240,250,.5)', [10, 18], -t * 12); } });
+    },
+    sky(g, st, t, S) {
+      const { W, H } = st, M = ev('moonUp');
+      if (t > M - 0.5 && t < 318) {
+        const k = drop(t, M, 315.5), x = W * (st.aspectK > 0.4 ? 0.3 : 0.24), y = H * lerp(-0.2, 0.17, k);
+        g.globalCompositeOperation = 'screen'; const gl = g.createRadialGradient(x, y, 0, x, y, 260 * st.eu); gl.addColorStop(0, `rgba(220,230,255,${0.3 * clamp(k)})`); gl.addColorStop(1, 'rgba(200,215,255,0)'); g.fillStyle = gl; g.fillRect(0, 0, W, H); g.globalCompositeOperation = 'source-over';
+        st.hang(g, st.fx.fullmoon, x, y, 1.4, Math.sin(t * 0.4) * 1.2 * DEG);
+      }
+      const HM = ev('home');
+      if (t > HM - 0.2 && t < 318) { const k = drop(t, HM, 315.2); g.save(); g.globalAlpha = 0.85; st.hang(g, st.fx.homecard, W * (st.aspectK > 0.4 ? 0.74 : 0.7), H * lerp(-0.2, 0.2, k), st.aspectK > 0.4 ? 1.4 : 1.1, Math.sin(t * 0.5) * 1.4 * DEG); g.restore(); }
+    },
+  });
+}
 // the thread of silk: unwound from the reel, it runs on, stitched into the world, through everything
 const THREAD0 = 94.6;
 const threadEnd = (t) => (t < 40.4 ? -1e9 : t < 46.5 ? THREAD0 + (t - 40.4) * 9 : 1e9);
@@ -520,14 +588,14 @@ const NIGHT = ['#0a102b', '#11193c', '#1a2650', '#2e3a66'], DUSK = ['#141b3c', '
 const W_ = [255, 252, 244];
 const skyK = track([
   [0, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [5, ['#262f5a', '#57497c', '#b0627a', '#e08f5e']], [9, DUSK], [13, ['#0c1230', '#131c42', '#1e2a56', '#35426e']],
-  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [48.5, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [51, DUSK], [54, NIGHT], [95, NIGHT], [99, DAWN], [103, DAY], [107, DAY], [109, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [113, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [116, DAY], [238, DAY], [241, ['#6a8ab0', '#a8b0c0', '#e8d0b0', '#f6c890']], [256, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [260, DAY],
+  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [48.5, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [51, DUSK], [54, NIGHT], [95, NIGHT], [99, DAWN], [103, DAY], [107, DAY], [109, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [113, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [116, DAY], [238, DAY], [241, ['#6a8ab0', '#a8b0c0', '#e8d0b0', '#f6c890']], [256, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [260, DAY], [290, DAY], [294, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [297.5, DUSK], [300, NIGHT], [315, NIGHT], [318.5, DAWN], [321, DAY],
 ]);
-const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [48.5, [244, 200, 180]], [51, [130, 110, 140]], [54, [66, 72, 116]], [95, [66, 72, 116]], [99, [200, 180, 175]], [103, W_], [107, W_], [109, [210, 200, 196]], [113, [210, 200, 196]], [116, W_], [238, W_], [241, [255, 236, 214]], [256, [240, 200, 180]], [260, W_]]);
+const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [48.5, [244, 200, 180]], [51, [130, 110, 140]], [54, [66, 72, 116]], [95, [66, 72, 116]], [99, [200, 180, 175]], [103, W_], [107, W_], [109, [210, 200, 196]], [113, [210, 200, 196]], [116, W_], [238, W_], [241, [255, 236, 214]], [256, [240, 200, 180]], [260, W_], [290, W_], [294, [244, 200, 180]], [297.5, [110, 104, 140]], [300, [60, 70, 116]], [315, [60, 70, 116]], [318.5, [200, 180, 175]], [321, W_]]);
 const moteK = track([[0, [255, 222, 170]], [12, [255, 190, 120]], [26, [255, 222, 170]], [46, [255, 222, 170]], [52, [255, 190, 120]], [98, [255, 222, 170]]]);
 const gradeK = track([[0, [255, 170, 95, 0.16]], [24, [255, 170, 95, 0.16]], [30, [255, 205, 150, 0.1]], [46, [255, 205, 150, 0.1]], [52, [255, 160, 90, 0.18]], [96, [255, 160, 90, 0.16]], [102, [255, 205, 150, 0.1]], [107, [255, 205, 150, 0.1]], [109, [150, 140, 130, 0.22]], [113, [150, 140, 130, 0.22]], [116, [255, 210, 160, 0.1]]]);
 const SUNS = [[-1, 11, -430, -78, 170], [24, 31, 430, 170, -60], [45, 52, -430, -40, 170], [96, 103, 430, 170, -60]];
-const NIGHTS = [[7, 27], [50, 99]];
-const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3], [146.5, 148.5, 150.5, 152.5, 0.22], [168, 170.5, 173, 175, 0.12], [175.5, 177.5, 180.5, 182.5, 0.42]];
+const NIGHTS = [[7, 27], [50, 99], [296, 319]];
+const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3], [146.5, 148.5, 150.5, 152.5, 0.22], [168, 170.5, 173, 175, 0.12], [175.5, 177.5, 180.5, 182.5, 0.42], [287, 289, 292.5, 294.5, 0.2], [299, 303, 314, 317, 0.45]];
 
 function state(t, stage) {
   const c = cam(t), lights = [], emitters = [], smoke = [];
@@ -571,7 +639,7 @@ function sky(g, st, t, S) {
     st.hang(g, st.fx.moon, x, y, 1, Math.sin(t * 0.5) * 1.6 * DEG, 1, -0.35);
   }
   // in the long days a paper sun hangs on its thread
-  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186], [188, 226]]) {
+  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186], [188, 226], [262, 290]]) {
     if (t < t0 - 0.5 || t > t1 + 3) continue;
     const k = drop(t, t0, t1), sx = W * (st.aspectK > 0.4 ? 0.16 : 0.2), sy = H * lerp(-0.25, 0.13, k);
     g.globalCompositeOperation = 'screen'; const gl = g.createRadialGradient(sx, sy, 0, sx, sy, 300 * u); gl.addColorStop(0, `rgba(255,236,190,${0.35 * clamp(k)})`); gl.addColorStop(1, 'rgba(255,230,180,0)'); g.fillStyle = gl; g.fillRect(sx - 300 * u, sy - 300 * u, 600 * u, 600 * u); g.globalCompositeOperation = 'source-over';

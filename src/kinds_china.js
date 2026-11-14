@@ -749,3 +749,96 @@ KINDS.bodhi = {
   bake(mk) { return KINDS.oak.bake(mk, 1); },
   draw(g, P, t, e, env) { const k = e.grow ? e.grow(t) : 1; if (k <= 0.01) return; g.scale(0.2 + 0.8 * k, 0.15 + 0.85 * k); g.rotate(fbm(t * 0.4 + e.a, 9) * DEG); put(g, P.spr, env.sh); },
 };
+
+// ================================================================ Sui and Tang ===
+KINDS.willow = {
+  bake(mk, v = 0) {
+    const r = rng(3300 + v), sh = mk('willow' + v, [-80, -210, 80, 6]), P = { strands: [] };
+    sh.piece([[-8, 2], [-5, -90], [-26, -150], [-20, -154], [0, -118], [4, -170], [10, -170], [9, -112], [30, -150], [36, -146], [12, -90], [10, 2]], '#4a3c30', { round: 2 });
+    sh.piece(ellipse(0, -160, 60, 30, 16), '#6a8a4a', { round: 8, rough: 2, lift: 1.4, paint: (g) => dab(g, r, 40, [-56, -186, 56, -134], ['rgba(140,170,90,.5)', 'rgba(50,80,40,.45)'], 6, 1.6) });
+    P.spr = sh.finish();
+    for (let i = 0; i < 9; i++) { const x = -54 + i * 13.5, L = 70 + r() * 50; P.strands.push({ x, spr: mk('willow-s' + v + i, [-6, -4, 6, L + 4], { pad: 3 }).piece([[-1.6, 0], [1.6, 0], [2.6, L * 0.5], [0.6, L], [-1.4, L * 0.5]], i % 2 ? '#7a9a52' : '#8aa860', { round: 1, rough: 0.6, thick: 0.4, lift: 0.6 }).finish({ shadowBlur: 2 }), ph: r() * 9 }); }
+    return P;
+  },
+  draw(g, P, t, e, env) {
+    put(g, P.spr, env.sh);
+    for (const s of P.strands) { g.save(); g.translate(s.x, -150 + Math.abs(s.x) * 0.2); g.rotate((Math.sin(t * 0.9 + s.ph) * 4 + fbm(t * 0.5 + s.ph, 3) * 5) * DEG); put(g, s.spr, env.sh * 0.5, 1, 2); g.restore(); }
+  },
+};
+// A canal barge with a square sail and a load of grain sacks.
+KINDS.barge = {
+  bake(mk, v = 0) {
+    const sh = mk('barge' + v, [-90, -150, 90, 12]);
+    sh.piece([[-84, -20], [-74, 6], [70, 6], [86, -22], [70, -12], [-70, -12]], '#6a4a2e', { round: 3, paint: (g) => { g.strokeStyle = 'rgba(40,25,15,.5)'; g.lineWidth = 1; for (let y = -10; y < 6; y += 5) { g.beginPath(); g.moveTo(-76, y); g.lineTo(76, y); g.stroke(); } } });
+    for (const x of [-40, -18, 4, 26]) sh.piece(ellipse(x, -22, 11, 9, 10), '#c8b080', { round: 3, lift: 1 });
+    sh.piece(strip(44, -14, 46, -140, 3.4, 2.6), '#4a3423', { round: 1, lift: 1 });
+    sh.piece([[20, -40], [72, -40], [70, -130], [22, -130]], v ? '#c8a878' : '#b8986a', { round: 2, lift: 2, paint: (g) => { g.strokeStyle = 'rgba(90,60,30,.45)'; g.lineWidth = 1.4; for (let y = -50; y > -130; y -= 12) { g.beginPath(); g.moveTo(20, y); g.lineTo(72, y); g.stroke(); } } });
+    return { spr: sh.finish({ shadowBlur: 5 }) };
+  },
+  draw(g, P, t, e, env) { g.translate(0, Math.sin(t * 1.2 + e.a) * 2); g.rotate(Math.sin(t * 0.8 + e.a * 2) * 1.6 * DEG); put(g, P.spr, env.sh, 4, 5); },
+};
+// The examination cells: a long row of tiny rooms, a candidate in each, writing; candles at night.
+KINDS.examcells = {
+  bake(mk) {
+    const r = rng(3400), sh = mk('examcells', [-160, -150, 160, 6]), win = [];
+    sh.piece(rect(-156, 4, 156, -100), '#b8a88a', { round: 2, paint: (g) => {
+      for (let i = 0; i < 9; i++) { const x = -148 + i * 33; g.fillStyle = 'rgba(40,28,20,.9)'; g.fillRect(x, -88, 26, 80); win.push([x, -88, 26, 80]);
+        g.fillStyle = '#8a6a44'; g.fillRect(x + 2, -40, 22, 4);
+        g.fillStyle = 'rgba(220,200,170,.85)'; g.beginPath(); g.arc(x + 12, -58, 5, 0, 7); g.fill(); g.fillRect(x + 7, -54, 10, 14);
+        g.fillStyle = 'rgba(30,24,20,.9)'; g.fillRect(x + 7, -64, 10, 4);
+        g.fillStyle = '#efe6cf'; g.fillRect(x + 3, -44, 14, 4);
+        g.fillStyle = 'rgba(255,220,150,.9)'; g.fillRect(x + 20, -50, 2, 6); }
+    } });
+    sh.piece(roofPts(156, -100, 14, 14, 6), '#4a4a50', { round: 2, lift: 1.6 });
+    sh.piece(rect(-30, -126, 30, -150), '#a8322a', { round: 1.5, lift: 1.2, paint: (g) => { glyph0(g); } });
+    return { spr: sh.finish({ shadowBlur: 5 }), windows: win };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+  glow: glowRects,
+};
+function glyph0(g) { g.strokeStyle = 'rgba(240,210,120,.9)'; g.lineWidth = 2.4; g.beginPath(); g.moveTo(-18, -138); g.lineTo(-6, -138); g.moveTo(-12, -144); g.lineTo(-12, -132); g.moveTo(4, -144); g.lineTo(18, -144); g.lineTo(18, -132); g.lineTo(4, -132); g.closePath(); g.stroke(); }
+// The Big Wild Goose Pagoda: square, of brick, seven storeys, each a little smaller.
+KINDS.brickpagoda = {
+  bake(mk) {
+    const sh = mk('brickpagoda', [-70, -380, 70, 6]), c = '#b89a72';
+    sh.piece(rect(-64, 4, 64, -30), shade(c, -0.1), { round: 2 });
+    for (let i = 0; i < 7; i++) { const w = 54 - i * 5.4, y = -30 - i * 46, h = 40; sh.piece(rect(-w, y, w, y - h), shade(c, i % 2 ? 0.03 : -0.02), { round: 1.5, lift: 1.2, paint: (g) => { g.fillStyle = 'rgba(40,28,20,.85)'; g.beginPath(); g.moveTo(-6, y); g.lineTo(-6, y - 22); g.quadraticCurveTo(0, y - 30, 6, y - 22); g.lineTo(6, y); g.fill(); g.strokeStyle = 'rgba(90,64,40,.4)'; g.lineWidth = 0.8; for (let yy = y - 5; yy > y - h; yy -= 5) { g.beginPath(); g.moveTo(-w, yy); g.lineTo(w, yy); g.stroke(); } } }); sh.piece(rect(-w - 8, y - h, w + 8, y - h - 6), shade(c, -0.18), { round: 1, lift: 1 }); }
+    sh.piece([[-10, -358], [10, -358], [4, -378], [-4, -378]], '#7a6a5a', { round: 2, lift: 1 });
+    return { spr: sh.finish({ shadowBlur: 6 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 4, 5); },
+};
+// A raised dais with a painted screen behind it, for an emperor (or an empress) to be seen on.
+KINDS.dais = {
+  bake(mk) {
+    const sh = mk('dais', [-80, -200, 80, 6]);
+    sh.piece(rect(-60, -40, 60, -190), '#a8322a', { round: 2, paint: (g) => { g.strokeStyle = 'rgba(232,190,90,.75)'; g.lineWidth = 3; g.strokeRect(-52, -182, 104, 136); g.lineWidth = 2; for (let k = 0; k < 4; k++) { g.beginPath(); g.moveTo(-40 + k * 10, -160); g.quadraticCurveTo(0, -120 - k * 8, 40 - k * 10, -160); g.stroke(); } g.fillStyle = 'rgba(232,190,90,.85)'; g.beginPath(); g.arc(0, -150, 10, 0, 7); g.fill(); } });
+    sh.piece([[-74, 4], [-70, -40], [70, -40], [74, 4]], '#c8a050', { round: 2, lift: 1.4, paint: (g) => { g.strokeStyle = 'rgba(90,60,20,.5)'; g.lineWidth = 1; for (let y = -6; y > -40; y -= 7) { g.beginPath(); g.moveTo(-72, y); g.lineTo(72, y); g.stroke(); } } });
+    return { spr: sh.finish({ shadowBlur: 5 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+};
+// Li Bai's room: a cutaway with a bed and a round window; moonlight lies on the floor like frost.
+KINDS.tangroom = {
+  bake(mk) {
+    const P = {}, sh = mk('tangroom', [-110, -210, 110, 6]);
+    sh.piece(rect(-100, 4, 100, -150), '#3a2e2a', { round: 2, paint: (g) => { g.fillStyle = '#5a463a'; g.fillRect(-100, -10, 200, 14); g.fillStyle = 'rgba(20,14,12,.9)'; g.beginPath(); g.arc(-50, -96, 24, 0, 7); g.fill(); g.strokeStyle = 'rgba(120,90,60,.8)'; g.lineWidth = 1.2; for (let k = -20; k <= 20; k += 8) { g.beginPath(); g.moveTo(-50 + k, -120); g.lineTo(-50 + k, -72); g.stroke(); g.beginPath(); g.moveTo(-74, -96 + k); g.lineTo(-26, -96 + k); g.stroke(); } } });
+    sh.piece([[-104, 4], [-104, -150], [-96, -150], [-96, 4]], '#6a3a2a', { round: 1, lift: 1 }).piece([[96, 4], [96, -150], [104, -150], [104, 4]], '#6a3a2a', { round: 1, lift: 1 });
+    sh.piece(roofPts(100, -150, 26, 22, 10), '#4a4a50', { round: 2, lift: 1.8 });
+    sh.piece([[0, -10], [90, -10], [90, -38], [0, -38]], '#6a4a34', { round: 2, lift: 1.4, paint: (g) => { g.fillStyle = '#d8cfbc'; g.fillRect(4, -40, 82, 6); } }).piece([[0, -10], [6, -10], [6, -60], [0, -60]], '#6a4a34', { round: 1, lift: 1.4 });
+    P.spr = sh.finish({ shadowBlur: 5 });
+    return P;
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+  glow(g, P, t, e, env, p) {
+    const k = e.moon ? e.moon(t) : 0; if (k < 0.01 || p < 0.6) return;
+    g.globalCompositeOperation = 'lighter';
+    // moonlight through the round window, laid on the floor
+    const gr = g.createLinearGradient(-50, -96, 30, -6); gr.addColorStop(0, `rgba(200,215,255,${0.32 * k})`); gr.addColorStop(1, `rgba(200,215,255,${0.08 * k})`);
+    g.fillStyle = gr; g.beginPath(); g.moveTo(-70, -96); g.lineTo(-30, -96); g.lineTo(54, -6); g.lineTo(-6, -6); g.closePath(); g.fill();
+    g.fillStyle = `rgba(230,238,255,${0.5 * k})`; g.beginPath(); g.ellipse(24, -6, 32, 4, 0, 0, 7); g.fill();
+    // and on the patch of floor, a glitter like frost
+    const f = e.frost ? e.frost(t) : 0; if (f > 0.01) for (let i = 0; i < 26; i++) { const x = -4 + hash(i * 7) * 56, a = Math.max(0, Math.sin(t * (2 + hash(i) * 3) + i)) ** 6 * f; g.fillStyle = `rgba(255,255,255,${a})`; g.fillRect(x, -8 + hash(i * 3) * 4, 1.6, 1.6); }
+    g.globalCompositeOperation = 'source-over';
+  },
+};

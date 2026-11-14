@@ -198,3 +198,16 @@ fxGroup(['realm'], (mk) => {
   });
   return S;
 });
+
+// ---------------------------------------------------------------- Li Bai ---
+fxGroup(['fullmoon', 'homecard'], (mk) => {
+  const r = rng(701), S = {};
+  S.fullmoon = mk('fullmoon', [-46, -46, 46, 46], { pad: 8 }).piece(ellipse(0, 0, 40, 40, 30), '#f2ecd8', { round: 6, rough: 0.8, paint: (g) => { g.fillStyle = 'rgba(180,170,150,.35)'; for (const [x, y, rr] of [[-12, -8, 9], [10, 6, 12], [-4, 18, 6], [16, -16, 5], [-20, 10, 4]]) { g.beginPath(); g.arc(x, y, rr, 0, 7); g.fill(); } } }).finish({ shadowBlur: 6 });
+  S.homecard = mk('homecard', [-70, -50, 70, 50], { pad: 6 }).piece(ellipse(0, 0, 64, 44, 30), '#d8d4c4', { round: 6, paint: (g) => {
+    g.fillStyle = '#8a9a8a'; g.beginPath(); g.moveTo(-64, 10); g.quadraticCurveTo(-30, -26, 0, 4); g.quadraticCurveTo(30, -30, 64, 6); g.lineTo(64, 44); g.lineTo(-64, 44); g.fill();
+    g.fillStyle = '#6a7a6a'; g.beginPath(); g.moveTo(-64, 26); g.quadraticCurveTo(0, 6, 64, 26); g.lineTo(64, 44); g.lineTo(-64, 44); g.fill();
+    g.fillStyle = '#e8e2d4'; g.fillRect(-14, 4, 26, 16); g.fillStyle = '#4a4a50'; g.beginPath(); g.moveTo(-20, 6); g.lineTo(-1, -8); g.lineTo(18, 6); g.fill();
+    g.fillStyle = 'rgba(255,200,120,.95)'; g.fillRect(-6, 9, 6, 6); g.strokeStyle = 'rgba(160,150,140,.6)'; g.lineWidth = 1.4; g.beginPath(); g.moveTo(10, -6); g.quadraticCurveTo(14, -20, 8, -30); g.stroke();
+  } }).finish({ shadowBlur: 4 });
+  return S;
+});
