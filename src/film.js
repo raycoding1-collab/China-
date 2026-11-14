@@ -48,15 +48,17 @@ const cam = monotone([
   [318.5, 1206], [321, 1216], [323.5, 1234], [326, 1246], [329, 1252], [331.5, 1262], [334, 1266], [337.5, 1272], [340, 1290], [342.5, 1302], [345, 1316], [347.5, 1326], [350.5, 1334], [354, 1340],
   // 9. Mongols and Ming
   [357, 1366], [360, 1376], [363, 1384], [366, 1392], [369, 1400], [372, 1406], [375, 1418], [378, 1426], [381, 1446], [384, 1460], [387, 1484], [390, 1500], [393, 1522], [395.5, 1540], [398.5, 1550], [402, 1556],
-  [406, 1590], [662, 2600], [800, 2740],
+  // 10. the last dynasty
+  [406, 1588], [409, 1598], [412, 1606], [414.5, 1620], [417.5, 1630], [420, 1644], [422.5, 1656], [425.5, 1664], [428.5, 1676], [431, 1684], [434, 1694], [437, 1700], [440, 1716], [443, 1724], [446, 1732], [449, 1748], [452, 1752], [456, 1756],
+  [459, 1810], [662, 2600], [800, 2740],
 ]);
 
 // ------------------------------------------------- paint and shape of land --
 const ZONES = [
   [-200, 28, [148, 134, 86]], [33, 50, [196, 164, 104]], [56, 76, [112, 140, 82]], [80, 110, [104, 132, 76]],
-  [116, 182, [150, 132, 92]], [186, 214, [128, 120, 88]], [222, 272, [150, 104, 78]], [280, 704, [176, 150, 108]], [710, 772, [214, 182, 122]], [778, 1196, [168, 150, 104]], [1200, 1288, [176, 160, 120]], [1290, 1312, [44, 86, 126]], [1316, 1352, [168, 150, 104]], [1356, 1384, [150, 150, 96]], [1390, 1476, [168, 150, 104]], [1480, 1526, [44, 86, 126]], [1530, 1544, [204, 178, 120]], [1548, 9999, [168, 150, 104]],
+  [116, 182, [150, 132, 92]], [186, 214, [128, 120, 88]], [222, 272, [150, 104, 78]], [280, 704, [176, 150, 108]], [710, 772, [214, 182, 122]], [778, 1196, [168, 150, 104]], [1200, 1288, [176, 160, 120]], [1290, 1312, [44, 86, 126]], [1316, 1352, [168, 150, 104]], [1356, 1384, [150, 150, 96]], [1390, 1476, [168, 150, 104]], [1480, 1526, [44, 86, 126]], [1530, 1544, [204, 178, 120]], [1548, 1668, [168, 150, 104]], [1672, 1700, [44, 86, 126]], [1704, 1740, [120, 100, 84]], [1744, 9999, [168, 150, 104]],
 ];
-const SEAS = [[1290, 1312], [1480, 1526]];
+const SEAS = [[1290, 1312], [1480, 1526], [1672, 1700]];
 function zoneColor(a) {
   for (let i = 0; i < ZONES.length; i++) {
     const [a0, a1, c] = ZONES[i];
@@ -751,6 +753,95 @@ Object.assign(LOOKS, {
     },
   });
 }
+
+// ====================================================== 10. The last dynasty ===
+Object.assign(LOOKS, {
+  bannerman: { skin: 4, top: 'coat', topCol: '#c9a24a', sleeve: '#c9a24a', legs: 'trousers', legCol: '#3a3030', hat: 'qing', hatCol: '#2a2224', hair: 'queue', pose: 'sit' },
+  bannerman2: { skin: 3, top: 'coat', topCol: '#e8e2d4', sleeve: '#e8e2d4', legs: 'trousers', legCol: '#3a3030', hat: 'qing', hatCol: '#2a2224', hair: 'queue', pose: 'sit' },
+  qingEmperor: { skin: 4, top: 'robe', topCol: '#d8a838', legs: 'robe', legCol: '#d8a838', sleeve: '#d8a838', pattern: 'stripe', hat: 'qing', hatCol: '#2a2224', hair: 'queue', pose: 'stand' },
+  qingOfficial: { skin: 4, top: 'robe', topCol: '#2a2a4a', legs: 'robe', legCol: '#2a2a4a', sleeve: '#2a2a4a', hat: 'qing', hatCol: '#2a2224', hair: 'queue', beard: 1, pose: 'stand' },
+  qingFarmer: { skin: 3, top: 'tunic', topCol: '#4a5a6a', legs: 'trousers', legCol: '#3a3a40', hat: 'cone', hatCol: '#c9a86a', hair: 'queue', pose: 'stand', item: 'hoe' },
+  hongMerchant: { skin: 4, top: 'robe', topCol: '#3a2a4a', legs: 'robe', legCol: '#3a2a4a', sleeve: '#3a2a4a', hat: 'qing', hatCol: '#2a2224', hair: 'queue', pose: 'stand' },
+  briton: { skin: 6, top: 'coat', topCol: '#2a2a3a', sleeve: '#2a2a3a', legs: 'trousers', legCol: '#d8d0bc', hat: 'top', hatCol: '#1e1c1c', pose: 'stand' },
+  linZexu: { skin: 4, top: 'robe', topCol: '#8a2a2a', legs: 'robe', legCol: '#2a2a3a', sleeve: '#8a2a2a', hat: 'qing', hatCol: '#2a2224', hair: 'queue', beard: 1, pose: 'stand' },
+  coolie: { skin: 1, top: 'tunic', topCol: '#9a8a6a', legs: 'trousers', legCol: '#4a4038', hat: 'cone', hatCol: '#c9a86a', hair: 'queue', pose: 'stand' },
+  puyi: { skin: 6, top: 'robe', topCol: '#d8a838', legs: 'robe', legCol: '#d8a838', sleeve: '#d8a838', hat: 'qing', hatCol: '#2a2224', pose: 'sit', small: 0.62 },
+  puyiStand: { skin: 6, top: 'robe', topCol: '#d8a838', legs: 'robe', legCol: '#d8a838', sleeve: '#d8a838', hat: 'qing', hatCol: '#2a2224', pose: 'stand', small: 0.62 },
+});
+const PUYI_A = 1752;
+{
+  // the Manchu banners ride in; a Qing emperor
+  const MA = ev('manchu');
+  [['bannerman', 0], ['bannerman2', 1], ['bannerman', 2]].forEach(([v, i]) => add('rider', 'main', 1580 - i * 5, { v, z: 3 + i * 0.1, scale: 0.95, popAt: MA + i * 0.25, gait: 'gallop', move: (t) => clamp((t - MA - i * 0.25) * 6, 0, 20) }));
+  [[1592, 3], [1597, 6], [1602, 1], [1607, 2]].forEach(([a, v], i) => add('banner', 'mid', a, { v, scale: 0.9, popAt: MA + 0.6 + i * 0.25 }));
+  add('hall', 'main', 1608, { v: 4, z: 0, wide: 22 });
+  add('person', 'main', 1601.4, { v: 'qingEmperor', z: 2.4, scale: P2 * 1.05, popAt: ev('qing'), loud: 1.2 });
+  add('person', 'main', 1615, { v: 'qingOfficial', z: 2.2, scale: P2, flip: true, popAt: ev('qing') + 0.4, act: (t) => ({ lean: 24, head: 10 }) });
+  // terraces of maize and sweet potato; the people multiply
+  const CR = ev('newcrops');
+  [1622, 1625, 1628, 1631].forEach((a, i) => add('maize', 'main', a, { v: i % 2, z: 1, popAt: CR + i * 0.14, loud: 0.6 }));
+  [1634.4, 1637].forEach((a, i) => add('potato', 'main', a, { v: i, z: 1, over: true, scale: 1.3, popAt: CR + 0.7 + i * 0.14, loud: 0.6 }));
+  add('person', 'main', 1640.4, { v: 'qingFarmer', z: 2, scale: P2, popAt: CR + 0.4 });
+  // Canton: tea, silk and porcelain out; silver in
+  for (const [a, v] of [[1650, 0], [1656, 1], [1662, 2]]) add('hong', 'main', a, { v, z: 0 });
+  add('person', 'main', 1666.4, { v: 'hongMerchant', z: 2, scale: P2 });
+  add('person', 'main', 1668.6, { v: 'briton', z: 2, scale: P2, flip: true });
+  for (let a = 1672; a < 1700; a += 4.2) add('wave', 'main', a, { v: (R() * 4) | 0, z: 4, loud: 0.2, ground: false, y: -2 });
+  for (let a = 1670; a < 1702; a += 6) add('wave', 'front', a, { v: (R() * 4) | 0, scale: 1.6, ground: false, loud: 0.2 });
+  add('ship', 'main', 1678, { z: 3, ground: false, y: -6, scale: 0.85 });
+  // opium smuggled in; Lin Zexu has it destroyed; the gunboat
+  const OP = ev('opium'), DE = ev('destroy'), WAR = ev('opiumWar');
+  [1684, 1686.4, 1688.8].forEach((a, i) => add('crate', 'main', a, { v: i % 2, z: 3, ground: false, y: 30, popAt: OP + 0.6 + i * 0.25, foldAt: DE + 0.6 + i * 0.2 }));
+  add('steamship', 'main', 1694, { z: 3.2, ground: false, y: 8, scale: 0.9, from: WAR - 0.6, popAt: WAR - 0.4, loud: 1.4, move: (t) => -clamp((t - WAR) * 1.2, 0, 4) });
+  add('junk', 'mid', 1690, { v: 1, scale: 0.5, ground: false, y: 4, foldAt: WAR + 1.8 });
+  add('junk', 'mid', 1698, { v: 0, scale: 0.45, ground: false, y: 4, foldAt: WAR + 2.4 });
+  add('person', 'main', 1704, { v: 'linZexu', z: 2, scale: P2, flip: true, popAt: DE - 0.6, act: (t) => (t > DE - 0.2 && t < DE + 2 ? { front: [-150, -10], head: -4 } : {}) });
+  ['coolie', 'coolie'].forEach((v, i) => add('person', 'main', 1708 + i * 3, { v, z: 2, scale: P2, flip: true, popAt: DE - 0.3, act: (t) => { const k = Math.max(0, Math.sin(t * 4 + i)); return { lean: 20 + k * 20, front: [-80 + k * 40, -30], back: [-70 + k * 40, -30] }; } }));
+  // the civil war: a dark country, figures folding
+  const TP = ev('taiping');
+  for (let a = 1716, i = 0; a < 1736; a += 1.6, i++) add('person', 'mid', a, { v: ['coolie', 'qingFarmer', 'hongMerchant'][i % 3], scale: P2 * 0.62, popAt: TP - 1.2 + i * 0.05, foldAt: TP + 1.2 + hash(i) * 4 });
+  for (const [a, v] of [[1718, 0], [1732, 1]]) add('roundhut', 'main', a, { v, z: 0, foldAt: TP + 1.5 + v * 1.2 });
+  // the last emperor, six years old
+  const AB = ev('abdicate');
+  add('hall', 'main', PUYI_A + 6, { v: 4, z: 0, wide: 22 });
+  add('dais', 'main', PUYI_A, { z: 0.5, scale: 1.1 });
+  add('dragonthrone', 'main', PUYI_A, { z: 0.8, scale: 1.0, y: 44, foldAt: AB + 1.2, loud: 1.6 });
+  add('person', 'main', PUYI_A - 0.6, { v: 'puyi', z: 1, scale: P2, y: 44 + 58, foldAt: AB + 0.7, act: (t) => ({ lean: 2, head: Math.sin(t * 0.8) * 4, front: [-20 + Math.sin(t * 2.2) * 8, -20], back: [-10, -10] }) });
+  add('person', 'main', PUYI_A + 4.8, { v: 'puyiStand', z: 2.6, scale: P2, popAt: 1e9, repopAt: AB + 1.0, act: (t) => ({ head: 4 + Math.sin(t * 0.6) * 3, front: [-10, -10], back: [6, -6] }) });
+  grassRun(1572, 1648, 3.6, 'main', { skip: (a) => (a > 1596 && a < 1644) });
+  grassRun(1704, 1770, 3.6, 'main', { skip: (a) => (a > 1742 && a < 1766) });
+  grassRun(1572, 1770, 7, 'front', { s: 2, skip: (a) => a > 1670 && a < 1702 });
+  hook({
+    lights(t, c, L, Em, Sm) {
+      if (near(1694, c, 60) && t > WAR) for (let k = 0; k < 4; k++) { const tf = WAR + 0.6 + k * 0.9, f = Math.exp(-(((t - tf) / 0.12) ** 2)); if (f > 0.02) L.push({ a: 1690 - k * 0.8, h: 30, r: 500, k: 1.4 * f, color: [255, 200, 140] }); if (t > tf) Sm.push({ a: 1690 - k * 0.8, h: 30, t0: tf, t1: tf + 0.3, size: 1.2, life: 3, every: 0.1, rise: 90, drift: 3, alpha: 0.8 }); }
+      if (near(1700, c, 60) && t > DE && t < DE + 6) Sm.push({ a: 1706, h: 10, t0: DE + 0.4, t1: DE + 4, size: 1.3, life: 4, every: 0.3, rise: 200, drift: 3, alpha: 0.6 });
+      if (near(1726, c, 70) && t > TP - 1 && t < TP + 9) Sm.push({ a: 1726, h: 20, t0: TP, t1: TP + 6, size: 2, life: 6, every: 0.4, rise: 300, drift: 5, alpha: 0.6 });
+    },
+    ground(g, st, t, S, G) {
+      // a thread across the water: Chinese goods out, silver back
+      const TR = ev('trade');
+      if (t > TR - 0.5 && t < TR + 7) {
+        const [x0, y0] = G.rad(1666, 150), [x1, y1] = G.rad(1679, 230), k = sramp(t, TR, TR + 1), P = (f) => { const a = 1 - f, mx = (x0 + x1) / 2, my = Math.min(y0, y1) - 90; return [a * a * x0 + 2 * a * f * mx + f * f * x1, a * a * y0 + 2 * a * f * my + f * f * y1]; };
+        g.save(); g.globalAlpha = 1 - sramp(t, TR + 5.6, TR + 6.6); g.strokeStyle = 'rgba(244,206,108,.9)'; g.lineWidth = 1.8; g.beginPath(); g.moveTo(x0, y0); for (let i = 1; i <= 24; i++) { const [x, y] = P((i / 24) * k); g.lineTo(x, y); } g.stroke();
+        const ride = (icon, t0, back, s = 1.3) => { if (t < t0 || t > t0 + 2.4) return; const f = clamp((t - t0) / 2.2), [x, y] = P(back ? 1 - f : f); g.save(); g.translate(x, y + 14); g.rotate((1666 - G.c) * DEG + Math.sin(t * 3) * 0.1); g.scale(s, s); put(g, icon, 0.3, 2, 3); g.restore(); };
+        ride(st.fx.teaIcon, TR + 0.6); ride(st.fx.icons.silk, TR + 1.1); ride(st.fx.vase, TR + 1.6); ride(st.fx.sycee, TR + 2.6, true); ride(st.fx.sycee, TR + 3.0, true); ride(st.fx.sycee, TR + 3.4, true);
+        g.restore();
+      }
+    },
+    over(g, st, t, S) {
+      // the people of the Qing, more and more of them: a paper chain that keeps unfolding
+      const PO = ev('popgrow');
+      if (t < PO - 0.3 || t > PO + 7) return;
+      const { W, H } = st, u = st.eu, por = st.aspectK > 0.4 ? 0 : 1, s = por ? 0.8 : 1.05, sp = 40 * s * u;
+      const k = drop(t, PO, PO + 5.8), y = H * lerp(-0.32, por ? 0.24 : 0.19, k), n = Math.min(30, Math.floor(clamp((t - PO) / 4) * 30) + 1);
+      const x0 = W * 0.06;
+      g.save(); g.strokeStyle = 'rgba(200,190,175,0.32)'; g.lineWidth = Math.max(1, 0.6 * u);
+      for (const xx of [x0 - sp * 0.5, x0 + (n - 0.5) * sp]) { g.beginPath(); g.moveTo(xx, -20); g.lineTo(xx, y - 17 * s * u); g.stroke(); }
+      for (let i = 0; i < n; i++) { const open = clamp((t - PO) * 7.5 - i * 0.25), bob = Math.sin(t * 1.1 + i * 0.7) * 1.2 * u; g.save(); g.translate(x0 + i * sp, y + bob - 17 * s * u); g.scale(s * u * open, s * u); g.translate(0, 17); put(g, st.fx.dollC[(i * 3) % 5], 0.25, 2, 3); g.restore(); }
+      g.restore();
+    },
+  });
+}
 // the thread of silk: unwound from the reel, it runs on, stitched into the world, through everything
 const THREAD0 = 94.6;
 const threadEnd = (t) => (t < 40.4 ? -1e9 : t < 46.5 ? THREAD0 + (t - 40.4) * 9 : 1e9);
@@ -764,14 +855,14 @@ const NIGHT = ['#0a102b', '#11193c', '#1a2650', '#2e3a66'], DUSK = ['#141b3c', '
 const W_ = [255, 252, 244];
 const skyK = track([
   [0, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [5, ['#262f5a', '#57497c', '#b0627a', '#e08f5e']], [9, DUSK], [13, ['#0c1230', '#131c42', '#1e2a56', '#35426e']],
-  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [48.5, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [51, DUSK], [54, NIGHT], [95, NIGHT], [99, DAWN], [103, DAY], [107, DAY], [109, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [113, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [116, DAY], [238, DAY], [241, ['#6a8ab0', '#a8b0c0', '#e8d0b0', '#f6c890']], [256, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [260, DAY], [290, DAY], [294, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [297.5, DUSK], [300, NIGHT], [315, NIGHT], [318.5, DAWN], [321, DAY], [328, DAY], [330.5, DUSK], [332.5, NIGHT], [338, NIGHT], [340.5, DAWN], [343, DAY],
+  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [48.5, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [51, DUSK], [54, NIGHT], [95, NIGHT], [99, DAWN], [103, DAY], [107, DAY], [109, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [113, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [116, DAY], [238, DAY], [241, ['#6a8ab0', '#a8b0c0', '#e8d0b0', '#f6c890']], [256, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [260, DAY], [290, DAY], [294, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [297.5, DUSK], [300, NIGHT], [315, NIGHT], [318.5, DAWN], [321, DAY], [328, DAY], [330.5, DUSK], [332.5, NIGHT], [338, NIGHT], [340.5, DAWN], [343, DAY], [427, DAY], [430, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [438, ['#4a3a3a', '#6a4a40', '#8a5a48', '#a87a5a']], [446, ['#4a3a3a', '#6a4a40', '#8a5a48', '#a87a5a']], [449, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [457, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']],
 ]);
-const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [48.5, [244, 200, 180]], [51, [130, 110, 140]], [54, [66, 72, 116]], [95, [66, 72, 116]], [99, [200, 180, 175]], [103, W_], [107, W_], [109, [210, 200, 196]], [113, [210, 200, 196]], [116, W_], [238, W_], [241, [255, 236, 214]], [256, [240, 200, 180]], [260, W_], [290, W_], [294, [244, 200, 180]], [297.5, [110, 104, 140]], [300, [60, 70, 116]], [315, [60, 70, 116]], [318.5, [200, 180, 175]], [321, W_], [328, W_], [330.5, [110, 104, 140]], [332.5, [56, 64, 108]], [338, [56, 64, 108]], [340.5, [200, 180, 175]], [343, W_]]);
+const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [48.5, [244, 200, 180]], [51, [130, 110, 140]], [54, [66, 72, 116]], [95, [66, 72, 116]], [99, [200, 180, 175]], [103, W_], [107, W_], [109, [210, 200, 196]], [113, [210, 200, 196]], [116, W_], [238, W_], [241, [255, 236, 214]], [256, [240, 200, 180]], [260, W_], [290, W_], [294, [244, 200, 180]], [297.5, [110, 104, 140]], [300, [60, 70, 116]], [315, [60, 70, 116]], [318.5, [200, 180, 175]], [321, W_], [328, W_], [330.5, [110, 104, 140]], [332.5, [56, 64, 108]], [338, [56, 64, 108]], [340.5, [200, 180, 175]], [343, W_], [427, W_], [430, [210, 200, 196]], [438, [180, 140, 126]], [446, [180, 140, 126]], [449, [236, 230, 224]], [457, [236, 230, 224]]]);
 const moteK = track([[0, [255, 222, 170]], [12, [255, 190, 120]], [26, [255, 222, 170]], [46, [255, 222, 170]], [52, [255, 190, 120]], [98, [255, 222, 170]]]);
 const gradeK = track([[0, [255, 170, 95, 0.16]], [24, [255, 170, 95, 0.16]], [30, [255, 205, 150, 0.1]], [46, [255, 205, 150, 0.1]], [52, [255, 160, 90, 0.18]], [96, [255, 160, 90, 0.16]], [102, [255, 205, 150, 0.1]], [107, [255, 205, 150, 0.1]], [109, [150, 140, 130, 0.22]], [113, [150, 140, 130, 0.22]], [116, [255, 210, 160, 0.1]]]);
 const SUNS = [[-1, 11, -430, -78, 170], [24, 31, 430, 170, -60], [45, 52, -430, -40, 170], [96, 103, 430, 170, -60]];
 const NIGHTS = [[7, 27], [50, 99], [296, 319], [330, 341]];
-const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3], [146.5, 148.5, 150.5, 152.5, 0.22], [168, 170.5, 173, 175, 0.12], [175.5, 177.5, 180.5, 182.5, 0.42], [287, 289, 292.5, 294.5, 0.2], [299, 303, 314, 317, 0.45], [325, 326.5, 328.5, 330, 0.3], [369, 371, 373.5, 375.5, 0.25], [396, 398, 401.5, 403.5, 0.12]];
+const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3], [146.5, 148.5, 150.5, 152.5, 0.22], [168, 170.5, 173, 175, 0.12], [175.5, 177.5, 180.5, 182.5, 0.42], [287, 289, 292.5, 294.5, 0.2], [299, 303, 314, 317, 0.45], [325, 326.5, 328.5, 330, 0.3], [369, 371, 373.5, 375.5, 0.25], [396, 398, 401.5, 403.5, 0.12], [448, 450, 455, 457.5, 0.4]];
 
 function state(t, stage) {
   const c = cam(t), lights = [], emitters = [], smoke = [];
@@ -815,7 +906,7 @@ function sky(g, st, t, S) {
     st.hang(g, st.fx.moon, x, y, 1, Math.sin(t * 0.5) * 1.6 * DEG, 1, -0.35);
   }
   // in the long days a paper sun hangs on its thread
-  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186], [188, 226], [262, 290], [344, 356], [358, 402]]) {
+  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186], [188, 226], [262, 290], [344, 356], [358, 402], [404, 426]]) {
     if (t < t0 - 0.5 || t > t1 + 3) continue;
     const k = drop(t, t0, t1), sx = W * (st.aspectK > 0.4 ? 0.16 : 0.2), sy = H * lerp(-0.25, 0.13, k);
     g.globalCompositeOperation = 'screen'; const gl = g.createRadialGradient(sx, sy, 0, sx, sy, 300 * u); gl.addColorStop(0, `rgba(255,236,190,${0.35 * clamp(k)})`); gl.addColorStop(1, 'rgba(255,230,180,0)'); g.fillStyle = gl; g.fillRect(sx - 300 * u, sy - 300 * u, 600 * u, 600 * u); g.globalCompositeOperation = 'source-over';

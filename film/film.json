@@ -453,6 +453,16 @@
   "zhenghe": 384.2,
   "africa": 389.6,
   "giraffe": 394.4,
-  "qilin": 397.6
+  "qilin": 397.6,
+  "manchu": 405.0,
+  "qing": 409.4,
+  "newcrops": 413.8,
+  "popgrow": 415.4,
+  "trade": 421.4,
+  "opium": 428.4,
+  "destroy": 433.2,
+  "opiumWar": 434.8,
+  "taiping": 439.6,
+  "abdicate": 449.6
  }
 }

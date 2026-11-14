@@ -249,3 +249,10 @@ fxGroup(['qilin'], (mk) => ({
     g.fillStyle = 'rgba(178,40,32,.85)'; g.fillRect(58, 34, 10, 10);
   } }).finish({ shadowBlur: 4 }),
 }));
+
+// ------------------------------------------------------- the last dynasty ---
+fxGroup(['teaIcon', 'vase', 'sycee'], (mk) => ({
+  teaIcon: mk('ic-tea', [-14, -14, 14, 14], { pad: 4 }).piece(rect(-12, -12, 12, 12), '#9a6a3a', { round: 1.5, paint: (g) => { g.fillStyle = 'rgba(240,220,170,.85)'; g.fillRect(-8, -8, 16, 16); g.fillStyle = '#5a7a3a'; g.beginPath(); g.ellipse(0, 0, 5, 3, 0.6, 0, 7); g.fill(); } }).finish({ shadowBlur: 2 }),
+  vase: mk('ic-vase', [-12, -20, 12, 18], { pad: 4 }).piece([[-4, -18], [4, -18], [4, -12], [10, -4], [10, 8], [6, 16], [-6, 16], [-10, 8], [-10, -4], [-4, -12]], '#eef0f2', { round: 3, paint: (g) => { g.strokeStyle = '#2a4a8a'; g.lineWidth = 1.4; g.beginPath(); g.moveTo(-9, 0); g.quadraticCurveTo(0, -8, 9, 0); g.stroke(); g.beginPath(); g.arc(0, 6, 3, 0, 7); g.stroke(); g.beginPath(); g.moveTo(-8, 10); g.lineTo(8, 10); g.stroke(); } }).finish({ shadowBlur: 2 }),
+  sycee: mk('ic-sycee', [-16, -12, 16, 8], { pad: 4 }).piece([[-14, -8], [-8, -2], [8, -2], [14, -8], [12, 4], [-12, 4]], '#c8ccd0', { round: 3, paint: (g) => { g.fillStyle = 'rgba(255,255,255,.5)'; g.beginPath(); g.ellipse(0, -2, 6, 3, 0, 0, 7); g.fill(); } }).finish({ shadowBlur: 2 }),
+}));

@@ -955,3 +955,47 @@ KINDS.baobab = {
   },
   draw(g, P, t, e, env) { put(g, P.spr, env.sh); },
 };
+
+// ======================================================== the last dynasty ===
+// A Canton "factory": the foreign trading houses on the waterfront, white fronts and flags.
+KINDS.hong = {
+  bake(mk, v = 0) {
+    const sh = mk('hong' + v, [-70, -190, 70, 6]), c = ['#e8e2d4', '#e0d4bc', '#d8d8d0'][v % 3], win = [];
+    for (const x of [-48, -16, 16]) for (const y of [-118, -70]) win.push([x, y, 18, 28]);
+    sh.piece(rect(-60, 4, 60, -150), c, { round: 2, paint: (g) => { paintRects(win)(g); g.fillStyle = 'rgba(140,130,110,.4)'; g.fillRect(-60, -84, 120, 4); for (const x of [-56, -24, 8, 40]) g.fillRect(x, -150, 6, 154); g.fillStyle = 'rgba(30,24,20,.85)'; g.fillRect(-10, -34, 20, 38); } });
+    sh.piece([[-66, -150], [0, -176], [66, -150]], shade(c, -0.1), { round: 2, lift: 1.4 });
+    sh.piece(strip(40, -150, 40, -196, 2.4, 2), '#3a3030', { round: 0.5, lift: 1 });
+    sh.piece(rect(41, -196, 64, -182), ['#c8322a', '#2a4a8a', '#e8e2d4'][v % 3], { round: 0.6, lift: 0.8, paint: (g) => { if (v % 3 === 2) { g.fillStyle = '#c8322a'; g.fillRect(41, -190, 23, 2.5); g.fillRect(51, -196, 2.5, 14); } else { g.fillStyle = 'rgba(255,255,255,.7)'; g.fillRect(41, -190, 23, 2); } } });
+    return { spr: sh.finish({ shadowBlur: 5 }), windows: win };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+  glow: glowRects,
+};
+// An iron paddle steamer with a tall funnel and guns.
+KINDS.steamship = {
+  bake(mk) {
+    const sh = mk('steamship', [-160, -170, 160, 16]);
+    sh.piece([[-150, -40], [-136, 8], [130, 10], [156, -34], [-150, -34]], '#2a2828', { round: 3, paint: (g) => { g.fillStyle = 'rgba(200,190,170,.35)'; g.fillRect(-140, -26, 280, 3); g.fillStyle = 'rgba(20,18,18,.9)'; for (let x = -110; x < 120; x += 28) { g.beginPath(); g.arc(x, -14, 4, 0, 7); g.fill(); } } });
+    sh.piece(ellipse(-10, -26, 32, 32, 18), '#3a3434', { round: 4, lift: 1.4, paint: (g) => { g.strokeStyle = 'rgba(200,190,170,.4)'; g.lineWidth = 1.4; for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; g.beginPath(); g.moveTo(-10, -26); g.lineTo(-10 + Math.cos(a) * 28, -26 + Math.sin(a) * 28); g.stroke(); } } });
+    sh.piece(rect(-34, -40, 20, -60), '#4a4442', { round: 1.5, lift: 1.2 });
+    sh.piece(rect(-16, -60, 0, -150), '#1e1c1c', { round: 1.5, lift: 1.2, paint: (g) => { g.fillStyle = 'rgba(180,60,40,.8)'; g.fillRect(-16, -150, 16, 6); } });
+    for (const x of [-90, 70]) sh.piece(strip(x, -36, x, -160, 3, 2.4), '#3a3030', { round: 0.6, lift: 1 });
+    sh.piece(rect(70, -160, 100, -146), '#c8322a', { round: 0.5, lift: 0.8, paint: (g) => { g.fillStyle = '#2a4a8a'; g.fillRect(70, -160, 12, 8); } });
+    return { spr: sh.finish({ shadowBlur: 6 }) };
+  },
+  draw(g, P, t, e, env) { g.translate(0, Math.sin(t * 1.1 + e.a) * 2.4); g.rotate(Math.sin(t * 0.8 + e.a * 2) * 1.4 * DEG); put(g, P.spr, env.sh, 5, 6); },
+};
+KINDS.crate = {
+  bake(mk, v = 0) { return { spr: mk('crate' + v, [-24, -40, 24, 6], { pad: 5 }).piece(rect(-20, 4, 20, -34), v ? '#7a5a3a' : '#8a6a44', { round: 1.5, paint: (g) => { g.strokeStyle = 'rgba(40,24,12,.6)'; g.lineWidth = 2; g.strokeRect(-18, -32, 36, 34); g.beginPath(); g.moveTo(-18, -32); g.lineTo(18, 2); g.stroke(); g.fillStyle = 'rgba(30,20,14,.7)'; g.font = '700 9px Georgia'; } }).finish({ shadowBlur: 3 }) }; },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 2, 3); },
+};
+// The dragon throne: gold, a red cushion, a carved back much too big for a small boy.
+KINDS.dragonthrone = {
+  bake(mk) {
+    const sh = mk('dragonthrone', [-60, -170, 60, 6]);
+    sh.piece([[-50, 4], [-50, -70], [-44, -150], [-30, -164], [30, -164], [44, -150], [50, -70], [50, 4], [40, 4], [40, -50], [-40, -50], [-40, 4]], '#d8a838', { round: 3, paint: (g) => { g.strokeStyle = 'rgba(120,70,20,.6)'; g.lineWidth = 2; for (let k = 0; k < 5; k++) { g.beginPath(); g.moveTo(-36 + k * 3, -150 + k * 16); g.quadraticCurveTo(0, -120 + k * 14, 36 - k * 3, -150 + k * 16); g.stroke(); } g.fillStyle = 'rgba(168,40,40,.9)'; g.beginPath(); g.arc(0, -126, 9, 0, 7); g.fill(); } });
+    sh.piece(rect(-42, -50, 42, -62), '#a8282a', { round: 2, lift: 1.4 });
+    return { spr: sh.finish({ shadowBlur: 5 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+};
