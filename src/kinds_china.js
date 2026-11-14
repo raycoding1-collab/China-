@@ -266,3 +266,150 @@ KINDS.flutist = {
     } });
   },
 };
+
+// ============================================================ bronze and bone ===
+const BRONZE = '#c08a4e', BRONZE_D = '#7a5232', PATINA = '#6f8a72';
+const taotie = (x, y, s, col = 'rgba(60,34,18,.75)') => (g) => {
+  // a monster mask in low relief: two big eyes, curling horns and brows, a nose ridge, spirals
+  g.save(); g.translate(x, y); g.scale(s, s); g.strokeStyle = col; g.fillStyle = col; g.lineWidth = 1.6; g.lineCap = 'round';
+  for (const sx of [-1, 1]) {
+    g.beginPath(); g.ellipse(sx * 9, 0, 4, 3, 0, 0, 7); g.stroke(); g.beginPath(); g.arc(sx * 9, 0, 1.4, 0, 7); g.fill();
+    g.beginPath(); g.moveTo(sx * 3, -6); g.quadraticCurveTo(sx * 14, -14, sx * 22, -6); g.quadraticCurveTo(sx * 24, 0, sx * 19, 2); g.stroke();
+    g.beginPath(); g.arc(sx * 20, 8, 3, 0, 5); g.stroke(); g.beginPath(); g.moveTo(sx * 4, 6); g.lineTo(sx * 13, 10); g.stroke();
+  }
+  g.beginPath(); g.moveTo(0, -10); g.lineTo(0, 10); g.stroke();
+  g.restore();
+};
+// A Shang hall: a thatched hall on a terrace of pounded earth, laid down layer by layer.
+KINDS.shanghall = {
+  bake(mk, v = 0) {
+    const r = rng(2000 + v), w = 130, sh = mk('shanghall' + v, [-w - 30, -210, w + 30, 6]);
+    sh.piece([[-w, 4], [-w + 4, -34], [w - 4, -34], [w, 4]], '#b8945e', { round: 2, paint: (g) => { g.strokeStyle = 'rgba(90,62,30,.35)'; g.lineWidth = 1.2; for (let y = 0; y > -34; y -= 4.2) { g.beginPath(); g.moveTo(-w, y); g.lineTo(w, y + (r() - 0.5)); g.stroke(); } } });
+    sh.piece([[-30, 4], [-24, -34], [24, -34], [30, 4]], '#a8844e', { round: 1.5, lift: 1.2, paint: (g) => { g.strokeStyle = 'rgba(80,54,26,.5)'; g.lineWidth = 1; for (let y = 0; y > -34; y -= 6) { g.beginPath(); g.moveTo(-28, y); g.lineTo(28, y); g.stroke(); } } });
+    sh.piece(rect(-w + 18, -34, w - 18, -110), '#c9ac7c', { round: 2, lift: 1.4, paint: (g) => { for (let x = -w + 18; x <= w - 26; x += 26) { g.fillStyle = '#4a3020'; g.fillRect(x, -110, 6, 76); } g.fillStyle = 'rgba(28,18,12,.85)'; g.fillRect(-14, -96, 28, 62); } });
+    sh.piece([[-w - 26, -102], [-w + 30, -170], [w - 30, -170], [w + 26, -102], [w + 14, -96], [-w - 14, -96]], '#a88a52', { round: 4, rough: 2, lift: 2, paint: (g) => { g.strokeStyle = 'rgba(110,80,40,.5)'; g.lineWidth = 1; for (let i = 0; i < 60; i++) { const x = -w - 20 + r() * (w * 2 + 40); g.beginPath(); g.moveTo(x * 0.8, -168); g.lineTo(x, -98); g.stroke(); } } });
+    sh.piece([[-w + 26, -168], [w - 26, -168], [w - 34, -178], [-w + 34, -178]], '#7a6034', { round: 2, lift: 1.2 });
+    return { spr: sh.finish({ shadowBlur: 6 }), windows: [[-14, -96, 28, 62]] };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 4, 5); },
+  glow: glowRects,
+};
+// The foundry: a clay furnace, a mould, and a crucible that tips its molten bronze in (e.pour(t): 0..1).
+KINDS.foundry = {
+  bake(mk) {
+    const P = {};
+    P.base = mk('foundry', [-110, -120, 120, 6])
+      .piece([[-100, 4], [-104, -40], [-90, -74], [-66, -86], [-44, -74], [-30, -40], [-26, 4]], '#9a6a44', { round: 8, rough: 1.6, paint: (g) => { g.fillStyle = 'rgba(30,14,8,.92)'; g.beginPath(); g.ellipse(-64, -20, 14, 16, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(60,34,18,.4)'; g.lineWidth = 1.4; for (let y = -6; y > -80; y -= 10) { g.beginPath(); g.moveTo(-100, y); g.quadraticCurveTo(-64, y - 6, -28, y); g.stroke(); } } })
+      .piece([[-74, -84], [-56, -84], [-58, -116], [-72, -116]], '#7a5236', { round: 2, lift: 1 })
+      .piece([[30, 4], [24, -28], [32, -54], [80, -54], [88, -28], [82, 4]], '#a87a52', { round: 6, rough: 1.2, lift: 1.4, paint: (g) => { g.strokeStyle = 'rgba(60,34,18,.5)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(56, -54); g.lineTo(56, 4); g.stroke(); for (const y of [-40, -18]) { g.beginPath(); g.moveTo(26, y); g.lineTo(86, y); g.stroke(); } } })
+      .piece([[48, -54], [64, -54], [60, -66], [52, -66]], '#7a5236', { round: 2, lift: 1 })
+      .piece(strip(0, 4, 2, -104, 5, 4), '#5a4030', { round: 1, lift: 1 })
+      .finish({ shadowBlur: 5 });
+    P.pole = mk('foundry-pole', [-10, -6, 80, 6], { pad: 5 }).piece(strip(0, 0, 74, 0, 4, 3.4), '#4a3423', { round: 1 }).finish({ shadowBlur: 2 });
+    P.pot = mk('crucible', [-16, -4, 18, 26], { pad: 5 }).piece([[-12, 0], [14, 0], [10, 22], [-8, 22]], '#6a4a38', { round: 5, rough: 0.8, paint: (g) => { g.fillStyle = '#ffb040'; g.beginPath(); g.ellipse(1, 1.4, 12, 2.4, 0, 0, 7); g.fill(); } }).piece([[14, 0], [20, -2], [18, 3]], '#6a4a38', { round: 1, lift: 0.6 }).finish({ shadowBlur: 2 });
+    return P;
+  },
+  draw(g, P, t, e, env) {
+    put(g, P.base, env.sh, 4, 5);
+    const k = e.pour ? e.pour(t) : 0;
+    g.save(); g.translate(2, -100); g.rotate((8 + k * 10) * DEG); put(g, P.pole, env.sh * 0.5);
+    g.translate(66, 2); g.rotate((-8 - k * 10 + k * 64) * DEG); put(g, P.pot, env.sh * 0.5); g.restore();
+  },
+  glow(g, P, t, e, env, p) {
+    if (p < 0.6) return;
+    const k = e.pour ? e.pour(t) : 0, f = 0.85 + 0.15 * fbm(t * 6, 4);
+    g.globalCompositeOperation = 'lighter';
+    let gr = g.createRadialGradient(-64, -20, 0, -64, -20, 46); gr.addColorStop(0, `rgba(255,190,90,${0.95 * f})`); gr.addColorStop(0.3, `rgba(255,120,40,${0.5 * f})`); gr.addColorStop(1, 'rgba(255,90,20,0)');
+    g.fillStyle = gr; g.fillRect(-110, -66, 92, 92);
+    if (k > 0.35) {
+      // the stream of bronze, from the lip of the crucible to the mouth of the mould
+      const s = sramp(k, 0.35, 0.55) * (1 - sramp(k, 0.97, 1));
+      g.strokeStyle = `rgba(255,214,120,${s})`; g.lineWidth = 3.4; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(80, -84); g.quadraticCurveTo(66, -80, 57, -66); g.stroke();
+      gr = g.createRadialGradient(58, -68, 0, 58, -68, 30); gr.addColorStop(0, `rgba(255,200,100,${0.8 * s})`); gr.addColorStop(1, 'rgba(255,120,40,0)'); g.fillStyle = gr; g.fillRect(28, -98, 60, 60);
+    }
+    g.globalCompositeOperation = 'source-over';
+  },
+};
+// Ritual bronzes: v0 a square four-legged ding, v1 a round tripod ding, v2 a gu goblet, v3 a jue.
+KINDS.ding = {
+  bake(mk, v = 0) {
+    const r = rng(2100 + v), sh = mk('ding' + v, [-60, -130, 60, 6], { pad: 8 }), c = BRONZE, cd = shade(c, -0.25);
+    if (v === 0) {
+      for (const x of [-32, 26]) sh.piece([[x - 6, 4], [x + 6, 4], [x + 7, -34], [x - 5, -34]], cd, { round: 2, paint: taotie(x, -16, 0.28) });
+      sh.piece([[-44, -30], [44, -30], [46, -96], [-46, -96]], c, { round: 3, lift: 1.4, paint: (g) => { taotie(0, -64, 1.1)(g); g.strokeStyle = 'rgba(60,34,18,.5)'; g.lineWidth = 1; g.strokeRect(-40, -92, 80, 58); g.fillStyle = 'rgba(255,240,200,.15)'; g.fillRect(-44, -96, 10, 66); } });
+      for (const x of [-34, 22]) sh.piece([[x, -94], [x, -124], [x + 12, -124], [x + 12, -94], [x + 8, -94], [x + 8, -118], [x + 4, -118], [x + 4, -94]], c, { round: 1.5, lift: 1 });
+    } else if (v === 1) {
+      for (const x of [-26, 0, 24]) sh.piece([[x - 5, 4], [x + 5, 4], [x + 4, -30], [x - 4, -30]], cd, { round: 2 });
+      const pts = []; for (let i = 0; i <= 14; i++) { const a = Math.PI * (i / 14); pts.push([-Math.cos(a) * 44, -30 - Math.sin(a) * 30 + (i === 0 || i === 14 ? -50 : 0)]); }
+      sh.piece([[-46, -80], ...pts.slice(1, -1), [46, -80]], c, { round: 6, lift: 1.4, paint: (g) => { taotie(0, -64, 0.8)(g); g.fillStyle = 'rgba(60,34,18,.5)'; g.fillRect(-46, -80, 92, 5); } });
+      for (const x of [-30, 20]) sh.piece([[x, -78], [x, -104], [x + 10, -104], [x + 10, -78], [x + 7, -78], [x + 7, -100], [x + 3, -100], [x + 3, -78]], c, { round: 1.5, lift: 1 });
+    } else if (v === 2) {
+      sh.piece([[-22, 4], [22, 4], [16, -20], [8, -34], [10, -56], [6, -70], [30, -120], [-30, -120], [-6, -70], [-10, -56], [-8, -34], [-16, -20]], c, { round: 3, paint: (g) => { taotie(0, -46, 0.45)(g); taotie(0, -12, 0.4)(g); g.fillStyle = 'rgba(255,240,200,.14)'; g.fillRect(-8, -118, 5, 110); } });
+    } else {
+      for (const [x, a] of [[-18, -10], [16, 10], [0, 0]]) sh.piece(strip(x, 4, x * 0.4, -30, 3, 4), cd, { round: 1, lift: 0.8 });
+      sh.piece([[-24, -28], [22, -28], [26, -60], [52, -72], [36, -62], [-30, -64], [-40, -70], [-26, -58]], c, { round: 3, lift: 1.2, paint: taotie(0, -44, 0.5) });
+      for (const x of [-8, 6]) sh.piece(strip(x, -62, x, -80, 2.4, 3.4), c, { round: 1, lift: 1 });
+      sh.piece([[22, -34], [38, -40], [34, -30], [22, -28]], cd, { round: 1, lift: 0.8 });
+    }
+    return { spr: sh.finish({ shadowBlur: 4 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+};
+
+// Sanxingdui, far to the southwest: a bronze face with eyes on stalks, seen from the side so the stalks show.
+KINDS.sxmask = {
+  bake(mk) {
+    const P = {}, c = '#8a7a52';
+    P.post = mk('sx-post', [-14, -150, 14, 6]).piece([[-10, 4], [10, 4], [6, -146], [-6, -146]], '#5a4030', { round: 2 }).piece([[-22, 4], [22, 4], [16, -10], [-16, -10]], '#6a5040', { round: 2, lift: 1 }).finish({ shadowBlur: 3 });
+    P.face = mk('sx-face', [-80, -90, 50, 70], { pad: 8 })
+      // the great ear, swept back like a wing
+      .piece([[-26, -30], [-74, -64], [-80, -40], [-64, -20], [-76, 6], [-40, 10], [-26, 4]], shade(c, -0.12), { round: 4, rough: 0.8, paint: (g) => { g.strokeStyle = 'rgba(40,30,18,.5)'; g.lineWidth = 1.6; g.beginPath(); g.moveTo(-34, -24); g.quadraticCurveTo(-66, -48, -70, -30); g.quadraticCurveTo(-58, -20, -68, 0); g.stroke(); } })
+      // the face in profile: a high brow, a hooked nose, a long mouth that runs back to the ear
+      .piece([[-30, -70], [10, -74], [16, -50], [14, -34], [36, -20], [26, -12], [18, -10], [24, 2], [16, 10], [24, 24], [10, 40], [-30, 44], [-34, 0]], c, { round: 5, lift: 1.6, paint: (g) => { g.strokeStyle = 'rgba(40,30,18,.75)'; g.lineWidth = 2; g.beginPath(); g.moveTo(22, 14); g.lineTo(-24, 22); g.stroke(); g.beginPath(); g.moveTo(-10, -44); g.quadraticCurveTo(4, -50, 14, -44); g.stroke(); g.fillStyle = 'rgba(110,140,110,.35)'; for (let i = 0; i < 20; i++) { g.beginPath(); g.arc(-28 + Math.random() * 50, -60 + Math.random() * 90, 2 + Math.random() * 4, 0, 7); g.fill(); } } })
+      .finish({ shadowBlur: 5 });
+    P.eye = mk('sx-eye', [-4, -12, 62, 12], { pad: 5 }).piece([[0, -6], [44, -6], [46, -9], [58, -10], [60, 0], [58, 10], [46, 9], [44, 6], [0, 6]], '#9a8a5e', { round: 3, paint: (g) => { g.strokeStyle = 'rgba(40,30,18,.6)'; g.lineWidth = 1.2; for (const x of [12, 26, 40]) { g.beginPath(); g.moveTo(x, -6); g.lineTo(x, 6); g.stroke(); } g.fillStyle = 'rgba(40,30,18,.8)'; g.beginPath(); g.ellipse(59, 0, 2, 7, 0, 0, 7); g.fill(); } }).finish({ shadowBlur: 3 });
+    return P;
+  },
+  draw(g, P, t, e, env) {
+    put(g, P.post, env.sh, 3, 4);
+    g.translate(4, -186);
+    const k = e.eyesAt !== undefined ? clamp(spring(t - e.eyesAt, 9, 0.32), 0, 1.4) : 1;
+    g.save(); g.translate(-6 + k * 4, -34); g.scale(0.3 + 0.7 * k, 1); g.rotate(Math.sin(t * 9) * Math.exp(-Math.max(0, t - (e.eyesAt ?? 0)) * 2) * 6 * DEG); put(g, P.eye, env.sh * 0.5, 2, 3); g.restore();
+    put(g, P.face, env.sh, 3, 4);
+  },
+};
+KINDS.sxfigure = {
+  bake(mk) {
+    const c = '#8a7a52', sh = mk('sx-figure', [-40, -300, 50, 6]);
+    sh.piece([[-36, 4], [36, 4], [30, -40], [-30, -40]], '#6a5a3c', { round: 2, paint: (g) => { g.strokeStyle = 'rgba(30,20,10,.5)'; g.lineWidth = 1.4; g.beginPath(); g.moveTo(-28, -20); g.lineTo(28, -20); g.stroke(); } });
+    sh.piece([[-16, -40], [16, -40], [18, -170], [12, -196], [-12, -196], [-18, -170]], c, { round: 4, lift: 1.4, paint: (g) => { g.strokeStyle = 'rgba(40,30,18,.5)'; g.lineWidth = 1.2; for (let y = -60; y > -180; y -= 18) { g.beginPath(); g.moveTo(-17, y); g.lineTo(17, y - 4); g.stroke(); taotie(0, y - 8, 0.25)(g); } } });
+    sh.piece([[-10, -196], [14, -196], [24, -214], [20, -232], [-8, -238], [-12, -214]], c, { round: 4, lift: 1.4, paint: (g) => { g.fillStyle = 'rgba(40,30,18,.8)'; g.fillRect(4, -222, 12, 3); } });
+    sh.piece([[-12, -236], [-16, -262], [-6, -278], [8, -268], [18, -280], [16, -252], [20, -236]], shade(c, 0.05), { round: 3, lift: 1.2 });
+    // the huge hands, held out in front, gripping something long since gone
+    sh.piece([[12, -150], [42, -148], [46, -136], [40, -126], [14, -130]], c, { round: 4, lift: 1.6, paint: (g) => { g.fillStyle = 'rgba(30,20,10,.85)'; g.beginPath(); g.arc(36, -138, 5, 0, 7); g.fill(); } });
+    sh.piece([[10, -176], [40, -184], [44, -172], [38, -162], [12, -160]], shade(c, 0.06), { round: 4, lift: 1.8, paint: (g) => { g.fillStyle = 'rgba(30,20,10,.85)'; g.beginPath(); g.arc(34, -172, 5, 0, 7); g.fill(); } });
+    return { spr: sh.finish({ shadowBlur: 6 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 4, 5); },
+};
+// A bronze tree with birds on its branch tips (Sanxingdui's sacred trees stood nearly four metres tall).
+KINDS.sxtree = {
+  bake(mk) {
+    const c = '#7a7a54', r = rng(2200), sh = mk('sx-tree', [-110, -330, 110, 6]);
+    sh.piece([[-30, 4], [30, 4], [20, -24], [-20, -24]], '#5a5038', { round: 3 });
+    sh.piece(strip(0, -20, 0, -320, 7, 4), c, { round: 1.5, lift: 1.2 });
+    for (let tier = 0; tier < 3; tier++) for (const s of [-1, 1]) {
+      const y0 = -90 - tier * 80, L = 86 - tier * 20, pts = [];
+      for (let i = 0; i <= 10; i++) { const f = i / 10; pts.push([s * L * f, y0 - Math.sin(f * Math.PI * 0.9) * 26 + f * f * 40]); }
+      const top = pts.map(([x, y]) => [x, y - 2.4]), bot = pts.slice().reverse().map(([x, y]) => [x, y + 2.4]);
+      sh.piece([...top, ...bot], c, { round: 1.2, lift: 1 });
+      const [bx, by] = pts[10];
+      sh.piece([[bx - 6, by + 2], [bx - 4, by - 10], [bx + 4, by - 14], [bx + 10, by - 10], [bx + 8, by - 4], [bx + s * 14, by - 8], [bx + 6, by + 2]], '#8a8a5c', { round: 2, lift: 1.2 });
+      sh.piece(ellipse(bx, by + 10, 4, 6, 8), '#6a6a48', { round: 1.5, lift: 0.8 });
+    }
+    sh.piece([[-6, -326], [6, -326], [10, -340], [0, -348], [-10, -340]], '#8a8a5c', { round: 2, lift: 1 });
+    return { spr: sh.finish({ shadowBlur: 6 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 4, 5); },
+};

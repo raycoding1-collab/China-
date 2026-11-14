@@ -55,3 +55,68 @@ fxGroup(['boneflute'], (mk) => {
     } }).finish({ shadowBlur: 4 });
   return S;
 });
+
+// ------------------------------------------------------------ oracle bones ---
+// A turtle's under-shell, prepared for divination: polished, with rows of hollows drilled into it.
+export const HOLLOWS = [[-42, -78], [42, -78], [-46, -26], [46, -26], [-46, 26], [46, 26], [-40, 76], [40, 76]];
+fxGroup(['plastron', 'rod', 'slip'], (mk, mkSoft, mkBig) => {
+  const r = rng(1250), S = {};
+  const pts = [[-30, -140], [30, -140], [44, -126], [70, -96], [84, -50], [80, -20], [80, 20], [88, 58], [74, 104], [44, 132], [18, 144], [-18, 144], [-44, 132], [-74, 104], [-88, 58], [-80, 20], [-80, -20], [-84, -50], [-70, -96], [-44, -126]];
+  S.plastron = mkBig('plastron', [-96, -150, 96, 152], { pad: 14 }).piece(pts, '#e6d6b2', { round: 22, rough: 1.4, seg: 20, lift: 4, thick: 4, paint: (g) => {
+    for (let i = 0; i < 70; i++) { g.fillStyle = `rgba(${r() < 0.5 ? '150,110,60' : '255,246,226'},${0.05 + r() * 0.1})`; g.beginPath(); g.ellipse(-80 + r() * 160, -130 + r() * 270, 4 + r() * 18, 2 + r() * 8, r() * 3, 0, 7); g.fill(); }
+    g.strokeStyle = 'rgba(120,86,50,.45)'; g.lineWidth = 1.6; g.beginPath(); g.moveTo(0, -140); g.lineTo(0, 144); g.stroke();
+    for (const [y, b] of [[-104, 10], [-52, 14], [0, 8], [50, 14], [104, 10]]) { g.beginPath(); g.moveTo(-86, y + b); g.quadraticCurveTo(0, y - b, 86, y + b); g.stroke(); }
+    for (const [x, y] of HOLLOWS) { const s = Math.sign(x); g.fillStyle = 'rgba(96,64,36,.55)'; g.beginPath(); g.ellipse(x, y, 7, 12, 0, 0, 7); g.fill(); g.fillStyle = 'rgba(70,44,24,.5)'; g.beginPath(); g.arc(x - s * 12, y, 5.4, 0, 7); g.fill(); g.strokeStyle = 'rgba(255,246,226,.5)'; g.lineWidth = 1; g.beginPath(); g.ellipse(x + 0.8, y + 0.8, 7, 12, 0, 0.3, 2.6); g.stroke(); }
+  } }).finish({ shadowBlur: 10 });
+  S.rod = mkBig('hotrod', [-6, -200, 6, 6], { pad: 6 }).piece([[-3, 0], [3, 0], [3.6, -196], [-3, -196]], '#5a3a26', { round: 1.5, rough: 0.6, paint: (g) => { g.fillStyle = '#2a1810'; g.fillRect(-3, -12, 6.6, 12); } }).finish({ shadowBlur: 5 });
+  S.slip = mkBig('signslip', [-140, -60, 140, 60], { pad: 10 }).piece([[-132, -52], [132, -54], [134, 52], [-130, 54]], '#efe5cc', { round: 4, rough: 0.8, lift: 3, thick: 3, paint: (g) => { g.strokeStyle = 'rgba(150,120,80,.3)'; g.lineWidth = 1; g.beginPath(); g.moveTo(-126, 0); g.lineTo(126, 0); g.stroke(); for (let i = 0; i < 40; i++) { g.fillStyle = 'rgba(160,130,90,.12)'; g.fillRect(-130 + Math.random() * 260, -50 + Math.random() * 100, 3, 1); } } }).finish({ shadowBlur: 8 });
+  return S;
+});
+
+// Signs as strokes in a 40-unit box: the oracle-bone forms (incised) and the forms written today (brush).
+const circ = (rx, ry, n = 14, a0 = 0, a1 = Math.PI * 2) => { const p = []; for (let i = 0; i <= n; i++) { const a = a0 + (a1 - a0) * (i / n); p.push([Math.cos(a) * rx, Math.sin(a) * ry]); } return p; };
+export const GLYPH = {
+  // the inscription: 卜 (crack), 貞 (to ask, drawn as a ding), 旬 (ten days, a spiral), 亡 (no), and a bone with a crack (misfortune)
+  bu: [[[0, -18], [0, 18]], [[0, -4], [12, -12]]],
+  zhen: [[[-12, -9], [12, -9], [12, 8], [-12, 8], [-12, -9]], [[-8, 8], [-10, 18]], [[8, 8], [10, 18]], [[-7, -9], [-7, -17]], [[7, -9], [7, -17]], [[-12, 0], [12, 0]]],
+  xun: [[[10, -16], [-6, -16], [-12, -6], [-10, 8], [2, 12], [10, 4], [4, -4], [-4, 0]]],
+  wang: [[[-4, -18], [-4, 14], [14, 14]], [[-14, -10], [6, -10]]],
+  huo: [[[-10, -18], [10, -18], [10, 16], [-10, 16], [-10, -18]], [[0, -10], [0, 10]], [[0, -2], [7, -8]]],
+  // 日 月 人 木 山, then and now
+  o_ri: [circ(13, 15, 16), [[-4, 0], [4, 0]]], m_ri: [[[-10, -16], [10, -16], [10, 16], [-10, 16], [-10, -16]], [[-10, 0], [10, 0]]],
+  o_yue: [[[4, -18], [-8, -10], [-12, 4], [-4, 16], [8, 18], [2, 8], [0, -6], [4, -18]], [[-6, 2], [0, 4]]], m_yue: [[[-9, -16], [-9, 6], [-14, 17]], [[-9, -16], [10, -16], [10, 14], [6, 17]], [[-9, -5], [10, -5]], [[-9, 5], [10, 5]]],
+  o_ren: [[[6, -18], [-2, -6], [-4, 6], [-10, 18]], [[-2, -4], [10, 4]]], m_ren: [[[1, -17], [-1, 0], [-13, 16]], [[0, -4], [6, 6], [14, 15]]],
+  o_mu: [[[0, -18], [0, 18]], [[0, -6], [-10, -16]], [[0, -6], [10, -16]], [[0, 8], [-10, 18]], [[0, 8], [10, 18]]], m_mu: [[[-15, -6], [15, -6]], [[0, -18], [0, 18]], [[0, -6], [-14, 12]], [[0, -6], [14, 12]]],
+  o_shan: [[[-16, 14], [-14, -4], [-8, 10], [0, -16], [8, 10], [14, -4], [16, 14], [-16, 14]]], m_shan: [[[0, -18], [0, 14]], [[-13, -6], [-13, 14], [13, 14]], [[13, -6], [13, 14]]],
+};
+// Draw a sign, stroke by stroke, k from 0 (nothing) to 1 (all). style: 'cut' (incised in bone), 'red' (cut, rubbed with
+// red pigment), 'ink' (brush).
+export function glyph(g, name, x, y, s, k, style = 'cut') {
+  if (k <= 0) return;
+  const strokes = GLYPH[name], lens = strokes.map((p) => p.slice(1).reduce((a, q, i) => a + Math.hypot(q[0] - p[i][0], q[1] - p[i][1]), 0)), total = lens.reduce((a, b) => a + b, 0);
+  let left = k * total;
+  g.save(); g.translate(x, y); g.scale(s, s); g.lineCap = 'round'; g.lineJoin = 'round';
+  const pass = (col, w, dx, dy) => {
+    let rem = left;
+    g.strokeStyle = col; g.lineWidth = w;
+    strokes.forEach((p, si) => {
+      if (rem <= 0) return; g.beginPath(); g.moveTo(p[0][0] + dx, p[0][1] + dy);
+      for (let i = 1; i < p.length; i++) { const L = Math.hypot(p[i][0] - p[i - 1][0], p[i][1] - p[i - 1][1]); if (rem >= L) { g.lineTo(p[i][0] + dx, p[i][1] + dy); rem -= L; } else { const f = rem / L; g.lineTo(p[i - 1][0] + (p[i][0] - p[i - 1][0]) * f + dx, p[i - 1][1] + (p[i][1] - p[i - 1][1]) * f + dy); rem = 0; break; } }
+      g.stroke();
+    });
+  };
+  if (style === 'ink') { pass('rgba(24,18,16,.92)', 3.6, 0, 0); }
+  else { const w = style === 'red' ? 2.2 : 3; pass('rgba(255,248,230,.6)', w + 0.4, 0.8, 0.8); pass(style === 'red' ? 'rgba(150,40,26,.92)' : 'rgba(60,34,18,.95)', w, 0, 0); }
+  g.restore();
+}
+// A crack spreading from a hollow: the long split along the shell, then the side branch (the sign 卜 copies it).
+export function crack(g, x, y, k, dir = 1, seed = 1) {
+  if (k <= 0) return;
+  const r = rng(seed), main = [[0, 0]], side = [[0, 0]];
+  for (let i = 1; i <= 8; i++) main.push([(r() - 0.5) * 3, i * 7 * (i % 2 ? 1 : 1)]);
+  for (let i = 1; i <= 5; i++) side.push([dir * i * 5 + (r() - 0.5) * 2, -i * 2.4 - (r() - 0.5) * 2]);
+  g.save(); g.translate(x, y - 22); g.strokeStyle = 'rgba(40,22,10,.95)'; g.lineWidth = 1.8; g.lineCap = 'round';
+  const draw = (pts, kk) => { if (kk <= 0) return; const n = Math.max(1, Math.floor(kk * (pts.length - 1))); g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i <= n; i++) g.lineTo(pts[i][0], pts[i][1]); g.stroke(); };
+  draw(main, clamp(k * 1.6)); g.translate(main[3][0], main[3][1]); draw(side, clamp(k * 1.6 - 0.6));
+  g.restore();
+}

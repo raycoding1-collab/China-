@@ -346,5 +346,38 @@
    "text": "Ahead, the paper is still blank. The next part has not been written yet."
   }
  ],
- "events": {}
+ "events": {
+  "flute": 11.4,
+  "boneflute": 20.3,
+  "fluteStop": 20.4,
+  "millet": 29.0,
+  "rice": 32.2,
+  "silk": 37.1,
+  "thread": 40.4,
+  "king": 48.0,
+  "pour": 52.6,
+  "vessels": 54.5,
+  "oracle": 59.4,
+  "rod": 61.9,
+  "cracks": [
+   63.2,
+   64.8
+  ],
+  "carve": [
+   69.0,
+   69.7,
+   70.4,
+   71.1,
+   71.8
+  ],
+  "signs": [
+   77.4,
+   78.3,
+   79.2,
+   80.1,
+   81.0
+  ],
+  "oracleOut": 85.6,
+  "eyes": 93.4
+ }
 }

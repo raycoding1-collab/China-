@@ -9,7 +9,7 @@ import './kinds_nature.js';
 import './kinds_built.js';
 import './kinds_modern.js';
 import './kinds_china.js';
-import { makeFx, hang2 } from './sky_china.js';
+import { makeFx, hang2, glyph, crack } from './sky_china.js';
 import { BlurSheet } from './engine.js';
 import { EV, DURATION } from './timeline.js';
 
@@ -32,13 +32,15 @@ const cam = monotone([
   // 1. the bone flute
   [0, -40], [3, -31], [7, -15], [11, -5.5], [15, -1], [19, 2], [22.5, 4.5], [25, 13], [27.5, 30], [30, 41], [32.5, 53], [35, 64], [37.5, 80], [40.5, 88], [43, 93], [46, 104],
   // (the rest of the film is laid out chapter by chapter)
-  [52, 140], [662, 2600], [800, 2740],
+  // 2. bronze and bone
+  [48.5, 124], [51, 136], [54, 148], [57, 163], [59.5, 180], [62, 186], [70, 189], [80, 192], [85, 202], [87.5, 230], [90, 244], [94.5, 250.5], [97, 262],
+  [100, 300], [662, 2600], [800, 2740],
 ]);
 
 // ------------------------------------------------- paint and shape of land --
 const ZONES = [
   [-200, 28, [148, 134, 86]], [33, 50, [196, 164, 104]], [56, 76, [112, 140, 82]], [80, 110, [104, 132, 76]],
-  [116, 9999, [176, 150, 108]],
+  [116, 182, [150, 132, 92]], [186, 214, [128, 120, 88]], [222, 272, [150, 104, 78]], [280, 9999, [176, 150, 108]],
 ];
 const SEAS = [];
 function zoneColor(a) {
@@ -139,6 +141,98 @@ const flick = (t, s) => 0.84 + 0.16 * fbm(t * 7.3 + s, 60) + 0.05 * Math.sin(t *
     },
   });
 }
+
+// ==================================================== 2. Bronze and bone ===
+// Dusk at a Shang court: a hall on pounded earth, a foundry pouring bronze, vessels standing up in a row.
+Object.assign(LOOKS, {
+  shangKing: { skin: 3, top: 'robe', topCol: '#4a2420', legs: 'robe', legCol: '#4a2420', sleeve: '#4a2420', pattern: 'stripe', hat: 'band', hatCol: '#c9a24a', hair: 'bun', beard: 1, pose: 'stand' },
+  shangLady: { skin: 3, top: 'robe', topCol: '#6a5a3a', legs: 'robe', legCol: '#6a5a3a', sleeve: '#6a5a3a', hair: 'bun', hat: 'band', hatCol: '#3a6a5a', pose: 'stand' },
+  caster: { skin: 1, top: 'bare', wrap: '#8a6a48', hair: 'bun', pose: 'stand' },
+  caster2: { skin: 0, top: 'tunic', topCol: '#9a7a56', hair: 'short', pose: 'stand' },
+  diviner: { skin: 3, top: 'robe', topCol: '#3a3040', legs: 'robe', legCol: '#3a3040', sleeve: '#3a3040', hat: 'band', hatCol: '#a8282a', hair: 'bun', pose: 'kneel' },
+  sxPriest: { skin: 3, top: 'robe', topCol: '#6a4a2a', legs: 'robe', legCol: '#6a4a2a', sleeve: '#6a4a2a', hat: 'band', hatCol: '#c9a24a', hair: 'bun', pose: 'stand' },
+});
+const FOUNDRY_A = 153;
+{
+  add('shanghall', 'main', 139.6, { z: 0, wide: 16, popAt: ev('king') - 0.6, loud: 2, winOn: (t) => 0.75 * sramp(t, 49, 51.5) * (0.9 + 0.1 * fbm(t * 5, 2)) });
+  add('person', 'main', 131.4, { v: 'shangKing', z: 2, scale: P2, popAt: ev('king'), act: (t) => ({ head: t > ev('vessels') ? 8 + Math.sin(t) * 2 : -2, front: [-30 + Math.sin(t * 0.5) * 4, -30] }) });
+  add('person', 'main', 128.2, { v: 'shangLady', z: 1.5, scale: P2, popAt: ev('king') + 0.3 });
+  add('foundry', 'main', FOUNDRY_A, { z: 1, scale: 1.15, popAt: 50.6, loud: 1.4, pour: (t) => sramp(t, ev('pour') - 0.9, ev('pour')) * (1 - sramp(t, ev('pour') + 2.6, ev('pour') + 3.4)) });
+  add('person', 'main', 147.6, { v: 'caster', z: 2, scale: P2, popAt: 51, act: (t) => ({ lean: 14, head: 8, front: [-100 + Math.sin(t * 2.4) * 12, -30], back: [-90 + Math.sin(t * 2.4) * 12, -30] }) });
+  add('person', 'main', 156.4, { v: 'caster2', z: 2, scale: P2, flip: true, popAt: 51.3, act: (t) => ({ lean: 6, head: 10, front: [-150, -20], back: [-130, -20] }) });
+  [[161.6, 0, 1.25], [166.4, 1, 1.05], [169.8, 2, 0.62], [172.2, 3, 0.62], [175.2, 1, 0.8]].forEach(([a, v, s], i) => add('ding', 'main', a, { v, z: 1.5, scale: s, popAt: ev('vessels') + i * 0.32, loud: 1.2 }));
+  for (const [a, v] of [[122, 1], [145, 2], [181, 0]]) add('oak', 'mid', a, { v, scale: 0.55 });
+  for (const a of [126, 150, 172]) add('shanghall', 'far', a, { v: 1, scale: 0.4 });
+  grassRun(118, 182, 3.4, 'main', { skip: (a) => a > 124 && a < 178 });
+  grassRun(118, 182, 7, 'front', { s: 2 });
+  // the diviner by a small fire, a basket of shells
+  add('person', 'main', 186.8, { v: 'diviner', z: 2, scale: P2, popAt: 57.6, act: (t) => ({ lean: 20, head: 14, front: [-60 + Math.sin(t * 0.7) * 4, -50], back: [-50, -40] }) });
+  add('logs', 'main', 190.4, { z: 2, scale: 0.8, popAt: 57.8 });
+  for (const [a, v] of [[180, 0], [196, 1], [203, 2]]) add('oak', 'main', a, { v, z: 0, scale: 0.9 });
+  grassRun(182, 214, 3.6, 'main', { skip: (a) => a > 185 && a < 192 });
+  // Sanxingdui by torchlight
+  for (const a of [234.6, 250.8, 262.4]) add('torchpost', 'main', a, { z: 1, scale: 1.3, popAt: 86.2 + (a - 234) * 0.02 });
+  add('sxfigure', 'main', 241.2, { z: 1, popAt: 87.8, loud: 1.6 });
+  add('sxmask', 'main', 247.4, { z: 1.2, popAt: 88.6, loud: 1.4, eyesAt: ev('eyes') });
+  add('sxtree', 'main', 256.4, { z: 0.8, popAt: 89.4, loud: 1.6 });
+  add('person', 'main', 252.8, { v: 'sxPriest', z: 2, scale: P2, flip: true, popAt: 89.8, act: (t) => ({ head: t > ev('eyes') && t < ev('eyes') + 2.4 ? -12 : 4, lean: t > ev('eyes') && t < ev('eyes') + 2.4 ? -6 : 2 }) });
+  for (const a of [228, 244, 266]) add('bamboo', 'mid', a, { v: (a | 0) % 3, scale: 0.55 });
+  for (const [a, v, s] of [[236, 3, 0.7], [250, 1, 0.6], [264, 4, 0.75]]) add('karst', 'far', a, { v, scale: s });
+  grassRun(226, 270, 3.8, 'main', { skip: (a) => a > 238 && a < 260 });
+  grassRun(214, 300, 7, 'front', { s: 2 });
+
+  hook({
+    lights(t, c, L, Em) {
+      if (near(FOUNDRY_A, c, 60) && t > 46 && t < 80) {
+        L.push({ a: FOUNDRY_A - 4.2, h: 24, r: 760, k: 1.1 * flick(t, 2), color: [255, 150, 70] });
+        const p = sramp(t, ev('pour') - 0.4, ev('pour')) * (1 - sramp(t, ev('pour') + 2.6, ev('pour') + 3.4)); if (p > 0) L.push({ a: FOUNDRY_A + 3.8, h: 80, r: 420, k: 1.1 * p, color: [255, 190, 90] });
+        L.push({ a: 139.6, h: 60, r: 420, k: 0.7 * sramp(t, 49, 51.5), color: [255, 170, 90] });
+        for (const [a, i] of [[161.6, 0], [166.4, 1], [170.4, 2], [173.6, 3]]) { const k = sramp(t, ev('vessels') + i * 0.32, ev('vessels') + 0.6 + i * 0.32); if (k > 0) L.push({ a, h: 50, r: 200, k: 0.55 * k, color: [255, 200, 120] }); }
+      }
+      if (near(190, c, 60) && t > 56 && t < 100) {
+        const k = sramp(t, 57.8, 58.6);
+        L.push({ a: 190.4, h: 30, r: 640, k: 1.1 * k * flick(t, 3), color: [255, 150, 74] });
+        Em.push({ a: 190.4, h: 4, scale: 0.6, lit: k, litAt: 57.8, seed: 3 });
+      }
+      if (near(248, c, 60) && t > 84) for (const [a, n] of [[234.6, 4], [250.8, 5], [262.4, 6]]) {
+        const k = sramp(t, 86.6 + (a - 234) * 0.02, 87.4 + (a - 234) * 0.02) * (1 - sramp(t, 97, 99)); if (k <= 0) continue;
+        L.push({ a, h: 90, r: 640, k: 1.25 * k * flick(t, n), color: [255, 150, 74] });
+        Em.push({ a, h: 84, scale: 0.5, small: 1, lit: k, litAt: 86.6, seed: n });
+      }
+    },
+    over(g, st, t, S) {
+      const { W, H } = st;
+      if (t < ev('oracle') - 0.2 || t > ev('oracleOut') + 1.6) return;
+      const up = clamp(spring(t - ev('oracle'), 5.2, 0.55), 0, 1.3), out = sramp(t, ev('oracleOut'), ev('oracleOut') + 1.1), veil = clamp(up) * (1 - out);
+      g.fillStyle = `rgba(10,6,4,${0.5 * veil})`; g.fillRect(0, 0, W, H);
+      const wide = W > H, evo = sramp(t, EV.signs[0] - 1.6, EV.signs[0] - 0.3), base = Math.min(W * 0.62, H * 0.56) / 270;
+      const cx = lerp(W * 0.5, W * (wide ? 0.27 : 0.5), evo), cy = lerp(H * 0.44, H * (wide ? 0.44 : 0.27), evo), s = base * lerp(wide ? 1.0 : 0.9, wide ? 0.78 : 0.5, evo);
+      g.save(); g.translate(cx, cy + (1 - Math.min(1, up)) * H * 0.9 + out * H * 0.9); g.rotate((1 - Math.min(1, up)) * 0.25 - 0.04); g.scale(s, s);
+      put(g, st.fx.plastron, 0.6, 8, 12);
+      // the red-hot rod, pressed into one hollow, then the next; each one cracks
+      const [hx, hy] = [46, -26], [jx, jy] = [-46, -26], rodT = ev('rod');
+      const at = t < EV.cracks[0] + 0.3 ? 0 : 1, tx = at ? jx : hx, ty = at ? jy : hy;
+      const rin = sramp(t, rodT - 1, rodT), rout = sramp(t, EV.cracks[1] + 0.4, EV.cracks[1] + 1.2);
+      const press = Math.exp(-(((t - (at ? EV.cracks[1] - 0.6 : EV.cracks[0] - 0.6)) / 0.5) ** 2));
+      const heat = (x, y, k) => { if (k <= 0.01) return; g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(x, y, 0, x, y, 22); gr.addColorStop(0, `rgba(255,170,80,${0.8 * k})`); gr.addColorStop(1, 'rgba(255,90,30,0)'); g.fillStyle = gr; g.fillRect(x - 22, y - 22, 44, 44); g.globalCompositeOperation = 'source-over'; };
+      heat(hx, hy, Math.exp(-(((t - EV.cracks[0] + 0.5) / 0.5) ** 2))); heat(jx, jy, Math.exp(-(((t - EV.cracks[1] + 0.5) / 0.5) ** 2)));
+      crack(g, hx, hy, sramp(t, EV.cracks[0], EV.cracks[0] + 0.5), -1, 3); crack(g, jx, jy, sramp(t, EV.cracks[1], EV.cracks[1] + 0.5), 1, 7);
+      // then the question and the answer, cut beside the cracks and rubbed with red
+      ['bu', 'zhen', 'xun', 'wang', 'huo'].forEach((n, i) => glyph(g, n, 18, -94 + i * 34, 0.7, sramp(t, EV.carve[i], EV.carve[i] + 0.6), 'red'));
+      ['bu', 'zhen', 'wang'].forEach((n, i) => glyph(g, n, -20, -60 + i * 34, 0.62, sramp(t, EV.carve[i] + 0.35, EV.carve[i] + 0.95), 'red'));
+      if (rin > 0 && rout < 1) { g.save(); g.translate(lerp(tx + 80, tx, rin) + 0, lerp(ty - 200, ty, rin) - (1 - press) * 10 - rout * 260); g.rotate(0.35); put(g, st.fx.rod, 0.5, 6, 8); if (press > 0.05) { g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(0, -4, 0, 0, -4, 12); gr.addColorStop(0, `rgba(255,190,90,${press})`); gr.addColorStop(1, 'rgba(255,90,30,0)'); g.fillStyle = gr; g.fillRect(-12, -16, 24, 24); g.globalCompositeOperation = 'source-over'; } g.restore(); }
+      g.restore();
+      // and the signs, then and now: 日 月 人 木 山
+      if (t > EV.signs[0] - 1.6) {
+        const rise = clamp(spring(t - (EV.signs[0] - 1.2), 5.2, 0.55), 0, 1.3), ss = base * (wide ? 1.12 : 0.66);
+        g.save(); g.translate(wide ? W * 0.66 : W * 0.5, (wide ? H * 0.44 : H * 0.66) + (1 - Math.min(1, rise)) * H * 0.9 + out * H * 0.9); g.rotate(0.02 - (1 - Math.min(1, rise)) * 0.2); g.scale(ss, ss);
+        put(g, st.fx.slip, 0.5, 8, 12);
+        ['ri', 'yue', 'ren', 'mu', 'shan'].forEach((n, i) => { const x = -104 + i * 52; glyph(g, 'o_' + n, x, -25, 1.15, sramp(t, EV.signs[i], EV.signs[i] + 0.6), 'cut'); glyph(g, 'm_' + n, x, 27, 1.15, sramp(t, EV.signs[i] + 0.45, EV.signs[i] + 1.1), 'ink'); });
+        g.restore();
+      }
+    },
+  });
+}
 // the thread of silk: unwound from the reel, it runs on, stitched into the world, through everything
 const THREAD0 = 94.6;
 const threadEnd = (t) => (t < 40.4 ? -1e9 : t < 46.5 ? THREAD0 + (t - 40.4) * 9 : 1e9);
@@ -152,14 +246,14 @@ const NIGHT = ['#0a102b', '#11193c', '#1a2650', '#2e3a66'], DUSK = ['#141b3c', '
 const W_ = [255, 252, 244];
 const skyK = track([
   [0, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [5, ['#262f5a', '#57497c', '#b0627a', '#e08f5e']], [9, DUSK], [13, ['#0c1230', '#131c42', '#1e2a56', '#35426e']],
-  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [49, DUSK], [53, NIGHT],
+  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [48.5, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [51, DUSK], [54, NIGHT], [95, NIGHT], [99, DAWN], [103, DAY],
 ]);
-const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [49, [150, 120, 130]], [53, [50, 58, 100]]]);
-const moteK = track([[0, [255, 222, 170]], [12, [255, 190, 120]], [26, [255, 222, 170]], [46, [255, 222, 170]], [52, [255, 190, 120]]]);
-const gradeK = track([[0, [255, 170, 95, 0.16]], [24, [255, 170, 95, 0.16]], [30, [255, 205, 150, 0.1]], [46, [255, 205, 150, 0.1]], [52, [255, 160, 90, 0.16]]]);
-const SUNS = [[-1, 11, -430, -78, 170], [24, 31, 430, 170, -60], [45, 52, -430, -40, 170]];
-const NIGHTS = [[7, 27]];
-const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22]];
+const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [48.5, [244, 200, 180]], [51, [130, 110, 140]], [54, [66, 72, 116]], [95, [66, 72, 116]], [99, [200, 180, 175]], [103, W_]]);
+const moteK = track([[0, [255, 222, 170]], [12, [255, 190, 120]], [26, [255, 222, 170]], [46, [255, 222, 170]], [52, [255, 190, 120]], [98, [255, 222, 170]]]);
+const gradeK = track([[0, [255, 170, 95, 0.16]], [24, [255, 170, 95, 0.16]], [30, [255, 205, 150, 0.1]], [46, [255, 205, 150, 0.1]], [52, [255, 160, 90, 0.18]], [96, [255, 160, 90, 0.16]], [102, [255, 205, 150, 0.1]]]);
+const SUNS = [[-1, 11, -430, -78, 170], [24, 31, 430, 170, -60], [45, 52, -430, -40, 170], [96, 103, 430, 170, -60]];
+const NIGHTS = [[7, 27], [50, 99]];
+const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3]];
 
 function state(t, stage) {
   const c = cam(t), lights = [], emitters = [], smoke = [];
@@ -270,6 +364,7 @@ function overFx(g, st, t, S) {
 // shadows fall away from the strongest light nearby: the fire, a low sun
 function shadowDx(e, a, t, S) {
   let dx = 0;
+  if (t > 57.8 && t < 99 && Math.abs(a - 190.4) < 14) dx += clamp((a - 190.4) / 3, -1, 1) * 9;
   if (t < 28 && Math.abs(a) < 18) dx += clamp(a / 3.5, -1, 1) * 10 * (1 - sramp(t, 25, 28)) * (1 - clamp((Math.abs(a) - 7) / 11));
   if (S.sun && S.sun.k > 0) dx -= Math.sign(S.sun.x) * 7 * S.sun.k * clamp((S.sun.y + 120) / 260);
   return e.flip ? -dx : dx;
