@@ -999,3 +999,52 @@ KINDS.dragonthrone = {
   },
   draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
 };
+
+// ======================================================= war and revolution ===
+// A rickshaw: a puller between the shafts, a passenger under the hood.
+KINDS.rickshaw = {
+  bake(mk) {
+    const P = { puller: KINDS.person.bake(mk, 'puller'), rider: KINDS.person.bake(mk, 'qipaoSit') };
+    P.cart = mk('rickshaw', [-50, -90, 80, 30]).piece([[-40, -10], [10, -10], [14, -40], [-36, -44]], '#2a2a2e', { round: 3 }).piece([[-44, -40], [-36, -86], [0, -88], [14, -40]], '#3a3a40', { round: 6, lift: 1.4 }).piece(strip(10, -14, 78, -26, 3, 2.4), '#4a3423', { round: 1, lift: 1 }).finish({ shadowBlur: 3 });
+    P.wheel = mk('rick-wheel', [-24, -24, 24, 24], { pad: 4 }).piece(ellipse(0, 0, 22, 22, 20), '#2a2a2e', { round: 4 }).piece(ellipse(0, 0, 17, 17, 18), '#c8c0b0', { round: 4, lift: 0.4, paint: (g) => { g.strokeStyle = '#2a2a2e'; g.lineWidth = 1.2; for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6; g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(a) * 17, Math.sin(a) * 17); g.stroke(); } } }).finish({ shadowBlur: 2 });
+    return P;
+  },
+  draw(g, P, t, e, env) {
+    const ph = t * 7;
+    g.save(); g.translate(-14, -30); drawPerson(g, P.rider, t, e, env, { lean: 4, head: 4, back: [-30, -40], front: [-40, -50] }); g.restore();
+    g.save(); g.translate(0, -16); put(g, P.cart, env.sh, 3, 4); g.restore();
+    const d = e.move ? e.move(t) * DEG * 1000 : 0; g.save(); g.translate(-10, -22); g.rotate(d / 22); put(g, P.wheel, env.sh * 0.5); g.restore();
+    g.save(); g.translate(86, 0); drawPerson(g, P.puller, t, e, env, { walk: ph, lean: 16, head: 4, back: [-30, -10], front: [-40, -10] }); g.restore();
+  },
+};
+// Tiananmen, the Gate of Heavenly Peace: a red wall with five arches, a double-roofed hall above.
+KINDS.tiananmen = {
+  bake(mk) {
+    const sh = mk('tiananmen', [-210, -330, 210, 6]), win = [];
+    sh.piece(rect(-200, 4, 200, -130), '#a8322a', { round: 2, paint: (g) => { for (const [x, w] of [[-150, 26], [-80, 30], [0, 38], [80, 30], [150, 26]]) { g.fillStyle = 'rgba(40,20,14,.9)'; g.beginPath(); g.moveTo(x - w / 2, 4); g.lineTo(x - w / 2, -60); g.quadraticCurveTo(x, -60 - w * 0.8, x + w / 2, -60); g.lineTo(x + w / 2, 4); g.fill(); } } });
+    sh.piece(rect(-206, -130, 206, -140), '#e8e4da', { round: 1, lift: 1, paint: (g) => { g.fillStyle = 'rgba(150,140,130,.6)'; for (let x = -200; x < 204; x += 10) g.fillRect(x, -140, 3, -10); } });
+    sh.piece(rect(-150, -140, 150, -206), '#a8322a', { round: 1.5, lift: 1.4, paint: (g) => { for (let x = -140; x < 140; x += 28) { g.fillStyle = 'rgba(40,24,16,.82)'; g.fillRect(x + 4, -196, 18, 50); win.push([x + 4, -196, 18, 50]); } } });
+    sh.piece(roofPts(154, -206, 16, 30, 10), '#e0a438', { round: 2, lift: 2 });
+    sh.piece(rect(-110, -232, 110, -262), '#a8322a', { round: 1.5, lift: 1.4 });
+    sh.piece(roofPts(110, -262, 38, 30, 12), '#e0a438', { round: 2, lift: 2 });
+    for (const x of [-84, 84]) sh.piece(ellipse(x, -178, 11, 13, 14), '#d8322a', { round: 3, lift: 1.2, paint: (g) => { g.fillStyle = 'rgba(232,190,90,.85)'; g.fillRect(x - 6, -192, 12, 3); g.fillRect(x - 6, -166, 12, 3); } });
+    return { spr: sh.finish({ shadowBlur: 7 }), windows: win };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 4, 5); },
+  glow: glowRects,
+};
+// A flag run up a pole: e.flag 'prc'; e.raise(t) 0..1.
+KINDS.flag = {
+  bake(mk, v = 0) {
+    const P = {};
+    P.pole = mk('flag-pole', [-4, -300, 6, 4], { pad: 4 }).piece(strip(0.5, 2, 0.5, -296, 3.4, 2.4), '#c8c4bc', { round: 1 }).piece(ellipse(0.5, -298, 3.4, 3.4, 8), '#c9a24a', { round: 1, lift: 0.8 }).finish({ shadowBlur: 2 });
+    const star = (g, x, y, r, rot) => { g.beginPath(); for (let i = 0; i < 10; i++) { const a = rot - Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.4 : r; g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } g.closePath(); g.fill(); };
+    P.cloth = [0, 1, 2, 3].map((k) => mk('flag-cloth' + k, [-2, -4, 92, 66], { pad: 4 }).piece([[0, 0], [22, 2 + k], [44, -1 + k], [66, 3 - k], [88, 1], [88, 60 + k], [66, 62 - k], [44, 58 + k], [22, 61], [0, 58]], '#d8282a', { round: 1.5, rough: 0.5, paint: (g) => { g.fillStyle = '#f2d23a'; star(g, 15, 15, 9, 0); star(g, 30, 6, 3, 0.4); star(g, 36, 12, 3, 0.8); star(g, 36, 21, 3, 1.2); star(g, 30, 27, 3, 1.6); } }).finish({ shadowBlur: 3 }));
+    return P;
+  },
+  draw(g, P, t, e, env) {
+    put(g, P.pole, env.sh, 2, 3);
+    const k = e.raise ? e.raise(t) : 1; if (k <= 0) return; const f = Math.floor((t * 5 + e.a) % 4);
+    g.save(); g.translate(2, -294 + (1 - k) * 230); g.rotate(fbm(t * 0.8 + e.a, 4) * 6 * DEG); put(g, P.cloth[f], env.sh * 0.6, 2, 3); g.restore();
+  },
+};
