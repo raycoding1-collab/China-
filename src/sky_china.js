@@ -256,3 +256,16 @@ fxGroup(['teaIcon', 'vase', 'sycee'], (mk) => ({
   vase: mk('ic-vase', [-12, -20, 12, 18], { pad: 4 }).piece([[-4, -18], [4, -18], [4, -12], [10, -4], [10, 8], [6, 16], [-6, 16], [-10, 8], [-10, -4], [-4, -12]], '#eef0f2', { round: 3, paint: (g) => { g.strokeStyle = '#2a4a8a'; g.lineWidth = 1.4; g.beginPath(); g.moveTo(-9, 0); g.quadraticCurveTo(0, -8, 9, 0); g.stroke(); g.beginPath(); g.arc(0, 6, 3, 0, 7); g.stroke(); g.beginPath(); g.moveTo(-8, 10); g.lineTo(8, 10); g.stroke(); } }).finish({ shadowBlur: 2 }),
   sycee: mk('ic-sycee', [-16, -12, 16, 8], { pad: 4 }).piece([[-14, -8], [-8, -2], [8, -2], [14, -8], [12, 4], [-12, 4]], '#c8ccd0', { round: 3, paint: (g) => { g.fillStyle = 'rgba(255,255,255,.5)'; g.beginPath(); g.ellipse(0, -2, 6, 3, 0, 0, 7); g.fill(); } }).finish({ shadowBlur: 2 }),
 }));
+
+// ------------------------------------------------------------ Mao's China ---
+// Ge Hong's "Handbook of Prescriptions for Emergencies", fourth century: soak a handful of qinghao in water, wring out the juice.
+fxGroup(['gehong'], (mk) => ({
+  gehong: mk('gehong', [-70, -56, 70, 56], { pad: 6 }).piece([[-64, -50], [64, -50], [64, 50], [-64, 50]], '#e6d8b4', { round: 2, paint: (g) => {
+    g.strokeStyle = 'rgba(120,90,50,.5)'; g.lineWidth = 1; g.beginPath(); g.moveTo(0, -50); g.lineTo(0, 50); g.stroke();
+    for (let c = 0; c < 10; c++) { const x = 54 - c * 11 - (c > 4 ? 6 : 0); for (let row = 0; row < 7; row++) { const y = -40 + row * 12, h = (x * 7 + row * 13) % 5; g.strokeStyle = 'rgba(30,24,20,.8)'; g.lineWidth = 1.3; g.beginPath(); g.moveTo(x - 3, y); g.lineTo(x + 3, y + (h - 2) * 0.4); g.moveTo(x, y - 3); g.lineTo(x - (h % 2) * 2, y + 4); g.stroke(); } }
+    g.fillStyle = 'rgba(178,40,32,.85)'; g.fillRect(-58, 34, 10, 10);
+    // the plant drawn in the margin, and the one line that mattered, ringed
+    g.strokeStyle = 'rgba(80,110,60,.85)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(-30, 44); g.lineTo(-30, 10); for (let k = 0; k < 4; k++) { g.moveTo(-30, 38 - k * 8); g.lineTo(-38, 32 - k * 8); g.moveTo(-30, 38 - k * 8); g.lineTo(-22, 32 - k * 8); } g.stroke();
+    g.strokeStyle = 'rgba(200,60,40,.8)'; g.lineWidth = 1.6; g.beginPath(); g.ellipse(32, -6, 7, 40, 0, 0, 7); g.stroke();
+  } }).finish({ shadowBlur: 4 }),
+}));

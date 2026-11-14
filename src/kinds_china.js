@@ -1048,3 +1048,34 @@ KINDS.flag = {
     g.save(); g.translate(2, -294 + (1 - k) * 230); g.rotate(fbm(t * 0.8 + e.a, 4) * 6 * DEG); put(g, P.cloth[f], env.sh * 0.6, 2, 3); g.restore();
   },
 };
+
+// ============================================================= Mao's China ===
+// A backyard furnace: a squat brick kiln, glowing, smoking, fed with the village's pots.
+KINDS.bfurnace = {
+  bake(mk) {
+    return { spr: mk('bfurnace', [-40, -110, 40, 6]).piece([[-34, 4], [-28, -70], [-14, -96], [14, -96], [28, -70], [34, 4]], '#9a5a3e', { round: 4, paint: (g) => { g.strokeStyle = 'rgba(60,30,20,.4)'; g.lineWidth = 1; let row = 0; for (let y = 0; y > -96; y -= 7, row++) { g.beginPath(); g.moveTo(-34, y); g.lineTo(34, y); g.stroke(); } g.fillStyle = 'rgba(30,12,6,.92)'; g.beginPath(); g.arc(0, -16, 11, Math.PI, 0); g.fillRect(-11, -16, 22, 16); g.fill(); } }).finish({ shadowBlur: 4 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+  glow(g, P, t, e, env, p) { if (p < 0.6) return; const k = e.lit ? e.lit(t) : 1; if (k < 0.01) return; g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(0, -10, 0, 0, -10, 30); gr.addColorStop(0, `rgba(255,170,80,${0.9 * k * (0.85 + 0.15 * Math.sin(t * 8 + e.a))})`); gr.addColorStop(1, 'rgba(255,90,30,0)'); g.fillStyle = gr; g.fillRect(-30, -40, 60, 60); g.globalCompositeOperation = 'source-over'; },
+};
+// A wall pasted over with big-character posters.
+KINDS.posterwall = {
+  bake(mk) {
+    const r = rng(3600), sh = mk('posterwall', [-110, -130, 110, 6]);
+    sh.piece(rect(-104, 4, 104, -110), '#9a9690', { round: 2, paint: (g) => { g.strokeStyle = 'rgba(60,60,60,.3)'; g.lineWidth = 1; for (let y = -10; y > -110; y -= 10) { g.beginPath(); g.moveTo(-104, y); g.lineTo(104, y); g.stroke(); } } });
+    for (let i = 0; i < 7; i++) { const x = -96 + i * 28 + (r() - 0.5) * 4, y = -100 + (r() - 0.5) * 8, red = r() < 0.4; sh.piece([[x, y], [x + 24, y + (r() - 0.5) * 3], [x + 24, y + 70 + r() * 10], [x, y + 72]], red ? '#c8322a' : '#ece6d6', { round: 0.8, rough: 0.6, lift: 0.8, thick: 0.4, paint: (g) => { g.strokeStyle = red ? 'rgba(250,240,220,.9)' : 'rgba(20,16,14,.85)'; g.lineWidth = 2.4; g.lineCap = 'round'; for (let k = 0; k < 4; k++) { const yy = y + 10 + k * 16; g.beginPath(); g.moveTo(x + 6, yy); g.lineTo(x + 18, yy); g.moveTo(x + 12, yy - 5); g.lineTo(x + 11, yy + 6); g.stroke(); } } }); }
+    return { spr: sh.finish({ shadowBlur: 4 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+};
+// Sweet wormwood (qinghao): feathery leaves, tiny yellow flowers. e.grow(t).
+KINDS.wormwood = {
+  bake(mk, v = 0) {
+    const r = rng(3700 + v), sh = mk('wormwood' + v, [-40, -120, 40, 6]);
+    sh.piece(strip(0, 2, 2, -110, 3, 1.6), '#6a8a4a', { round: 0.8 });
+    for (let i = 0; i < 9; i++) { const y = -20 - i * 10, s = i % 2 ? 1 : -1, L = 26 - i * 1.8; for (let j = 0; j < 4; j++) { const x = s * (6 + j * L / 4); sh.piece(ellipse(x, y - j * 2, 3.2, 1.6, 6, s * 0.4), j % 2 ? '#7a9a52' : '#88a85e', { round: 1, lift: 0.6, thick: 0.4 }); } }
+    for (let i = 0; i < 14; i++) sh.piece(ellipse(-10 + r() * 22, -100 - r() * 16, 1.8, 1.8, 6), '#e0c040', { round: 0.6, lift: 0.5, thick: 0.3 });
+    return { spr: sh.finish({ shadowBlur: 2 }) };
+  },
+  draw(g, P, t, e, env) { const k = e.grow ? e.grow(t) : 1; if (k < 0.01) return; g.scale(0.3 + 0.7 * k, k); g.rotate(fbm(t * 0.6 + e.a, 8) * 3 * DEG); put(g, P.spr, env.sh); },
+};

@@ -52,7 +52,9 @@ const cam = monotone([
   [406, 1588], [409, 1598], [412, 1606], [414.5, 1620], [417.5, 1630], [420, 1644], [422.5, 1656], [425.5, 1664], [428.5, 1676], [431, 1684], [434, 1694], [437, 1700], [440, 1716], [443, 1724], [446, 1732], [449, 1748], [452, 1752], [456, 1756],
   // 11. war and revolution
   [459, 1810], [462, 1818], [465, 1826], [468, 1844], [471, 1852], [474, 1860], [477, 1866], [480.5, 1872], [483.5, 1880],
-  [486, 1910], [662, 2600], [800, 2740],
+  // 12. Mao's China
+  [486, 1916], [489, 1928], [492, 1942], [495, 1950], [498, 1960], [501, 1972], [504, 1979], [507, 1987], [510, 2000], [513, 2006], [516, 2012], [519, 2020], [522, 2026],
+  [525.5, 2066], [662, 2600], [800, 2740],
 ]);
 
 // ------------------------------------------------- paint and shape of land --
@@ -898,6 +900,70 @@ Object.assign(LOOKS, {
     },
   });
 }
+
+// =========================================================== 12. Mao's China ===
+Object.assign(LOOKS, {
+  teacher50: { skin: 4, top: 'coat', topCol: '#3a4a6a', sleeve: '#3a4a6a', legs: 'trousers', legCol: '#3a3a40', hair: 'short', pose: 'stand', item: 'book' },
+  pupil50: { skin: 3, top: 'shirt', topCol: '#e8e4d8', sleeve: '#e8e4d8', legs: 'trousers', legCol: '#2a3a5a', hair: 'short', pose: 'stand', small: 0.66 },
+  pupil50b: { skin: 4, top: 'shirt', topCol: '#c8322a', sleeve: '#c8322a', legs: 'skirt', legCol: '#2a3a5a', hair: 'bob', pose: 'stand', small: 0.66 },
+  barefoot: { skin: 3, top: 'shirt', topCol: '#d8d0bc', sleeve: '#d8d0bc', legs: 'trousers', legCol: '#3a4a5a', hair: 'bob', pose: 'walk', item: 'medbox' },
+  elder50: { skin: 3, top: 'coat', topCol: '#3a3a40', sleeve: '#3a3a40', legs: 'trousers', legCol: '#2a2a30', hair: 'bald', beard: 1, beardCol: '#e0dcd4', pose: 'stand' },
+  commune: { skin: 3, top: 'coat', topCol: '#3a5a7a', sleeve: '#3a5a7a', legs: 'trousers', legCol: '#2a3a4a', hat: 'cap', hatCol: '#3a5a7a', pose: 'walk', item: 'basket' },
+  commune2: { skin: 4, top: 'coat', topCol: '#5a6a4a', sleeve: '#5a6a4a', legs: 'trousers', legCol: '#3a3a30', hair: 'bob', pose: 'stand' },
+  redguard: { skin: 4, top: 'coat', topCol: '#5a6a3a', sleeve: '#5a6a3a', legs: 'trousers', legCol: '#4a5030', hat: 'cap', hatCol: '#5a6a3a', pose: 'stand', item: 'redbook' },
+  redguardB: { skin: 3, top: 'coat', topCol: '#5a6a3a', sleeve: '#5a6a3a', legs: 'trousers', legCol: '#4a5030', hair: 'bob', pose: 'stand', item: 'redbook' },
+  teacherCR: { skin: 4, top: 'coat', topCol: '#4a4a50', sleeve: '#4a4a50', legs: 'trousers', legCol: '#3a3a40', hair: 'short', hairCol: '#8c8378', pose: 'stand' },
+  tuYouyou: { skin: 4, top: 'coat', topCol: '#efece4', sleeve: '#efece4', legs: 'trousers', legCol: '#3a3a40', hair: 'bob', pose: 'stand' },
+  saved70: { skin: 3, top: 'shirt', topCol: '#d8b860', sleeve: '#d8b860', legs: 'trousers', legCol: '#3a4a5a', hair: 'curly', pose: 'stand' },
+  saved70b: { skin: 0, top: 'dress', topCol: '#5a8a7a', legs: 'skirt', legCol: '#5a8a7a', hair: 'long', pose: 'stand' },
+});
+const LAB_A = 2010;
+{
+  // schools and clinics
+  add('hall', 'main', 1912, { v: 6, z: 0, wide: 10 });
+  add('person', 'main', 1916.4, { v: 'teacher50', z: 2, scale: P2, act: (t) => ({ front: [-110 + Math.sin(t * 1.4) * 10, -20] }) });
+  [['pupil50', 1919.4], ['pupil50b', 1921.4], ['pupil50', 1923.4]].forEach(([v, a], i) => add('person', 'main', a, { v, z: 2, scale: P2, flip: true, act: (t) => ({ head: -4 + Math.sin(t * 0.8 + i) * 3, front: t > 486 + i * 0.4 && t < 488 + i * 0.4 ? [-160, -10] : [-14, -16] }) }));
+  add('person', 'main', 1928, { v: 'barefoot', z: 2.2, scale: P2, pace: 4.4, move: (t) => clamp((t - 483) * 0.9, 0, 4.4), act: (t) => (t > 488 ? { walk: undefined, lean: 8, front: [-60, -20] } : {}) });
+  add('person', 'main', 1934.6, { v: 'elder50', z: 2, scale: P2, flip: true, popAt: ev('longer') });
+  add('person', 'main', 1937, { v: 'granny', z: 2, scale: P2, flip: true, popAt: ev('longer') + 0.3, screenAt: 1e9 });
+  // the Great Leap: furnaces in every yard, the harvest left in the fields, then hunger
+  const GL = ev('leap'), FAM = ev('famine');
+  for (const [a, i] of [[1944, 0], [1950, 1], [1956, 2]]) add('bfurnace', 'main', a, { z: 1, scale: 1.2, popAt: GL + 0.3 + i * 0.4, loud: 1, lit: (t) => 1 - sramp(t, FAM + 3, FAM + 5) });
+  ['commune', 'commune2', 'commune'].forEach((v, i) => add('person', 'main', 1946.4 + i * 6, { v, z: 2, scale: P2, popAt: GL + 0.6 + i * 0.3, foldAt: FAM + 0.6 + i * 0.5 }));
+  [1960, 1962.4, 1964.8].forEach((a, i) => add('millet', 'main', a, { v: i, z: 1, scale: 1.4, foldAt: GL + 3 + i * 0.4 }));
+  for (let a = 1940, i = 0; a < 1966; a += 1.4, i++) add('person', 'mid', a, { v: ['commune', 'commune2'][i % 2], scale: P2 * 0.62, popAt: GL + 1 + i * 0.04, foldAt: FAM + 0.4 + hash(i * 3) * 3 });
+  // the Cultural Revolution: posters, a teacher alone, students turning away
+  const CR = ev('cultural'), TURN = ev('turn');
+  add('posterwall', 'main', 1976, { z: 0, wide: 10, popAt: CR - 0.6, loud: 1.2 });
+  add('person', 'main', 1971.4, { v: 'teacherCR', z: 2, scale: P2, popAt: CR - 0.2, act: (t) => ({ lean: 10 + sramp(t, TURN, TURN + 1) * 10, head: 14 + sramp(t, TURN, TURN + 1) * 8, front: [-10, -10], back: [10, -10] }) });
+  [['redguard', 1975.2], ['redguardB', 1977.6], ['redguard', 1980]].forEach(([v, a], i) => {
+    add('person', 'main', a, { v, z: 2.2, scale: P2, flip: true, popAt: CR + 0.2 + i * 0.2, foldAt: TURN + i * 0.2, act: (t) => ({ front: [-150 + Math.sin(t * 5 + i) * 10, -10] }) });
+    add('person', 'main', a + 0.4, { v, z: 2.2, scale: P2, popAt: 1e9, repopAt: TURN + 0.3 + i * 0.2 });
+  });
+  add('person', 'main', 1986, { v: 'qipao', z: 2, scale: P2, flip: true, act: (t) => ({ walk: undefined, head: 10 }) });
+  add('person', 'main', 1988.4, { v: 'suitMan', z: 2, scale: P2, flip: true, act: (t) => ({ walk: undefined, head: 10 }) });
+  add('person', 'main', 1991.4, { v: 'pupil50', z: 2.2, scale: P2, flip: true, foldAt: TURN + 1.8 });
+  add('person', 'main', 1991.8, { v: 'pupil50', z: 2.2, scale: P2, popAt: 1e9, repopAt: TURN + 2.1 });
+  // Tu Youyou: an old book, a plant, a cure
+  const TU = ev('tu'), SAVED = ev('saved');
+  add('hall', 'main', LAB_A + 8, { v: 6, z: 0, wide: 10, winOn: () => 0.8, winCol: [230, 240, 255] });
+  add('lab', 'main', LAB_A, { z: 1.4, scale: 1.2, popAt: TU - 0.6, loud: 1.2, found: (t) => sramp(t, ev('cure'), ev('cure') + 0.5) * (0.85 + 0.15 * Math.sin(t * 3)) });
+  add('person', 'main', LAB_A - 3.4, { v: 'tuYouyou', z: 2, scale: P2, popAt: TU - 0.3, act: (t) => ({ lean: 12, head: 14, front: [-70, -40], back: [-50, -30] }) });
+  for (const [a, i] of [[LAB_A + 4.6, 0], [LAB_A + 6.4, 1]]) add('wormwood', 'main', a, { v: i, z: 1.6, scale: 1.2, grow: (t) => sramp(t, ev('herb') + i * 0.3, ev('herb') + 1.6 + i * 0.3) });
+  [['saved70', 2020], ['saved70b', 2022.4], ['saved', 2024.8], ['saved2', 2027.2], ['saved3', 2029.6]].forEach(([v, a], i) => add('person', 'main', a, { v, z: 2, scale: P2, flip: i % 2 === 1, popAt: SAVED + i * 0.3, loud: 0.9 }));
+  grassRun(1904, 2040, 3.6, 'main', { skip: (a) => (a > 1910 && a < 1940) || (a > 1942 && a < 1994) || (a > 2004 && a < 2032) });
+  grassRun(1904, 2040, 7, 'front', { s: 2 });
+  hook({
+    lights(t, c, L, Em, Sm) {
+      if (near(1950, c, 60) && t > GL && t < FAM + 6) for (const [a, i] of [[1944, 0], [1950, 1], [1956, 2]]) { const k = sramp(t, GL + 0.3 + i * 0.4, GL + 0.8 + i * 0.4) * (1 - sramp(t, FAM + 3, FAM + 5)); L.push({ a, h: 30, r: 340, k: 0.8 * k, color: [255, 150, 80] }); Sm.push({ a: a + 0.3, h: 120, t0: GL + i * 0.4, t1: FAM + 3, size: 1.1, life: 5, every: 0.5, rise: 220, drift: 4, alpha: 0.6 }); }
+      if (near(LAB_A, c, 60) && t > TU - 1) { L.push({ a: LAB_A, h: 70, r: 420, k: 0.8 * sramp(t, ev('cure'), ev('cure') + 0.5), color: [200, 255, 180] }); L.push({ a: LAB_A + 8, h: 60, r: 300, k: 0.5, color: [230, 240, 255] }); }
+    },
+    over(g, st, t, S) {
+      const GH = ev('gehong');
+      if (t > GH - 0.3 && t < GH + 7) { const k = drop(t, GH, GH + 6), por = st.aspectK > 0.4 ? 0 : 1; st.hang(g, st.fx.gehong, st.W * (por ? 0.5 : 0.34), st.H * lerp(-0.3, por ? 0.24 : 0.19, k), por ? 1.0 : 1.5, Math.sin(t * 0.6) * 1.5 * DEG); }
+    },
+  });
+}
 // the thread of silk: unwound from the reel, it runs on, stitched into the world, through everything
 const THREAD0 = 94.6;
 const threadEnd = (t) => (t < 40.4 ? -1e9 : t < 46.5 ? THREAD0 + (t - 40.4) * 9 : 1e9);
@@ -911,14 +977,14 @@ const NIGHT = ['#0a102b', '#11193c', '#1a2650', '#2e3a66'], DUSK = ['#141b3c', '
 const W_ = [255, 252, 244];
 const skyK = track([
   [0, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [5, ['#262f5a', '#57497c', '#b0627a', '#e08f5e']], [9, DUSK], [13, ['#0c1230', '#131c42', '#1e2a56', '#35426e']],
-  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [48.5, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [51, DUSK], [54, NIGHT], [95, NIGHT], [99, DAWN], [103, DAY], [107, DAY], [109, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [113, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [116, DAY], [238, DAY], [241, ['#6a8ab0', '#a8b0c0', '#e8d0b0', '#f6c890']], [256, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [260, DAY], [290, DAY], [294, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [297.5, DUSK], [300, NIGHT], [315, NIGHT], [318.5, DAWN], [321, DAY], [328, DAY], [330.5, DUSK], [332.5, NIGHT], [338, NIGHT], [340.5, DAWN], [343, DAY], [427, DAY], [430, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [438, ['#4a3a3a', '#6a4a40', '#8a5a48', '#a87a5a']], [446, ['#4a3a3a', '#6a4a40', '#8a5a48', '#a87a5a']], [449, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [457, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [462, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [465, ['#3a2a2a', '#5a3a32', '#8a4a3a', '#a86a4a']], [471, ['#2a2224', '#3a2a2a', '#5a3a34', '#6a4a40']], [474, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [478, DAY],
+  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [48.5, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [51, DUSK], [54, NIGHT], [95, NIGHT], [99, DAWN], [103, DAY], [107, DAY], [109, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [113, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [116, DAY], [238, DAY], [241, ['#6a8ab0', '#a8b0c0', '#e8d0b0', '#f6c890']], [256, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [260, DAY], [290, DAY], [294, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [297.5, DUSK], [300, NIGHT], [315, NIGHT], [318.5, DAWN], [321, DAY], [328, DAY], [330.5, DUSK], [332.5, NIGHT], [338, NIGHT], [340.5, DAWN], [343, DAY], [427, DAY], [430, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [438, ['#4a3a3a', '#6a4a40', '#8a5a48', '#a87a5a']], [446, ['#4a3a3a', '#6a4a40', '#8a5a48', '#a87a5a']], [449, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [457, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [462, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [465, ['#3a2a2a', '#5a3a32', '#8a4a3a', '#a86a4a']], [471, ['#2a2224', '#3a2a2a', '#5a3a34', '#6a4a40']], [474, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [478, DAY], [490, DAY], [493, ['#8a8a90', '#a8a49c', '#c8b8a0', '#d8c4a0']], [497, ['#5a5a66', '#7a7680', '#9a9090', '#a89a90']], [507, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [510, DUSK], [512.5, NIGHT], [522, NIGHT], [525.5, DAWN], [528, DAY],
 ]);
-const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [48.5, [244, 200, 180]], [51, [130, 110, 140]], [54, [66, 72, 116]], [95, [66, 72, 116]], [99, [200, 180, 175]], [103, W_], [107, W_], [109, [210, 200, 196]], [113, [210, 200, 196]], [116, W_], [238, W_], [241, [255, 236, 214]], [256, [240, 200, 180]], [260, W_], [290, W_], [294, [244, 200, 180]], [297.5, [110, 104, 140]], [300, [60, 70, 116]], [315, [60, 70, 116]], [318.5, [200, 180, 175]], [321, W_], [328, W_], [330.5, [110, 104, 140]], [332.5, [56, 64, 108]], [338, [56, 64, 108]], [340.5, [200, 180, 175]], [343, W_], [427, W_], [430, [210, 200, 196]], [438, [180, 140, 126]], [446, [180, 140, 126]], [449, [236, 230, 224]], [457, [236, 230, 224]], [462, [236, 230, 224]], [465, [190, 140, 120]], [471, [120, 96, 92]], [474, [240, 210, 196]], [478, W_]]);
+const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [48.5, [244, 200, 180]], [51, [130, 110, 140]], [54, [66, 72, 116]], [95, [66, 72, 116]], [99, [200, 180, 175]], [103, W_], [107, W_], [109, [210, 200, 196]], [113, [210, 200, 196]], [116, W_], [238, W_], [241, [255, 236, 214]], [256, [240, 200, 180]], [260, W_], [290, W_], [294, [244, 200, 180]], [297.5, [110, 104, 140]], [300, [60, 70, 116]], [315, [60, 70, 116]], [318.5, [200, 180, 175]], [321, W_], [328, W_], [330.5, [110, 104, 140]], [332.5, [56, 64, 108]], [338, [56, 64, 108]], [340.5, [200, 180, 175]], [343, W_], [427, W_], [430, [210, 200, 196]], [438, [180, 140, 126]], [446, [180, 140, 126]], [449, [236, 230, 224]], [457, [236, 230, 224]], [462, [236, 230, 224]], [465, [190, 140, 120]], [471, [120, 96, 92]], [474, [240, 210, 196]], [478, W_], [490, W_], [493, [226, 214, 200]], [497, [176, 170, 176]], [507, [196, 190, 190]], [510, [110, 104, 140]], [512.5, [60, 68, 112]], [522, [60, 68, 112]], [525.5, [200, 180, 175]], [528, W_]]);
 const moteK = track([[0, [255, 222, 170]], [12, [255, 190, 120]], [26, [255, 222, 170]], [46, [255, 222, 170]], [52, [255, 190, 120]], [98, [255, 222, 170]]]);
 const gradeK = track([[0, [255, 170, 95, 0.16]], [24, [255, 170, 95, 0.16]], [30, [255, 205, 150, 0.1]], [46, [255, 205, 150, 0.1]], [52, [255, 160, 90, 0.18]], [96, [255, 160, 90, 0.16]], [102, [255, 205, 150, 0.1]], [107, [255, 205, 150, 0.1]], [109, [150, 140, 130, 0.22]], [113, [150, 140, 130, 0.22]], [116, [255, 210, 160, 0.1]]]);
 const SUNS = [[-1, 11, -430, -78, 170], [24, 31, 430, 170, -60], [45, 52, -430, -40, 170], [96, 103, 430, 170, -60]];
-const NIGHTS = [[7, 27], [50, 99], [296, 319], [330, 341]];
-const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3], [146.5, 148.5, 150.5, 152.5, 0.22], [168, 170.5, 173, 175, 0.12], [175.5, 177.5, 180.5, 182.5, 0.42], [287, 289, 292.5, 294.5, 0.2], [299, 303, 314, 317, 0.45], [325, 326.5, 328.5, 330, 0.3], [369, 371, 373.5, 375.5, 0.25], [396, 398, 401.5, 403.5, 0.12], [448, 450, 455, 457.5, 0.4], [467, 469, 471.5, 473.5, 0.15]];
+const NIGHTS = [[7, 27], [50, 99], [296, 319], [330, 341], [510, 526]];
+const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3], [146.5, 148.5, 150.5, 152.5, 0.22], [168, 170.5, 173, 175, 0.12], [175.5, 177.5, 180.5, 182.5, 0.42], [287, 289, 292.5, 294.5, 0.2], [299, 303, 314, 317, 0.45], [325, 326.5, 328.5, 330, 0.3], [369, 371, 373.5, 375.5, 0.25], [396, 398, 401.5, 403.5, 0.12], [448, 450, 455, 457.5, 0.4], [467, 469, 471.5, 473.5, 0.15], [511, 513, 520, 522.5, 0.2]];
 
 function state(t, stage) {
   const c = cam(t), lights = [], emitters = [], smoke = [];
@@ -962,7 +1028,7 @@ function sky(g, st, t, S) {
     st.hang(g, st.fx.moon, x, y, 1, Math.sin(t * 0.5) * 1.6 * DEG, 1, -0.35);
   }
   // in the long days a paper sun hangs on its thread
-  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186], [188, 226], [262, 290], [344, 356], [358, 402], [404, 426]]) {
+  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186], [188, 226], [262, 290], [344, 356], [358, 402], [404, 426], [480, 490]]) {
     if (t < t0 - 0.5 || t > t1 + 3) continue;
     const k = drop(t, t0, t1), sx = W * (st.aspectK > 0.4 ? 0.16 : 0.2), sy = H * lerp(-0.25, 0.13, k);
     g.globalCompositeOperation = 'screen'; const gl = g.createRadialGradient(sx, sy, 0, sx, sy, 300 * u); gl.addColorStop(0, `rgba(255,236,190,${0.35 * clamp(k)})`); gl.addColorStop(1, 'rgba(255,230,180,0)'); g.fillStyle = gl; g.fillRect(sx - 300 * u, sy - 300 * u, 600 * u, 600 * u); g.globalCompositeOperation = 'source-over';
