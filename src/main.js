@@ -31,7 +31,7 @@ function frame(now) {
   stage.bakeBudget = !started ? 14 : sound.paused ? 16 : 5;
   let t;
   if (frozen !== null) t = frozen;
-  else if (!started) t = 30 + Math.sin(now / 1000 * 0.05) * 0.4; // a quiet, living frame behind the title
+  else if (!started) t = (film.titleT ?? 30) + Math.sin(now / 1000 * 0.05) * 0.4; // a quiet, living frame behind the title
   else t = sound.time(now);
   stage.render(t);
   if (started || frozen !== null) { captions(t); ending(t); markChapter(t); }

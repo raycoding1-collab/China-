@@ -104,6 +104,17 @@ function bakeItem(mk, name) {
     case 'basket': return mk('it-basket', [-12, -16, 12, 4], { pad: 5 }).piece([[-11, -14], [11, -14], [8, 2], [-8, 2]], '#b08a50', { round: 2, paint: (g) => { g.strokeStyle = 'rgba(90,60,30,.5)'; g.lineWidth = 1; for (let y = -12; y < 2; y += 3) { g.beginPath(); g.moveTo(-12, y); g.lineTo(12, y); g.stroke(); } } }).piece(ellipse(0, -15, 9, 3.2, 10), '#d8c27a', { round: 2, lift: 1, thick: 0.6 }).finish({ shadowBlur: 2 });
     case 'scroll': return mk('it-scroll', [-10, -6, 10, 6], { pad: 5 }).piece([[-9, -3.5], [9, -3.5], [9, 3.5], [-9, 3.5]], '#efe2bf', { round: 2 }).piece(ellipse(-9, 0, 2.2, 4.5, 8), '#8a5a2a', { round: 1, lift: 0.8, thick: 0.5 }).finish({ shadowBlur: 2 });
     case 'book': return mk('it-book', [-9, -8, 9, 8], { pad: 5 }).piece([[-8, -6], [8, -6], [8, 6], [-8, 6]], '#6a3b25', { round: 1 }).piece([[-7, -5], [7, -5], [7, 4.5], [-7, 4.5]], '#efe5cc', { round: 0.8, lift: 0.6, thick: 0.4, paint: (g) => { g.fillStyle = 'rgba(60,40,30,.45)'; for (let y = -3.5; y < 4; y += 1.6) { g.fillRect(-6, y, 5, 0.6); g.fillRect(1, y, 5, 0.6); } } }).finish({ shadowBlur: 2 });
+    case 'flute': return mk('it-flute', [-3, -4, 4, 30], { pad: 4 }).piece(strip(0.5, -2, 0.5, 28, 2.8, 2.3), '#e8dcc0', { round: 1, thick: 0.6, rough: 0.3, paint: (g) => { g.fillStyle = 'rgba(70,50,35,.85)'; for (let y = 6; y < 26; y += 3.2) { g.beginPath(); g.arc(0.5, y, 0.6, 0, 7); g.fill(); } } }).finish({ shadowBlur: 2 });
+    case 'hoe': return mk('it-hoe', [-4, -110, 22, 4], { pad: 5 }).piece(strip(0.5, -104, 0, 2, 2.8, 3.2), '#6b5038', { round: 1, thick: 0.8 }).piece([[-2, -110], [18, -104], [20, -96], [2, -100]], '#8a8478', { round: 1.5, lift: 1, thick: 0.7 }).finish({ shadowBlur: 2 });
+    case 'ge': return mk('it-ge', [-4, -134, 24, 4], { pad: 5 }).piece(strip(0.5, -126, 0, 2, 2.6, 3), '#4a3626', { round: 1, thick: 0.8 }).piece([[-1, -124], [22, -128], [24, -124], [3, -118], [-1, -118]], '#7a8a80', { round: 1, lift: 1, thick: 0.7 }).piece(strip(0.5, -126, 0.5, -134, 1.6, 0.6), '#7a8a80', { round: 0.5, lift: 0.8 }).piece([[-3, -116], [-6, -104], [-2, -108], [0, -114]], '#a8282a', { round: 1, lift: 0.8, thick: 0.4 }).finish({ shadowBlur: 2 });
+    case 'shovel': return mk('it-shovel', [-8, -100, 8, 26], { pad: 5 }).piece(strip(0, -96, 0, 6, 2.8, 3), '#7a5a3a', { round: 1, thick: 0.8 }).piece([[-6, 4], [6, 4], [6.5, 18], [0, 24], [-6.5, 18]], '#6a6e72', { round: 2, lift: 1, thick: 0.7 }).piece([[-5, -96], [5, -96], [5, -92], [-5, -92]], '#5a4028', { round: 1, lift: 0.6 }).finish({ shadowBlur: 2 });
+    case 'bowl': return mk('it-bowl', [-10, -8, 10, 4], { pad: 4 }).piece([[-9, -6], [9, -6], [6, 1], [-6, 1]], '#7a5a3e', { round: 2.5 }).finish({ shadowBlur: 2 });
+    case 'brush': return mk('it-brush', [-3, -4, 3, 24], { pad: 4 }).piece(strip(0, -2, 0, 18, 1.8, 1.6), '#7a5a2a', { round: 0.6, thick: 0.5 }).piece([[-1.4, 17], [1.4, 17], [0.6, 24], [-0.6, 24]], '#1e1a18', { round: 0.8, lift: 0.5 }).finish({ shadowBlur: 1.5 });
+    case 'jie': return mk('it-jie', [-8, -140, 10, 4], { pad: 5 }).piece(strip(0.5, -136, 0, 2, 2.6, 3), '#5b4331', { round: 1, thick: 0.8 }).piece([[-3, -134], [4, -134], [5, -112], [3, -104], [-1, -114], [-4, -108], [-5, -122]], '#c8b8a0', { round: 2, lift: 1, rough: 1.4, paint: (g) => { g.strokeStyle = 'rgba(120,100,80,.6)'; g.lineWidth = 0.6; for (let x = -4; x < 5; x += 1.4) { g.beginPath(); g.moveTo(x, -134); g.lineTo(x + 0.4, -108); g.stroke(); } } }).piece([[-3, -112], [4, -112], [4.5, -94], [-3.5, -96]], '#b8a888', { round: 2, lift: 0.8, rough: 1.4 }).finish({ shadowBlur: 2 });
+    case 'fan': return mk('it-fan', [-14, -22, 14, 4], { pad: 4 }).piece([[0, 2], [-12, -16], [-6, -20], [0, -21], [6, -20], [12, -16]], '#efe4c8', { round: 2, paint: (g) => { g.strokeStyle = 'rgba(120,90,60,.5)'; g.lineWidth = 0.6; for (let k = -5; k <= 5; k++) { g.beginPath(); g.moveTo(0, 1); g.lineTo(k * 2.3, -20); g.stroke(); } } }).finish({ shadowBlur: 2 });
+    case 'redbook': return mk('it-redbook', [-6, -7, 6, 7], { pad: 4 }).piece([[-5, -6], [5, -6], [5, 6], [-5, 6]], '#b8282a', { round: 0.8 }).finish({ shadowBlur: 1.5 });
+    case 'medbox': return mk('it-medbox', [-12, -8, 12, 14], { pad: 4 }).piece([[-10, -6], [10, -6], [10, 12], [-10, 12]], '#d8d0b8', { round: 1.5, paint: (g) => { g.fillStyle = '#c8282a'; g.fillRect(-2, -2, 4, 11); g.fillRect(-5.5, 1.5, 11, 4); } }).finish({ shadowBlur: 2 });
+    case 'lanternH': return mk('it-lanternH', [-8, -4, 8, 34], { pad: 4 }).piece(strip(0, -2, 0, 14, 1.2, 1.2), '#4a3626', { round: 0.4 }).piece(ellipse(0, 22, 7, 9, 12), '#d8402e', { round: 2, lift: 0.8, paint: (g) => { g.strokeStyle = 'rgba(90,20,10,.5)'; g.lineWidth = 0.7; for (const x of [-3, 0, 3]) { g.beginPath(); g.moveTo(x, 13); g.lineTo(x, 31); g.stroke(); } } }).piece([[-3, 12], [3, 12], [3, 14], [-3, 14]], '#c9a24a', { round: 0.4, lift: 0.5 }).finish({ shadowBlur: 2 });
     case 'phone': return mk('it-phone', [-5, -8, 5, 8], { pad: 4 }).piece([[-4, -7.5], [4, -7.5], [4, 7.5], [-4, 7.5]], '#1d1f24', { round: 1.6, rough: 0.2 }).finish({ shadowBlur: 2 });
   }
   return null;
@@ -136,6 +147,8 @@ function bakeLook(mk, id, L) {
   else if (hair === 'short') Hd.piece([[-11.8, -15], [-9.8, -23.8], [-3, -27.8], [4.6, -27.2], [9.8, -22.6], [9.2, -19], [2, -21.5], [-4, -18], [-7, -11], [-10.4, -9]], hairCol, { ...lite, round: 2.5, rim: 0.25 });
   else if (hair === 'curly') Hd.piece(ellipse(-1.5, -21, 13, 9.5, 16), hairCol, { ...lite, round: 4, rough: 1.4, seg: 8, rim: 0.25 });
   else if (hair === 'bun') Hd.piece([[-11.8, -15], [-9.8, -23.8], [-3, -27.8], [4.6, -27.2], [9.8, -22.6], [9.2, -20], [2, -22.5], [-6, -19], [-10.4, -12]], hairCol, { ...lite, round: 2.5, rim: 0.25 }).piece(ellipse(-8.5, -27, 5, 4.5, 10), hairCol, { ...lite, round: 2, rim: 0.25 });
+  else if (hair === 'queue') Hd.piece([[-11.8, -15], [-9.8, -23.8], [-3, -27.8], [-1, -27.6], [-3, -21], [-7, -14], [-10.4, -9]], hairCol, { ...lite, round: 2.5, rim: 0.25 }).piece([[-12, -12], [-15, -2], [-16, 14], [-14.6, 16], [-12.5, 2], [-9.5, -10]], hairCol, { ...lite, round: 1.5, lift: 0.8, paint: (g) => { g.strokeStyle = 'rgba(255,255,255,.12)'; g.lineWidth = 0.7; for (let y = -8; y < 14; y += 2.6) { g.beginPath(); g.moveTo(-15.5, y); g.lineTo(-12, y + 1.4); g.stroke(); } } });
+  else if (hair === 'bob') Hd.piece([[-12.4, -6], [-12, -18], [-9.8, -24.8], [-3, -28.4], [4.6, -27.6], [10, -22.6], [10.6, -15], [8.4, -19.6], [2, -22], [-4, -17], [-6.4, -6]], hairCol, { ...lite, round: 2.5, rim: 0.25 });
   if (L.beard) Hd.piece([[-4, -9], [2, -6], [9, -6.5], [10.8, -8.5], [9, -2], [3, 2], [-3, 0], [-6, -5]], L.beardCol || hairCol, { ...lite, round: 2.5, rim: 0.2 });
   const hc = L.hatCol || '#5a4030';
   if (L.hat === 'turban') Hd.piece([[-13, -16], [-12, -26], [-4, -32], [6, -31], [11.5, -24], [11, -18], [2, -20], [-6, -19]], hc, { ...lite, round: 4, paint: (g) => { g.strokeStyle = rgb(shade(hc, -0.2), 0.6); g.lineWidth = 1.2; for (let k = 0; k < 4; k++) { g.beginPath(); g.moveTo(-12, -18 - k * 3.4); g.lineTo(11, -23 - k * 2); g.stroke(); } } });
@@ -146,6 +159,14 @@ function bakeLook(mk, id, L) {
   else if (L.hat === 'band') Hd.piece([[-11.6, -20], [9.8, -23.6], [9.6, -21], [-11.4, -17.4]], hc, { ...lite, round: 1, lift: 0.8 });
   else if (L.hat === 'soft') Hd.piece([[-13, -18], [-12, -27], [-2, -32], [8, -29], [12, -22], [6, -21], [-6, -20]], hc, { ...lite, round: 4 });
   else if (L.hat === 'hood') Hd.piece([[-14, 2], [-15, -18], [-10, -29], [0, -32], [9, -28], [12, -21], [8, -22], [0, -25], [-6, -20], [-8, -8], [-4, 3]], hc, { ...lite, round: 4 });
+  else if (L.hat === 'mian') Hd.piece(ellipse(-2, -29, 5, 4.5, 10), hairCol, { ...lite, round: 2 }).piece([[-9, -27], [5, -27], [5, -30.5], [-9, -30.5]], '#2a2224', { ...lite, round: 0.8, lift: 0.8 }).piece([[-19, -33], [21, -36.5], [21.5, -33.5], [-18.6, -30.2]], '#1e1a1c', { ...lite, round: 0.8, lift: 1.2, paint: (g) => { g.fillStyle = '#a8282a'; g.fillRect(-19, -34, 41, 1.4); } })
+  else if (L.hat === 'futou') Hd.piece([[-11, -18], [-10, -27], [-3, -31], [6, -30], [10, -24], [10, -19]], hc, { ...lite, round: 3 }).piece([[-9, -24], [-34, -26], [-34.5, -23.6], [-9, -21.6]], hc, { ...lite, round: 0.6, lift: 0.8, thick: 0.6 }).piece([[8, -24], [33, -26.5], [33.5, -24], [8, -21.6]], hc, { ...lite, round: 0.6, lift: 0.8, thick: 0.6 })
+  else if (L.hat === 'tangcap') Hd.piece([[-11, -18], [-10, -27], [-3, -31], [6, -30], [10, -24], [10, -19]], hc, { ...lite, round: 3 }).piece([[-9, -21], [-15, -12], [-13, -4], [-10, -12], [-7, -20]], hc, { ...lite, round: 1, lift: 0.8, thick: 0.6 })
+  else if (L.hat === 'mongol') Hd.piece([[-14, -17], [-12, -26], [-4, -33], [6, -33], [12, -26], [13, -17], [0, -19]], hc, { ...lite, round: 4 }).piece([[-15, -21], [14, -21], [14.5, -15.6], [-15.5, -15.6]], '#6a4a34', { ...lite, round: 2.4, lift: 1, rough: 1.2, paint: (g) => { g.strokeStyle = 'rgba(40,26,16,.5)'; g.lineWidth = 0.8; for (let x = -14; x < 14; x += 2.2) { g.beginPath(); g.moveTo(x, -21); g.lineTo(x + 0.6, -16); g.stroke(); } } })
+  else if (L.hat === 'qing') Hd.piece([[-15, -19], [-6, -31], [0, -33], [6, -31], [15, -19], [10, -20.6], [-10, -20.6]], hc, { ...lite, round: 2.4, paint: (g) => { g.strokeStyle = 'rgba(178,34,34,.85)'; g.lineWidth = 1.1; for (let k = -12; k <= 12; k += 1.6) { g.beginPath(); g.moveTo(0, -32); g.lineTo(k, -20); g.stroke(); } } }).piece(ellipse(0, -34, 2.6, 2.6, 8), '#c8282a', { ...lite, round: 1, lift: 0.8 }).piece([[-15.5, -19.2], [15.5, -19.2], [14, -16.8], [-14, -16.8]], '#2a2224', { ...lite, round: 1, lift: 0.8 })
+  else if (L.hat === 'helmet') Hd.piece([[-12.5, -12], [-12, -24], [-5, -31], [5, -31], [11, -24], [11.5, -18], [6, -19], [-8, -19], [-9, -11]], hc, { ...lite, round: 4, paint: (g) => { g.fillStyle = 'rgba(0,0,0,.2)'; for (let y = -29; y < -12; y += 3.4) g.fillRect(-13, y, 26, 1); } })
+  else if (L.hat === 'phoenix') Hd.piece(ellipse(-3, -28, 9, 6, 12), hairCol, { ...lite, round: 3 }).piece([[-12, -30], [-6, -42], [0, -36], [5, -44], [9, -33], [3, -30]], '#c9a24a', { ...lite, round: 1.5, lift: 1, paint: (g) => { g.fillStyle = '#b02a2a'; g.beginPath(); g.arc(-1, -35, 1.6, 0, 7); g.fill(); g.fillStyle = '#2f6a7a'; g.beginPath(); g.arc(5, -38, 1.3, 0, 7); g.fill(); } }).piece([[8, -33], [16, -30], [17, -22], [15, -22], [14, -29], [8, -31]], '#c9a24a', { ...lite, round: 1, lift: 0.8, thick: 0.5 })
+  else if (L.hat === 'scarf') Hd.piece([[-12.5, -2], [-13, -18], [-9, -27], [0, -30], [8, -27], [11, -20], [8, -21], [0, -24], [-6, -19], [-8, -6], [-5, 1]], hc, { ...lite, round: 4 })
   else if (L.hat === 'topknot') Hd.piece(ellipse(-2, -30, 4.5, 4, 10), hairCol, { ...lite, round: 2 }).piece([[-6, -30.5], [2, -31.5], [2, -29.6], [-6, -28.8]], '#2a2420', { ...lite, round: 0.5, lift: 0.6 });
   P.head = Hd.finish({ shadowBlur: 3 });
   // arms
@@ -218,6 +239,7 @@ function idle(t, e, L) {
   if (L.pose === 'sit') Object.assign(o, { lean: 8, back: [-30, -50], front: [-40, -60] });
   if (L.pose === 'kneel') Object.assign(o, { lean: 18, back: [-30, -40], front: [-46, -40] });
   if (L.item === 'phone') { Object.assign(o, { head: 22 + fbm(t * 0.4 + s, 3) * 3, lean: 5, front: [-38, -88] }); if (L.pose !== 'walk') o.back = [-24, -96]; }
+  if (L.item === 'hoe' || L.item === 'ge' || L.item === 'jie' || L.item === 'shovel') o.front = [-34 + Math.sin(t * 2 + s) * 3, -62];
   if (L.item === 'spear' || L.item === 'staff' || L.item === 'pole') o.front = [-34 + Math.sin(t * 2 + s) * 3, -62];
   if (L.item === 'torch') o.front = [-130, -20];
   if (L.item === 'jar') o.back = [-172 + Math.sin(t * 1.1 + s) * 2, 12];
@@ -234,6 +256,14 @@ function drawItem(g, P, L, t) {
   else if (it === 'bundle') g.translate(0, 6);
   else if (it === 'jar') { g.restore(); return; }
   else if (it === 'book') g.rotate(-70 * DEG);
+  else if (it === 'hoe' || it === 'ge' || it === 'jie') g.rotate(58 * DEG), g.translate(0, 34);
+  else if (it === 'shovel') g.rotate(40 * DEG), g.translate(0, 30);
+  else if (it === 'bowl') g.rotate(-90 * DEG), g.translate(4, -2);
+  else if (it === 'brush') g.rotate(-40 * DEG);
+  else if (it === 'flute') g.rotate(-150 * DEG), g.translate(0, -6);
+  else if (it === 'fan') g.rotate(-100 * DEG);
+  else if (it === 'redbook' || it === 'medbox') g.rotate(-80 * DEG);
+  else if (it === 'lanternH') g.translate(0, -2);
   put(g, P.item, 0.15, 1, 2);
   g.restore();
 }
