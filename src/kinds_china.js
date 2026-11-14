@@ -1079,3 +1079,52 @@ KINDS.wormwood = {
   },
   draw(g, P, t, e, env) { const k = e.grow ? e.grow(t) : 1; if (k < 0.01) return; g.scale(0.3 + 0.7 * k, k); g.rotate(fbm(t * 0.6 + e.a, 8) * 3 * DEG); put(g, P.spr, env.sh); },
 };
+
+// ============================================================== opening up ===
+// Two great red doors in a gate; e.open(t) 0..1 swings them open.
+KINDS.redgates = {
+  bake(mk) {
+    const P = {};
+    P.frame = mk('gateframe', [-120, -260, 120, 6]).piece([[-116, 4], [-116, -200], [-96, -200], [-96, 4]], '#8a2a24', { round: 2 }).piece([[96, 4], [96, -200], [116, -200], [116, 4]], '#8a2a24', { round: 2 }).piece(roofPts(110, -200, 30, 20, 10), '#4a4a50', { round: 2, lift: 1.6 }).finish({ shadowBlur: 5 });
+    P.door = mk('door', [-4, -196, 100, 4], { pad: 4 }).piece(rect(0, 2, 96, -194), '#b8322a', { round: 2, paint: (g) => { g.fillStyle = '#d8a838'; for (let i = 0; i < 9; i++) for (let j = 0; j < 7; j++) { g.beginPath(); g.arc(12 + j * 12, -176 + i * 20, 2.6, 0, 7); g.fill(); } g.strokeStyle = 'rgba(60,20,10,.5)'; g.lineWidth = 2; g.strokeRect(4, -190, 88, 188); } }).finish({ shadowBlur: 3 });
+    return P;
+  },
+  draw(g, P, t, e, env) {
+    const k = e.open ? e.open(t) : 0, c = Math.cos(k * Math.PI * 0.46);
+    for (const s of [-1, 1]) { g.save(); g.translate(s * 96, 0); g.scale(-s * c, 1); put(g, P.door, env.sh * c, 2, 3); g.restore(); }
+    put(g, P.frame, env.sh, 3, 4);
+  },
+};
+// Stacked shipping containers.
+KINDS.containers = {
+  bake(mk, v = 0) {
+    const r = rng(3800 + v), sh = mk('containers' + v, [-90, -110, 90, 6]), cols = ['#c8642a', '#2f6a8a', '#8a3a2a', '#5a7a3a', '#d8a838', '#3a4a6a'];
+    for (let row = 0; row < 3; row++) for (let i = 0; i < 3 - (row === 2 && v ? 1 : 0); i++) { const c = cols[(i + row * 2 + v) % cols.length], x = -84 + i * 56 + row * 6, y = -row * 34; sh.piece(rect(x, y + 2, x + 54, y - 30), c, { round: 1, lift: 1, paint: (g) => { g.strokeStyle = rgb(shade(c, -0.35), 0.6); g.lineWidth = 1; for (let xx = x + 4; xx < x + 52; xx += 4) { g.beginPath(); g.moveTo(xx, y); g.lineTo(xx, y - 28); g.stroke(); } } }); }
+    return { spr: sh.finish({ shadowBlur: 4 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+};
+// A tank, in dull paper: a hull, a turret, a gun, tracks.
+KINDS.tank = {
+  bake(mk) {
+    const sh = mk('tank', [-90, -80, 120, 6]), c = '#5a6050';
+    sh.piece([[-80, 4], [-88, -14], [-76, -30], [76, -30], [88, -14], [80, 4]], '#3a3a36', { round: 8, paint: (g) => { g.fillStyle = 'rgba(90,90,84,.9)'; for (let x = -66; x <= 66; x += 22) { g.beginPath(); g.arc(x, -12, 9, 0, 7); g.fill(); } } });
+    sh.piece([[-74, -30], [74, -30], [64, -46], [-66, -46]], c, { round: 3, lift: 1.4 });
+    sh.piece([[-36, -46], [-30, -66], [26, -66], [34, -46]], shade(c, 0.06), { round: 4, lift: 1.6 });
+    sh.piece(strip(28, -58, 112, -60, 6, 5), shade(c, -0.1), { round: 1, lift: 1.4 });
+    return { spr: sh.finish({ shadowBlur: 5 }) };
+  },
+  draw(g, P, t, e, env) { const moving = e.move && e.move(t + 0.05) !== e.move(t); g.translate(0, moving ? Math.sin(t * 20) * 0.6 : 0); put(g, P.spr, env.sh, 4, 5); },
+};
+// A village house: white walls, a grey tile roof, windows that light up.
+KINDS.farmhouse = {
+  bake(mk, v = 0) {
+    const w = [52, 44, 60][v % 3], h = [56, 48, 62][v % 3], win = [[-w * 0.6, -h * 0.66, 14, 16], [w * 0.28, -h * 0.66, 14, 16]], sh = mk('farmhouse' + v, [-w - 20, -h - 50, w + 20, 6]);
+    sh.piece(rect(-w, 4, w, -h), ['#e8e2d4', '#e0d8c4', '#ece6da'][v % 3], { round: 2, paint: (g) => { paintRects(win)(g); g.fillStyle = 'rgba(40,30,24,.85)'; g.fillRect(-8, -34, 16, 38); g.fillStyle = 'rgba(150,140,120,.3)'; g.fillRect(-w, -8, w * 2, 8); } });
+    sh.piece(roofPts(w, -h, 26, 16, 8), '#4a4a50', { round: 2, lift: 1.6 });
+    win.push([-8, -34, 16, 38]);
+    return { spr: sh.finish({ shadowBlur: 4 }), windows: win };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+  glow: glowRects,
+};

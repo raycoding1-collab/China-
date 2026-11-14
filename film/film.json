@@ -478,6 +478,12 @@
   "gehong": 512.2,
   "herb": 514.4,
   "cure": 516.8,
-  "saved": 519.4
+  "saved": 519.4,
+  "open": 528.4,
+  "shenzhen": 535.2,
+  "poverty": 542.4,
+  "tanks": 555.6,
+  "spark": 562.4,
+  "allLit": 566.2
  }
 }
