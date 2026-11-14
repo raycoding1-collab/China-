@@ -1,0 +1,350 @@
+{
+ "name": "film",
+ "duration": 662,
+ "voice": {
+  "blend": {
+   "bm_lewis": 0.55,
+   "bm_george": 0.45
+  },
+  "speed": 0.91,
+  "lang": "en-gb",
+  "pitch": -1
+ },
+ "chapters": [
+  {
+   "t": 0,
+   "title": "The bone flute"
+  },
+  {
+   "t": 46.1,
+   "title": "Bronze and bone"
+  },
+  {
+   "t": 96.9,
+   "title": "A hundred schools"
+  },
+  {
+   "t": 139.2,
+   "title": "The First Emperor"
+  },
+  {
+   "t": 187.2,
+   "title": "The Silk Road"
+  },
+  {
+   "t": 238.8,
+   "title": "Long divided"
+  },
+  {
+   "t": 258.0,
+   "title": "The Tang"
+  },
+  {
+   "t": 316.2,
+   "title": "The Song"
+  },
+  {
+   "t": 354.8,
+   "title": "Mongols and Ming"
+  },
+  {
+   "t": 403.7,
+   "title": "The last dynasty"
+  },
+  {
+   "t": 457.0,
+   "title": "War and revolution"
+  },
+  {
+   "t": 482.6,
+   "title": "Mao's China"
+  },
+  {
+   "t": 524.2,
+   "title": "Opening up"
+  },
+  {
+   "t": 573.8,
+   "title": "Today"
+  },
+  {
+   "t": 627.7,
+   "title": "The long thread"
+  }
+ ],
+ "narration": [
+  {
+   "t": 4.0,
+   "text": "Nine thousand years ago, in a village in central China, someone made a flute from the wing bone of a crane."
+  },
+  {
+   "t": 20.5,
+   "text": "It can still be played."
+  },
+  {
+   "t": 25.1,
+   "text": "Along two great rivers, people began to farm. Millet by the Yellow River, in the north. Rice along the Yangtze, in the south."
+  },
+  {
+   "t": 37.1,
+   "text": "And they learned to unwind a silk moth's cocoon into one long, shining thread."
+  },
+  {
+   "t": 47.7,
+   "text": "More than three thousand years ago, Shang kings ruled the Yellow River plain, and cast great vessels of bronze."
+  },
+  {
+   "t": 59.2,
+   "text": "To question their ancestors, they held a red-hot rod to bones and turtle shells, and read the cracks."
+  },
+  {
+   "t": 68.7,
+   "text": "Then they carved the question, and the answer, beside them."
+  },
+  {
+   "t": 75.6,
+   "text": "It is the oldest Chinese writing we know, and many of its signs can still be read today."
+  },
+  {
+   "t": 88.0,
+   "text": "Far to the southwest, at Sanxingdui, others cast bronze faces with eyes on stalks."
+  },
+  {
+   "t": 98.5,
+   "text": "The Zhou kings who came next claimed the Mandate of Heaven: a right to rule, which heaven could take away."
+  },
+  {
+   "t": 107.8,
+   "text": "As their power faded, rival states fought for five hundred years."
+  },
+  {
+   "t": 115.4,
+   "text": "And thinkers argued about how to live. Confucius taught respect, learning, and duty to family."
+  },
+  {
+   "t": 124.5,
+   "text": "Daoists said: be like water, which yields to everything, and wears away stone."
+  },
+  {
+   "t": 131.6,
+   "text": "And Sunzi wrote that the greatest victory is the one won without a fight."
+  },
+  {
+   "t": 140.8,
+   "text": "In 221 BCE, the king of Qin conquered the last of his rivals, and named himself the First Emperor."
+  },
+  {
+   "t": 151.5,
+   "text": "He decreed one script, one coinage, one set of weights, even one width for every cart's axle."
+  },
+  {
+   "t": 160.7,
+   "text": "He joined older walls into one long wall in the north."
+  },
+  {
+   "t": 167.2,
+   "text": "And he was buried with an army of clay: thousands of soldiers, no two faces alike."
+  },
+  {
+   "t": 175.7,
+   "text": "Farmers found them in 1974, digging a well."
+  },
+  {
+   "t": 182.0,
+   "text": "His dynasty lasted fifteen years."
+  },
+  {
+   "t": 188.8,
+   "text": "The Han dynasty that followed lasted four hundred years. Most Chinese people still call themselves Han."
+  },
+  {
+   "t": 198.9,
+   "text": "The envoy Zhang Qian crossed the deserts to the west, and trade followed, along the Silk Road."
+  },
+  {
+   "t": 207.4,
+   "text": "Silk went west. Horses, grapes and glass came east, and later, Buddhism."
+  },
+  {
+   "t": 216.4,
+   "text": "Han craftsmen made paper, from bark, hemp and old rags. This whole little world is made of it."
+  },
+  {
+   "t": 227.1,
+   "text": "And Zhang Heng built a jar to detect distant earthquakes: a ball would drop from a dragon's mouth into a toad's."
+  },
+  {
+   "t": 240.4,
+   "text": "An old novel begins: the empire, long divided, must unite; long united, must divide."
+  },
+  {
+   "t": 249.3,
+   "text": "After the Han, it stayed divided for almost four hundred years, and Buddhism took root."
+  },
+  {
+   "t": 259.6,
+   "text": "The Sui reunited it, and dug the Grand Canal, still the longest in the world."
+  },
+  {
+   "t": 267.6,
+   "text": "Officials were chosen by written exams, a system that would last thirteen hundred years."
+  },
+  {
+   "t": 277.2,
+   "text": "Under the Tang, the capital, Chang'an, held perhaps a million people, and merchants from as far as Persia."
+  },
+  {
+   "t": 287.0,
+   "text": "Wu Zetian became the only woman to rule China as emperor in her own name."
+  },
+  {
+   "t": 296.0,
+   "text": "And Li Bai wrote a poem that every child in China still knows."
+  },
+  {
+   "t": 303.2,
+   "text": "Moonlight before my bed. I took it for frost on the ground. I raise my head to the bright moon, and lower it, thinking of home."
+  },
+  {
+   "t": 317.8,
+   "text": "Under the Song, cities boomed, and so did invention."
+  },
+  {
+   "t": 323.7,
+   "text": "Alchemists looking for the elixir of eternal life had found gunpowder instead."
+  },
+  {
+   "t": 332.2,
+   "text": "The Song made it into rockets, and fireworks."
+  },
+  {
+   "t": 340.2,
+   "text": "Sailors steered by compass. Merchants paid with paper money."
+  },
+  {
+   "t": 346.9,
+   "text": "And Bi Sheng printed with movable type, four hundred years before Gutenberg."
+  },
+  {
+   "t": 356.4,
+   "text": "In 1279, the Mongols conquered all of China, and Kublai Khan ruled from where Beijing stands today."
+  },
+  {
+   "t": 366.9,
+   "text": "Ninety years later, a peasant who had been a begging monk drove them out, and founded the Ming."
+  },
+  {
+   "t": 375.3,
+   "text": "The Ming built the Forbidden City, and most of the Great Wall that people walk on today."
+  },
+  {
+   "t": 384.3,
+   "text": "From 1405, Admiral Zheng He sailed seven times, with hundreds of ships, as far as East Africa."
+  },
+  {
+   "t": 394.4,
+   "text": "One voyage brought back a giraffe. The court took it for a qilin, a creature of legend."
+  },
+  {
+   "t": 405.3,
+   "text": "In 1644, the Manchus took Beijing, and founded the last dynasty, the Qing."
+  },
+  {
+   "t": 413.8,
+   "text": "With new crops from the Americas, the population grew past four hundred million."
+  },
+  {
+   "t": 421.6,
+   "text": "Europe craved Chinese tea, silk and porcelain, and paid in silver."
+  },
+  {
+   "t": 428.5,
+   "text": "To win the silver back, British merchants smuggled in opium. When China destroyed it, Britain went to war, and won."
+  },
+  {
+   "t": 439.5,
+   "text": "More wars, unequal treaties, and a civil war that killed tens of millions shook the empire."
+  },
+  {
+   "t": 448.6,
+   "text": "In 1912, the last emperor gave up the throne. He was six years old."
+  },
+  {
+   "t": 458.6,
+   "text": "The young republic was torn by warlords and civil war, and, from 1937, by invasion from Japan."
+  },
+  {
+   "t": 468.3,
+   "text": "At least fourteen million Chinese people died."
+  },
+  {
+   "t": 474.3,
+   "text": "In 1949, the Communists under Mao Zedong won, and founded the People's Republic."
+  },
+  {
+   "t": 484.2,
+   "text": "Schools and clinics reached the villages, and lives grew longer."
+  },
+  {
+   "t": 491.0,
+   "text": "But the Great Leap Forward, Mao's rush to industrialise, caused a famine that killed tens of millions."
+  },
+  {
+   "t": 500.4,
+   "text": "In the Cultural Revolution, students were turned against their teachers, and children against their parents."
+  },
+  {
+   "t": 510.6,
+   "text": "Even then, following a clue in a medical book sixteen hundred years old, Tu Youyou's team found a new cure for malaria. It has saved millions of lives."
+  },
+  {
+   "t": 525.8,
+   "text": "From 1978, under Deng Xiaoping, China opened to the world, and to markets."
+  },
+  {
+   "t": 534.5,
+   "text": "Shenzhen grew from a small border town into a city of almost eighteen million."
+  },
+  {
+   "t": 542.5,
+   "text": "Some eight hundred million people escaped extreme poverty: the largest escape from poverty in history."
+  },
+  {
+   "t": 552.8,
+   "text": "In 1989, protests in Tiananmen Square were crushed by the army."
+  },
+  {
+   "t": 562.3,
+   "text": "And light reached the farthest villages. By 2015, almost every home had electricity."
+  },
+  {
+   "t": 575.4,
+   "text": "Today, 1.4 billion people live in China."
+  },
+  {
+   "t": 580.9,
+   "text": "Its high-speed railways, the first opened in 2008, now run for more than fifty thousand kilometres: more than the rest of the world together."
+  },
+  {
+   "t": 594.6,
+   "text": "In 2019, a Chinese probe made the first landing on the far side of the Moon. In 2024, another brought back the first rocks from there."
+  },
+  {
+   "t": 609.4,
+   "text": "China burns more coal than any other country, and builds about half the world's new solar and wind power."
+  },
+  {
+   "t": 619.1,
+   "text": "And its forests now cover a quarter of the land, twice as much as forty years ago."
+  },
+  {
+   "t": 629.3,
+   "text": "From a bone flute to the far side of the Moon, it is one long thread."
+  },
+  {
+   "t": 639.1,
+   "text": "Ahead, the paper is still blank. The next part has not been written yet."
+  }
+ ],
+ "events": {}
+}
