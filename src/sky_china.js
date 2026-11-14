@@ -178,3 +178,23 @@ fxGroup(['seismo', 'seisball'], (mk, mkSoft, mkBig) => {
   S.seisball = mkBig('seisball', [-8, -8, 8, 8], { pad: 4 }).piece(ellipse(0, 0, 6, 6, 12), '#b8a050', { round: 2 }).finish({ shadowBlur: 3 });
   return S;
 });
+
+// ------------------------------------------------------------ long divided ---
+// The realm as one sheet: ink mountains and a river, a red seal. It tears into three, and mends, and tears.
+export const TEAR = [[-110, [-110, -70, -36, 70], [[-36, -70], [-30, -40], [-42, -10], [-30, 20], [-40, 46], [-34, 70]]], [0, [-36, -70, 38, 70], [[38, -70], [44, -36], [32, -4], [44, 30], [34, 70]]], [110, [38, -70, 110, 70], null]];
+fxGroup(['realm'], (mk) => {
+  const r = rng(220), S = { realm: [] };
+  const paintRealm = (g) => {
+    g.strokeStyle = 'rgba(40,34,30,.7)'; g.lineWidth = 2; g.lineCap = 'round';
+    for (const [x0, h] of [[-96, 34], [-70, 50], [-44, 30], [10, 44], [40, 30], [70, 52], [94, 36]]) { g.beginPath(); g.moveTo(x0 - 18, -4); g.quadraticCurveTo(x0 - 6, -4 - h, x0, -6 - h); g.quadraticCurveTo(x0 + 6, -4 - h, x0 + 18, -4); g.stroke(); }
+    g.strokeStyle = 'rgba(60,90,110,.7)'; g.lineWidth = 3; g.beginPath(); g.moveTo(-104, 30); g.bezierCurveTo(-50, 10, -20, 50, 20, 30); g.bezierCurveTo(60, 12, 80, 46, 104, 36); g.stroke();
+    g.fillStyle = 'rgba(178,40,32,.88)'; g.fillRect(70, 44, 22, 22); g.fillStyle = 'rgba(240,230,210,.9)'; g.fillRect(74, 48, 3, 14); g.fillRect(85, 48, 3, 14); g.fillRect(74, 54, 14, 3);
+  };
+  const edge = (pts, x) => pts || [[x, 70], [x, -70]];
+  TEAR.forEach(([cx, box], i) => {
+    const left = i === 0 ? [[-104, 66], [-104, -66]] : TEAR[i - 1][2].slice().reverse(), right = TEAR[i][2] || [[104, -66], [104, 66]];
+    const poly = [...left.map(([x, y]) => [x - cx, y]), ...right.map(([x, y]) => [x - cx, y])];
+    S.realm.push(mk('realm' + i, [box[0] - cx - 8, -76, box[2] - cx + 8, 76], { pad: 6 }).piece(poly, '#efe4c8', { round: 1, rough: 0.8, seg: 12, paint: (g) => { g.translate(-cx, 0); paintRealm(g); } }).finish({ shadowBlur: 4 }));
+  });
+  return S;
+});

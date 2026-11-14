@@ -723,3 +723,29 @@ KINDS.papermaker = {
     drawPerson(g, P, t, e, env, { lean: 18 - hold * 14 + dip * 6, head: 18 - hold * 14, back: [b1, b2], front: [a1, a2], held: (g2) => { g2.save(); g2.rotate(-a2 * DEG); g2.translate(0, -19); g2.rotate(-a1 * DEG); g2.translate(-2, 34.5); g2.translate(mx, my); g2.rotate(hold * -1.2); put(g2, P.mould, env.sh * 0.4); g2.restore(); } });
   },
 };
+
+// ============================================================ long divided ===
+// A cliff carved with a great seated Buddha and rows of small ones; lamps can light the niches.
+KINDS.cliffbuddha = {
+  bake(mk) {
+    const r = rng(3200), c = '#a89478', sh = mk('cliffbuddha', [-170, -330, 170, 6]), win = [];
+    sh.piece([[-166, 4], [-160, -120], [-150, -230], [-120, -300], [-60, -322], [20, -326], [90, -306], [140, -250], [160, -150], [166, 4]], c, { round: 8, rough: 2.4, seg: 20, paint: (g) => {
+      dab(g, r, 120, [-160, -320, 160, 0], ['rgba(70,56,40,.3)', 'rgba(230,214,190,.25)', 'rgba(90,110,70,.35)'], 10, 3);
+      g.fillStyle = 'rgba(50,38,26,.75)'; g.beginPath(); g.moveTo(-70, 4); g.lineTo(-70, -190); g.quadraticCurveTo(0, -270, 70, -190); g.lineTo(70, 4); g.fill();
+      for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++) { for (const s of [-1, 1]) { const x = s * (96 + i * 0 + j * 20) - (s < 0 ? 18 : 0), y = -60 - i * 50; if (Math.abs(x) > 150 || y < -250) continue; g.fillStyle = 'rgba(50,38,26,.8)'; g.fillRect(x, y, 18, 26); win.push([x, y, 18, 26]); } }
+    } });
+    // the great Buddha in his niche: robe, folded hands, a calm face, the halo behind
+    sh.piece(ellipse(0, -200, 40, 40, 20), '#c8b48a', { round: 6, lift: 1, paint: (g) => { g.strokeStyle = 'rgba(120,90,50,.5)'; g.lineWidth = 2; for (const rr of [24, 32]) { g.beginPath(); g.arc(0, -200, rr, 0, 7); g.stroke(); } } });
+    sh.piece([[-56, 4], [-60, -40], [-48, -110], [-26, -150], [26, -150], [48, -110], [60, -40], [56, 4]], '#b8a27e', { round: 10, lift: 2, paint: (g) => { g.strokeStyle = 'rgba(90,70,46,.45)'; g.lineWidth = 1.6; for (let k = 0; k < 6; k++) { g.beginPath(); g.moveTo(-40 + k * 4, -130 + k * 8); g.quadraticCurveTo(0, -90 + k * 12, 40 - k * 4, -130 + k * 8); g.stroke(); } g.fillStyle = 'rgba(200,180,140,.6)'; g.beginPath(); g.ellipse(0, -40, 34, 10, 0, 0, 7); g.fill(); } });
+    sh.piece([[-22, -150], [-24, -176], [-16, -200], [0, -206], [16, -200], [24, -176], [22, -150]], '#c8b48a', { round: 8, lift: 1.6, paint: (g) => { g.strokeStyle = 'rgba(80,60,40,.6)'; g.lineWidth = 1.2; for (const s of [-1, 1]) { g.beginPath(); g.moveTo(s * 10, -178); g.quadraticCurveTo(s * 6, -176, s * 3, -178); g.stroke(); } g.beginPath(); g.moveTo(-4, -164); g.quadraticCurveTo(0, -162, 4, -164); g.stroke(); } });
+    sh.piece(ellipse(0, -206, 16, 9, 14), '#7a6a50', { round: 4, lift: 1, paint: (g) => { g.fillStyle = 'rgba(40,30,20,.4)'; for (let i = 0; i < 12; i++) { g.beginPath(); g.arc(-12 + (i % 6) * 5, -210 + Math.floor(i / 6) * 5, 1.6, 0, 7); g.fill(); } } });
+    return { spr: sh.finish({ shadowBlur: 7 }), windows: win };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 4, 5); },
+  glow: glowRects,
+};
+// A sacred fig that grows from a seedling while you watch: e.grow(t) 0..1.
+KINDS.bodhi = {
+  bake(mk) { return KINDS.oak.bake(mk, 1); },
+  draw(g, P, t, e, env) { const k = e.grow ? e.grow(t) : 1; if (k <= 0.01) return; g.scale(0.2 + 0.8 * k, 0.15 + 0.85 * k); g.rotate(fbm(t * 0.4 + e.a, 9) * DEG); put(g, P.spr, env.sh); },
+};

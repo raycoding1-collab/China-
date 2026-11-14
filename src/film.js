@@ -9,7 +9,7 @@ import './kinds_nature.js';
 import './kinds_built.js';
 import './kinds_modern.js';
 import './kinds_china.js';
-import { makeFx, hang2, glyph, crack, SEIS_DRAGONS } from './sky_china.js';
+import { makeFx, hang2, glyph, crack, SEIS_DRAGONS, TEAR } from './sky_china.js';
 import { BlurSheet } from './engine.js';
 import { EV, DURATION } from './timeline.js';
 
@@ -40,7 +40,9 @@ const cam = monotone([
   [141, 486], [144, 493], [147, 500], [150, 506], [152.5, 510], [155, 513], [157.5, 518], [160, 526], [162.5, 538], [165, 549], [167.5, 566], [170, 580], [173, 591], [175.5, 608], [178, 623], [181, 630], [184, 640], [187, 650],
   // 5. the Silk Road
   [189.5, 685], [192, 693], [195, 700], [198, 712], [201, 726], [204, 742], [207.5, 756], [210.5, 764], [213.5, 772], [216, 784], [219, 790], [222, 795], [225, 806], [227.5, 818], [231, 822], [236, 826], [239, 840],
-  [241.5, 900], [662, 2600], [800, 2740],
+  // 6. long divided
+  [241.5, 900], [244, 905], [247.5, 911], [250, 926], [252.5, 935], [255.5, 942], [258, 952],
+  [260.5, 980], [662, 2600], [800, 2740],
 ]);
 
 // ------------------------------------------------- paint and shape of land --
@@ -463,6 +465,48 @@ function threadLift(a, t) {
     },
   });
 }
+
+// ======================================================== 6. Long divided ===
+Object.assign(LOOKS, {
+  monk2: { skin: 4, top: 'robe', topCol: '#b8642a', legs: 'robe', legCol: '#b8642a', hair: 'bald', pose: 'walk', item: 'lanternH' },
+  monk3: { skin: 3, top: 'robe', topCol: '#8a4a2a', legs: 'robe', legCol: '#8a4a2a', hair: 'bald', pose: 'kneel' },
+  carver: { skin: 1, top: 'tunic', topCol: '#9a8a6a', legs: 'trousers', legCol: '#5a4a3a', hair: 'bun', pose: 'stand' },
+});
+{
+  // three kingdoms' camps below the sheet that tears
+  [[898, 2], [906, 4], [914, 1]].forEach(([a, v], i) => add('banner', 'main', a, { v, z: 1, scale: 1.1, popAt: ev('novel') + 1.4 + i * 0.3 }));
+  [['zhouSoldier', 900.4], ['redSoldier', 910.6]].forEach(([v, a], i) => add('person', 'main', a, { v, z: 2, scale: P2, flip: i === 1, popAt: ev('novel') + 2 }));
+  for (const [a, v] of [[894, 0], [918, 1]]) add('pine', 'main', a, { v, z: 0, scale: 0.85 });
+  // Buddhism takes root: a carved cliff, a wooden pagoda, monks with lamps, a fig tree growing
+  add('cliffbuddha', 'main', 938, { z: 0, wide: 18, popAt: ev('buddha') - 0.4, loud: 2.4, winOn: (t, i) => sramp(t, ev('buddha') + 1.5 + (i % 5) * 0.3, ev('buddha') + 2 + (i % 5) * 0.3) * 0.7 });
+  add('pagoda', 'main', 954, { z: 0, wide: 10 });
+  add('person', 'main', 927.4, { v: 'monk2', z: 2, scale: P2, pace: 4, move: (t) => (t - 246) * 0.35 });
+  add('person', 'main', 946.4, { v: 'monk3', z: 2, scale: P2, act: (t) => ({ lean: 30 + Math.sin(t * 0.6) * 4, head: 14, front: [-100, -60], back: [-90, -60] }) });
+  add('person', 'main', 924, { v: 'carver', z: 1.6, scale: P2, act: (t) => { const k = Math.max(0, Math.sin(t * 5)); return { front: [-130 + k * 30, -30], back: [-110 + k * 30, -40], lean: 4 }; } });
+  add('bodhi', 'main', 949.6, { z: 1.2, scale: 1.05, grow: (t) => sramp(t, ev('root'), ev('root') + 3.2) });
+  for (const [a, v, s] of [[928, 2, 0.6], [948, 0, 0.7]]) add('karst', 'far', a, { v, scale: s });
+  grassRun(890, 960, 3.6, 'main', { skip: (a) => a > 926 && a < 956 });
+  grassRun(890, 960, 7, 'front', { s: 2 });
+  hook({
+    lights(t, c, L) {
+      if (near(938, c, 50) && t > ev('buddha')) L.push({ a: 938, h: 160, r: 600, k: 0.45 * sramp(t, ev('buddha') + 1.5, ev('buddha') + 3), color: [255, 190, 110] });
+    },
+    over(g, st, t, S) {
+      const { W, H } = st, N = ev('novel');
+      if (t < N - 0.2 || t > N + 9.5) return;
+      const k = drop(t, N, N + 8.2), por = st.aspectK > 0.4 ? 0 : 1, sc = por ? 1.1 : 1.65;
+      // long divided ... must unite; long united ... must divide
+      const sep = sramp(t, N + 2.5, N + 3.2) * (1 - sramp(t, N + 3.7, N + 4.3)) + sramp(t, N + 5.7, N + 6.4);
+      const y = H * lerp(-0.3, por ? 0.24 : 0.22, k);
+      TEAR.forEach(([cx], i) => {
+        const dx = (i - 1) * sep * 26, rot = (i - 1) * sep * 0.12 + Math.sin(t * 0.7 + i) * 0.02;
+        g.save(); g.translate(W * 0.5 + cx * st.eu * sc + dx * st.eu * sc, 0); g.rotate(Math.sin(t * 0.6 + i) * 1.2 * DEG);
+        g.strokeStyle = 'rgba(200,190,175,0.32)'; g.lineWidth = Math.max(1, 0.6 * st.eu); g.beginPath(); g.moveTo(0, -20); g.lineTo(0, y - 70 * st.eu * sc); g.stroke();
+        g.translate(0, y); g.rotate(rot); g.scale(st.eu * sc, st.eu * sc); put(g, st.fx.realm[i], 0.2, 4, 6); g.restore();
+      });
+    },
+  });
+}
 // the thread of silk: unwound from the reel, it runs on, stitched into the world, through everything
 const THREAD0 = 94.6;
 const threadEnd = (t) => (t < 40.4 ? -1e9 : t < 46.5 ? THREAD0 + (t - 40.4) * 9 : 1e9);
@@ -476,9 +520,9 @@ const NIGHT = ['#0a102b', '#11193c', '#1a2650', '#2e3a66'], DUSK = ['#141b3c', '
 const W_ = [255, 252, 244];
 const skyK = track([
   [0, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [5, ['#262f5a', '#57497c', '#b0627a', '#e08f5e']], [9, DUSK], [13, ['#0c1230', '#131c42', '#1e2a56', '#35426e']],
-  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [48.5, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [51, DUSK], [54, NIGHT], [95, NIGHT], [99, DAWN], [103, DAY], [107, DAY], [109, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [113, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [116, DAY],
+  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [48.5, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [51, DUSK], [54, NIGHT], [95, NIGHT], [99, DAWN], [103, DAY], [107, DAY], [109, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [113, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [116, DAY], [238, DAY], [241, ['#6a8ab0', '#a8b0c0', '#e8d0b0', '#f6c890']], [256, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [260, DAY],
 ]);
-const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [48.5, [244, 200, 180]], [51, [130, 110, 140]], [54, [66, 72, 116]], [95, [66, 72, 116]], [99, [200, 180, 175]], [103, W_], [107, W_], [109, [210, 200, 196]], [113, [210, 200, 196]], [116, W_]]);
+const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [48.5, [244, 200, 180]], [51, [130, 110, 140]], [54, [66, 72, 116]], [95, [66, 72, 116]], [99, [200, 180, 175]], [103, W_], [107, W_], [109, [210, 200, 196]], [113, [210, 200, 196]], [116, W_], [238, W_], [241, [255, 236, 214]], [256, [240, 200, 180]], [260, W_]]);
 const moteK = track([[0, [255, 222, 170]], [12, [255, 190, 120]], [26, [255, 222, 170]], [46, [255, 222, 170]], [52, [255, 190, 120]], [98, [255, 222, 170]]]);
 const gradeK = track([[0, [255, 170, 95, 0.16]], [24, [255, 170, 95, 0.16]], [30, [255, 205, 150, 0.1]], [46, [255, 205, 150, 0.1]], [52, [255, 160, 90, 0.18]], [96, [255, 160, 90, 0.16]], [102, [255, 205, 150, 0.1]], [107, [255, 205, 150, 0.1]], [109, [150, 140, 130, 0.22]], [113, [150, 140, 130, 0.22]], [116, [255, 210, 160, 0.1]]]);
 const SUNS = [[-1, 11, -430, -78, 170], [24, 31, 430, 170, -60], [45, 52, -430, -40, 170], [96, 103, 430, 170, -60]];
