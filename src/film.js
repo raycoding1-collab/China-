@@ -46,15 +46,17 @@ const cam = monotone([
   [260.5, 982], [263, 992], [266, 1001], [268.5, 1016], [272, 1023], [275, 1029], [277.5, 1044], [281, 1056], [285, 1066], [287.5, 1086], [291, 1093], [294, 1102], [297, 1116], [301, 1119], [306, 1121], [312, 1123], [315.5, 1128],
   // 8. the Song
   [318.5, 1206], [321, 1216], [323.5, 1234], [326, 1246], [329, 1252], [331.5, 1262], [334, 1266], [337.5, 1272], [340, 1290], [342.5, 1302], [345, 1316], [347.5, 1326], [350.5, 1334], [354, 1340],
-  [357, 1370], [662, 2600], [800, 2740],
+  // 9. Mongols and Ming
+  [357, 1366], [360, 1376], [363, 1384], [366, 1392], [369, 1400], [372, 1406], [375, 1418], [378, 1426], [381, 1446], [384, 1460], [387, 1484], [390, 1500], [393, 1522], [395.5, 1540], [398.5, 1550], [402, 1556],
+  [406, 1590], [662, 2600], [800, 2740],
 ]);
 
 // ------------------------------------------------- paint and shape of land --
 const ZONES = [
   [-200, 28, [148, 134, 86]], [33, 50, [196, 164, 104]], [56, 76, [112, 140, 82]], [80, 110, [104, 132, 76]],
-  [116, 182, [150, 132, 92]], [186, 214, [128, 120, 88]], [222, 272, [150, 104, 78]], [280, 704, [176, 150, 108]], [710, 772, [214, 182, 122]], [778, 1196, [168, 150, 104]], [1200, 1288, [176, 160, 120]], [1290, 1312, [44, 86, 126]], [1316, 9999, [168, 150, 104]],
+  [116, 182, [150, 132, 92]], [186, 214, [128, 120, 88]], [222, 272, [150, 104, 78]], [280, 704, [176, 150, 108]], [710, 772, [214, 182, 122]], [778, 1196, [168, 150, 104]], [1200, 1288, [176, 160, 120]], [1290, 1312, [44, 86, 126]], [1316, 1352, [168, 150, 104]], [1356, 1384, [150, 150, 96]], [1390, 1476, [168, 150, 104]], [1480, 1526, [44, 86, 126]], [1530, 1544, [204, 178, 120]], [1548, 9999, [168, 150, 104]],
 ];
-const SEAS = [[1290, 1312]];
+const SEAS = [[1290, 1312], [1480, 1526]];
 function zoneColor(a) {
   for (let i = 0; i < ZONES.length; i++) {
     const [a0, a1, c] = ZONES[i];
@@ -74,7 +76,7 @@ function ground(layer, a) {
 }
 const profile = {
   far: (a) => (1 - water(a)) * (noise(a * 0.07, 5) * 14 + noise(a * 0.31, 6) * 4 + 12) + band(a, -60, 26) * 8 + band(a, 728, 790, 6) * (Math.abs(noise(a * 0.5, 41)) * 70 + 40),
-  mid: (a) => (1 - water(a)) * (noise(a * 0.33, 3) * 8 + noise(a * 0.1, 4) * 13) + band(a, 30, 50, 4) * (16 + noise(a * 0.8, 9) * 4) + band(a, 710, 772, 4) * (Math.sin(a * 0.9) * 10 + 14) - water(a) * 6,
+  mid: (a) => (1 - water(a)) * (noise(a * 0.33, 3) * 8 + noise(a * 0.1, 4) * 13) + band(a, 30, 50, 4) * (16 + noise(a * 0.8, 9) * 4) + band(a, 710, 772, 4) * (Math.sin(a * 0.9) * 10 + 14) + band(a, 1440, 1476, 4) * (Math.abs(noise(a * 0.4, 51)) * 70 + 30) - water(a) * 6,
   main: (a) => (1 - water(a)) * (noise(a * 0.9, 1) * 1.6 + noise(a * 0.21, 2) * 3.5) - band(a, 9, 21, 1.5) * 3 - band(a, 58, 73, 1) * 2.5 - water(a) * 4,
   front: (a) => noise(a * 0.5, 7) * 4 + noise(a * 0.13, 17) * 6,
   core: (a) => noise(a * 0.2, 8) * 8,
@@ -687,6 +689,68 @@ const fwPos = (st, i) => [st.W * [0.3, 0.62, 0.45, 0.76, 0.24, 0.55, 0.7][i], st
     },
   });
 }
+
+// ===================================================== 9. Mongols and Ming ===
+Object.assign(LOOKS, {
+  mongolA: { skin: 3, top: 'coat', topCol: '#6a4a2a', sleeve: '#6a4a2a', legs: 'trousers', legCol: '#3a2a20', hat: 'mongol', hatCol: '#8a3a2a', pose: 'sit' },
+  mongolB: { skin: 4, top: 'coat', topCol: '#3a5a6a', sleeve: '#3a5a6a', legs: 'trousers', legCol: '#3a2a20', hat: 'mongol', hatCol: '#2a4a5a', pose: 'sit' },
+  kublai: { skin: 4, top: 'robe', topCol: '#d8b850', legs: 'robe', legCol: '#8a5a2a', sleeve: '#d8b850', pattern: 'stripe', hat: 'mongol', hatCol: '#a8322a', beard: 1, pose: 'stand' },
+  beggarMonk: { skin: 3, top: 'robe', topCol: '#8a7a5a', legs: 'robe', legCol: '#8a7a5a', sleeve: '#8a7a5a', pattern: 'stripe', hair: 'bald', pose: 'walk', item: 'bowl' },
+  mingEmperor: { skin: 3, top: 'robe', topCol: '#d8a838', legs: 'robe', legCol: '#d8a838', sleeve: '#d8a838', pattern: 'stripe', hat: 'futou', hatCol: '#1e1a1c', beard: 1, pose: 'stand' },
+  mingOfficial: { skin: 4, top: 'robe', topCol: '#a8322a', legs: 'robe', legCol: '#a8322a', sleeve: '#a8322a', hat: 'futou', hatCol: '#1e1a1c', beard: 1, pose: 'kneel' },
+  mingOfficial2: { skin: 3, top: 'robe', topCol: '#2a4a7a', legs: 'robe', legCol: '#2a4a7a', sleeve: '#2a4a7a', hat: 'futou', hatCol: '#1e1a1c', pose: 'kneel' },
+  zhengHe: { skin: 4, top: 'robe', topCol: '#2a3a6a', legs: 'robe', legCol: '#2a3a6a', sleeve: '#2a3a6a', pattern: 'stripe', hat: 'futou', hatCol: '#1e1a1c', pose: 'stand' },
+  swahili: { skin: 0, top: 'robe', topCol: '#e8e2d4', legs: 'robe', legCol: '#e8e2d4', sleeve: '#e8e2d4', hat: 'band', hatCol: '#c8322a', beard: 1, pose: 'stand' },
+  swahili2: { skin: 2, top: 'dress', topCol: '#c8642a', legs: 'skirt', legCol: '#3a6a8a', hair: 'curly', pose: 'stand', item: 'basket' },
+});
+{
+  // the steppe, the riders, Kublai Khan
+  const MG = ev('mongols');
+  for (const [a, v] of [[1362, 0], [1370, 1], [1376.4, 0]]) add('yurt', 'main', a, { v, z: 0 });
+  for (const [a, v] of [[1366, 1], [1380, 0]]) add('yurt', 'mid', a, { v, scale: 0.55 });
+  ['mongolA', 'mongolB', 'mongolA'].forEach((v, i) => add('rider', 'main', 1352 - i * 5, { v, z: 3 + i * 0.1, scale: 0.95, popAt: MG + i * 0.25, move: (t) => clamp((t - MG - i * 0.25) * 6, 0, 30 - i * 2), gait: 'gallop', to: ev('zhu') + 1.5, foldAt: ev('zhu') + 0.4 + i * 0.2 }));
+  add('rider', 'mid', 1372, { v: 'mongolB', scale: 0.65, move: (t) => (t - 355) * 1.6, gait: 'gallop' });
+  add('dais', 'main', 1388, { z: 0.5, scale: 1.1, popAt: ev('kublai') - 0.4 });
+  add('person', 'main', 1388, { v: 'kublai', z: 1, scale: P2 * 1.06, y: 44, popAt: ev('kublai') });
+  add('hall', 'main', 1398, { v: 1, z: 0, wide: 20, popAt: ev('kublai') + 0.6 });
+  // the begging monk who became emperor
+  add('person', 'main', 1402, { v: 'beggarMonk', z: 2.5, scale: P2, popAt: ev('monk'), pace: 3.6, move: (t) => clamp((t - ev('monk')) * 0.8, 0, 4.4), foldAt: ev('ming') - 0.2, act: (t) => ({ front: [-60, -40] }) });
+  add('person', 'main', 1406.4, { v: 'mingEmperor', z: 2.5, scale: P2 * 1.05, popAt: 1e9, repopAt: ev('ming') + 0.15, loud: 1.4, act: (t) => ({ head: -4, lean: -2, front: [-30, -40] }) });
+  // the Forbidden City and the Ming wall
+  add('hall', 'main', 1424, { v: 4, z: 0, wide: 22, popAt: ev('forbidden'), loud: 2.6, scale: 1.1 });
+  for (const a of [1410, 1414.6, 1433.4, 1438]) add('palacewall', 'main', a, { z: 0.2, popAt: ev('forbidden') + 0.4 + Math.abs(a - 1424) * 0.02 });
+  [[1418.6, 'mingOfficial'], [1430, 'mingOfficial2']].forEach(([a, v], i) => add('person', 'main', a, { v, z: 2, scale: P2, flip: i === 1, popAt: ev('forbidden') + 0.8, act: (t) => ({ lean: 32, head: 14 }) }));
+  for (let a = 1440, i = 0; a < 1478; a += 2, i++) add('earthwall', 'mid', a, { v: 1, scale: 0.6, popAt: ev('mingwall') + i * 0.06, loud: 0.35 });
+  for (const [a, k] of [[1446, 0], [1458, 1], [1470, 2]]) add('beacon', 'mid', a, { v: 1, scale: 0.62, popAt: ev('mingwall') + 0.5 + k * 0.4, loud: 0.6 });
+  for (let a = 1448, i = 0; a < 1468; a += 2.9, i++) if (Math.abs(a - 1458) > 1.5) add('earthwall', 'main', a, { v: 1, z: 1, popAt: ev('mingwall') + 0.3 + i * 0.08, loud: 0.5 });
+  add('beacon', 'main', 1458, { v: 1, z: 1.1, popAt: ev('mingwall') + 0.8 });
+  for (const [a, v] of [[1442, 0], [1474, 1]]) add('pine', 'main', a, { v, z: 0, scale: 0.9 });
+  // Zheng He's fleet, out across the ocean to the coast of East Africa
+  const ZH = ev('zhenghe');
+  for (let a = 1480; a < 1526; a += 4.2) add('wave', 'main', a, { v: (R() * 4) | 0, z: 4, loud: 0.2, ground: false, y: -2 });
+  for (let a = 1478; a < 1528; a += 6) add('wave', 'front', a, { v: (R() * 4) | 0, scale: 1.6, ground: false, loud: 0.2 });
+  add('treasureship', 'main', 1494, { z: 3, ground: false, y: 12, scale: 0.8, popAt: ZH, loud: 2, move: (t) => Math.max(0, t - ZH) * 1.4 });
+  for (const [a, s, L] of [[1486, 0.55, 'mid'], [1500, 0.5, 'mid'], [1510, 0.45, 'mid'], [1490, 0.3, 'far'], [1504, 0.3, 'far'], [1516, 0.28, 'far']]) add(a % 2 ? 'junk' : 'treasureship', L, a, { v: 1, scale: s, ground: false, y: 4, popAt: ZH + 0.6 + (a % 7) * 0.1, move: (t) => Math.max(0, t - ZH) * 1.1 });
+  for (const [a, v] of [[1530, 0], [1538, 1]]) add('baobab', 'main', a, { v, z: 0 });
+  for (const a of [1533.4, 1542]) add('palm', 'main', a, { v: 0, z: 0.5, scale: 0.85 });
+  add('person', 'main', 1535.6, { v: 'swahili', z: 2, scale: P2, flip: true });
+  add('person', 'main', 1537.8, { v: 'swahili2', z: 2, scale: P2, flip: true });
+  // the giraffe at the Ming court; everyone bows to it
+  const GIR = ev('giraffe');
+  add('hall', 'main', 1562, { v: 4, z: 0, wide: 22 });
+  add('giraffe', 'main', 1546, { z: 2.4, scale: 1.25, popAt: GIR - 0.2, loud: 1.4, flip: false, pace: 1.4, move: (t) => clamp((t - GIR) * 1.1, 0, 4) });
+  [[1553, 'mingOfficial'], [1555.6, 'mingOfficial2'], [1558.2, 'mingOfficial']].forEach(([a, v], i) => add('person', 'main', a, { v, z: 2.2, scale: P2, flip: true, popAt: GIR + 0.5 + i * 0.2, act: (t) => { const b = sramp(t, ev('qilin') + i * 0.25, ev('qilin') + 0.5 + i * 0.25); return { lean: 18 + b * 30, head: 10 + b * 12 }; } }));
+  add('person', 'main', 1550.2, { v: 'zhengHe', z: 2.1, scale: P2, popAt: GIR + 0.3 });
+  grassRun(1356, 1478, 3.6, 'main', { skip: (a) => (a > 1384 && a < 1408) || (a > 1408 && a < 1440) });
+  grassRun(1528, 1572, 3.6, 'main', { skip: (a) => a > 1544 && a < 1570 });
+  grassRun(1356, 1572, 7, 'front', { s: 2, skip: (a) => a > 1478 && a < 1528 });
+  hook({
+    sky(g, st, t, S) {
+      const Q = ev('qilin');
+      if (t > Q - 0.3 && t < Q + 6) { const k = drop(t, Q, Q + 5.2), por = st.aspectK > 0.4 ? 0 : 1; st.hang(g, st.fx.qilin, st.W * (por ? 0.5 : 0.7), st.H * lerp(-0.3, por ? 0.24 : 0.2, k), por ? 1.0 : 1.4, Math.sin(t * 0.6) * 1.5 * DEG); }
+    },
+  });
+}
 // the thread of silk: unwound from the reel, it runs on, stitched into the world, through everything
 const THREAD0 = 94.6;
 const threadEnd = (t) => (t < 40.4 ? -1e9 : t < 46.5 ? THREAD0 + (t - 40.4) * 9 : 1e9);
@@ -707,7 +771,7 @@ const moteK = track([[0, [255, 222, 170]], [12, [255, 190, 120]], [26, [255, 222
 const gradeK = track([[0, [255, 170, 95, 0.16]], [24, [255, 170, 95, 0.16]], [30, [255, 205, 150, 0.1]], [46, [255, 205, 150, 0.1]], [52, [255, 160, 90, 0.18]], [96, [255, 160, 90, 0.16]], [102, [255, 205, 150, 0.1]], [107, [255, 205, 150, 0.1]], [109, [150, 140, 130, 0.22]], [113, [150, 140, 130, 0.22]], [116, [255, 210, 160, 0.1]]]);
 const SUNS = [[-1, 11, -430, -78, 170], [24, 31, 430, 170, -60], [45, 52, -430, -40, 170], [96, 103, 430, 170, -60]];
 const NIGHTS = [[7, 27], [50, 99], [296, 319], [330, 341]];
-const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3], [146.5, 148.5, 150.5, 152.5, 0.22], [168, 170.5, 173, 175, 0.12], [175.5, 177.5, 180.5, 182.5, 0.42], [287, 289, 292.5, 294.5, 0.2], [299, 303, 314, 317, 0.45], [325, 326.5, 328.5, 330, 0.3]];
+const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3], [146.5, 148.5, 150.5, 152.5, 0.22], [168, 170.5, 173, 175, 0.12], [175.5, 177.5, 180.5, 182.5, 0.42], [287, 289, 292.5, 294.5, 0.2], [299, 303, 314, 317, 0.45], [325, 326.5, 328.5, 330, 0.3], [369, 371, 373.5, 375.5, 0.25], [396, 398, 401.5, 403.5, 0.12]];
 
 function state(t, stage) {
   const c = cam(t), lights = [], emitters = [], smoke = [];
@@ -751,7 +815,7 @@ function sky(g, st, t, S) {
     st.hang(g, st.fx.moon, x, y, 1, Math.sin(t * 0.5) * 1.6 * DEG, 1, -0.35);
   }
   // in the long days a paper sun hangs on its thread
-  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186], [188, 226], [262, 290], [344, 356]]) {
+  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186], [188, 226], [262, 290], [344, 356], [358, 402]]) {
     if (t < t0 - 0.5 || t > t1 + 3) continue;
     const k = drop(t, t0, t1), sx = W * (st.aspectK > 0.4 ? 0.16 : 0.2), sy = H * lerp(-0.25, 0.13, k);
     g.globalCompositeOperation = 'screen'; const gl = g.createRadialGradient(sx, sy, 0, sx, sy, 300 * u); gl.addColorStop(0, `rgba(255,236,190,${0.35 * clamp(k)})`); gl.addColorStop(1, 'rgba(255,230,180,0)'); g.fillStyle = gl; g.fillRect(sx - 300 * u, sy - 300 * u, 600 * u, 600 * u); g.globalCompositeOperation = 'source-over';

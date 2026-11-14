@@ -900,3 +900,58 @@ KINDS.junk = {
   },
   draw(g, P, t, e, env) { g.translate(0, Math.sin(t * 1.3 + e.a) * 3); g.rotate(Math.sin(t * 0.9 + e.a * 2) * 2.2 * DEG); put(g, P.spr, env.sh, 5, 6); },
 };
+
+// ======================================================== Mongols and Ming ===
+KINDS.yurt = {
+  bake(mk, v = 0) {
+    const sh = mk('yurt' + v, [-70, -110, 70, 6]), c = v ? '#e8e0cc' : '#ddd2b8';
+    sh.piece([[-62, 4], [-62, -50], [62, -50], [62, 4]], c, { round: 3, paint: (g) => { g.strokeStyle = 'rgba(120,90,60,.5)'; g.lineWidth = 2; for (const y of [-14, -36]) { g.beginPath(); g.moveTo(-62, y); g.lineTo(62, y); g.stroke(); } g.fillStyle = '#a8322a'; g.fillRect(-12, -40, 24, 44); g.fillStyle = 'rgba(232,190,90,.8)'; g.fillRect(-10, -38, 20, 3); } });
+    sh.piece([[-68, -48], [-8, -94], [8, -94], [68, -48]], shade(c, -0.05), { round: 4, lift: 1.6, paint: (g) => { g.strokeStyle = 'rgba(120,90,60,.45)'; g.lineWidth = 1.4; for (let x = -60; x <= 60; x += 15) { g.beginPath(); g.moveTo(x * 0.12, -92); g.lineTo(x, -50); g.stroke(); } } });
+    sh.piece(rect(-10, -94, 10, -100), '#8a6a4a', { round: 1, lift: 1 });
+    return { spr: sh.finish({ shadowBlur: 4 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+};
+// A rider on horseback: e.v a look, e.gait.
+KINDS.rider = {
+  bake(mk, v) { return { h: bakeHorse(mk, 'r' + v, ['#6a4a34', '#a87a4a', '#3a2c26', '#c9b08a'][(v || '').length % 4]), p: KINDS.person.bake(mk, v) }; },
+  draw(g, P, t, e, env) {
+    const gait = e.gait || 'gallop', ph = t * (gait === 'gallop' ? 11 : 4.4) + e.a;
+    drawHorse(g, P.h, t, e, env, gait, e.a);
+    g.save(); g.translate(-14, -84 - (gait === 'gallop' ? Math.abs(Math.sin(ph)) * 6 : 0)); drawPerson(g, P.p, t, e, env, { lean: gait === 'gallop' ? 10 : 2, head: -6, back: [-50, -40], front: [-80 + Math.sin(ph) * 6, -50] }); g.restore();
+  },
+};
+// The Forbidden City's wall: red, with a coping of yellow tiles.
+KINDS.palacewall = {
+  bake(mk) {
+    const sh = mk('palacewall', [-44, -100, 44, 6]);
+    sh.piece(rect(-42, 4, 42, -78), '#a8322a', { round: 1.5, paint: (g) => { g.fillStyle = 'rgba(0,0,0,.08)'; g.fillRect(-42, -12, 84, 16); } });
+    sh.piece(roofPts(42, -78, 8, 6, 3), '#e0a438', { round: 1.5, lift: 1.4 });
+    return { spr: sh.finish({ shadowBlur: 4 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+};
+// Zheng He's treasure ship: nine masts, red sails, a high stern, a painted eye.
+KINDS.treasureship = {
+  bake(mk) {
+    const sh = mk('treasureship', [-250, -360, 250, 20]);
+    sh.piece([[-240, -70], [-214, 12], [196, 14], [246, -62], [210, -48], [196, -40], [-200, -40], [-214, -96], [-240, -96]], '#5a3622', { round: 4, paint: (g) => { g.strokeStyle = 'rgba(30,18,10,.5)'; g.lineWidth = 1.2; for (let y = -36; y < 14; y += 6) { g.beginPath(); g.moveTo(-220, y); g.lineTo(220, y); g.stroke(); } g.fillStyle = '#a8322a'; g.fillRect(-238, -96, 30, 26); g.fillStyle = 'rgba(232,190,90,.8)'; g.fillRect(-206, -44, 400, 4); g.fillStyle = 'rgba(240,220,170,.95)'; g.beginPath(); g.arc(214, -36, 8, 0, 7); g.fill(); g.fillStyle = 'rgba(20,14,10,.95)'; g.beginPath(); g.arc(216, -36, 3.4, 0, 7); g.fill(); } });
+    sh.piece(rect(-206, -40, -150, -96), '#7a4a2a', { round: 2, lift: 1.2, paint: (g) => { g.fillStyle = 'rgba(30,18,10,.8)'; for (const x of [-198, -180, -164]) g.fillRect(x, -84, 10, 14); } });
+    const masts = [[-170, 140, 40], [-118, 210, 52], [-58, 262, 62], [0, 300, 70], [62, 250, 60], [118, 200, 50], [170, 146, 40]];
+    for (const [x, h, w] of masts) {
+      sh.piece(strip(x, -40, x, -40 - h - 14, 4, 3), '#3a2414', { round: 1, lift: 1 });
+      sh.piece([[x - w * 0.5, -70], [x - w * 0.42, -40 - h], [x + w * 0.42, -40 - h * 1.04], [x + w * 0.5, -70]], x % 120 ? '#b8402e' : '#c8503a', { round: 2.6, lift: 2, paint: (g) => { g.strokeStyle = 'rgba(70,20,10,.7)'; g.lineWidth = 2; for (let k = 1; k < 7; k++) { const yy = -48 - (h * k) / 7; g.beginPath(); g.moveTo(x - w * 0.48, yy); g.quadraticCurveTo(x, yy + 5, x + w * 0.48, yy - 1); g.stroke(); } } });
+    }
+    return { spr: sh.finish({ shadowBlur: 8 }) };
+  },
+  draw(g, P, t, e, env) { g.translate(0, Math.sin(t * 1.0 + e.a) * 3); g.rotate(Math.sin(t * 0.7 + e.a * 2) * 1.6 * DEG); put(g, P.spr, env.sh, 6, 7); },
+};
+KINDS.baobab = {
+  bake(mk, v = 0) {
+    const r = rng(3500 + v), sh = mk('baobab' + v, [-90, -230, 90, 6]);
+    sh.piece([[-34, 4], [-30, -120], [-50, -170], [-70, -190], [-62, -196], [-36, -176], [-14, -150], [-10, -200], [0, -206], [6, -150], [30, -186], [56, -200], [62, -192], [34, -164], [28, -120], [34, 4]], '#8a7a6a', { round: 6, paint: (g) => dab(g, r, 30, [-30, -150, 30, 0], ['rgba(60,50,40,.35)', 'rgba(200,190,170,.25)'], 10, 2) });
+    for (const [x, y, rr] of [[-62, -198, 22], [52, -204, 24], [-2, -214, 20]]) sh.piece(ellipse(x, y, rr, rr * 0.6, 12), '#6a8a4a', { round: 6, rough: 2, lift: 1.2 });
+    return { spr: sh.finish() };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh); },
+};

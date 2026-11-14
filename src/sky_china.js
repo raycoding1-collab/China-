@@ -235,3 +235,17 @@ export function burst(g, st, x, y, d, col, n = 26, size = 1) {
   }
   g.globalCompositeOperation = 'source-over';
 }
+
+// The qilin of legend, drawn the way the court painters saw it: hooves, scales, a single horn, flames.
+fxGroup(['qilin'], (mk) => ({
+  qilin: mk('qilin', [-80, -60, 80, 60], { pad: 6 }).piece([[-74, -54], [74, -54], [74, 54], [-74, 54]], '#efe4c8', { round: 2, paint: (g) => {
+    g.strokeStyle = 'rgba(40,30,24,.85)'; g.lineWidth = 1.6; g.lineCap = 'round'; g.fillStyle = 'rgba(200,90,50,.25)';
+    g.beginPath(); g.moveTo(-40, 20); g.quadraticCurveTo(-36, -6, -10, -6); g.lineTo(26, -8); g.quadraticCurveTo(40, -10, 44, -26); g.quadraticCurveTo(52, -38, 60, -30); g.quadraticCurveTo(58, -18, 46, -6); g.quadraticCurveTo(40, 8, 28, 14); g.lineTo(-30, 18); g.closePath(); g.fill(); g.stroke();
+    for (const x of [-34, -22, 18, 30]) { g.beginPath(); g.moveTo(x, 16); g.lineTo(x + 2, 40); g.lineTo(x + 6, 40); g.stroke(); }
+    g.beginPath(); g.moveTo(52, -36); g.lineTo(56, -48); g.stroke();
+    g.beginPath(); g.moveTo(-40, 8); g.quadraticCurveTo(-56, 0, -60, -16); g.quadraticCurveTo(-50, -10, -46, -2); g.stroke();
+    for (let i = 0; i < 12; i++) { g.beginPath(); g.arc(-24 + (i % 6) * 9, -2 + Math.floor(i / 6) * 8, 3, Math.PI, 0); g.stroke(); }
+    g.strokeStyle = 'rgba(200,80,40,.7)'; for (const [x, y] of [[-16, -10], [8, -12], [-30, -8]]) { g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x - 4, y - 10, x + 2, y - 16); g.stroke(); }
+    g.fillStyle = 'rgba(178,40,32,.85)'; g.fillRect(58, 34, 10, 10);
+  } }).finish({ shadowBlur: 4 }),
+}));
