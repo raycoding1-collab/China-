@@ -2,7 +2,7 @@
 // change, and the special moments. Times come from src/timeline.js (generated from film/film.json).
 // Each chapter adds its cut-outs with add(), and its moments as hooks: lights(), sky(), ground(), over().
 import { monotone, track, noise, fbm, smooth, sramp, clamp, spring, hash, rng, lerp, mix, shade, rgb, DEG } from './util.js';
-import { put } from './paper.js';
+import { put, ellipse, strip } from './paper.js';
 import { KINDS } from './cutouts.js';
 import { LOOKS } from './people.js';
 import './kinds_nature.js';
@@ -36,7 +36,9 @@ const cam = monotone([
   [48.5, 124], [51, 136], [54, 148], [57, 163], [59.5, 180], [62, 186], [70, 189], [80, 192], [85, 202], [87.5, 230], [90, 244], [94.5, 250.5], [97, 262],
   // 3. a hundred schools
   [99.5, 304], [102, 311], [106, 316], [108.5, 336], [111, 348], [113.5, 360], [116, 377], [118.7, 387], [121.5, 396], [124, 405], [126.5, 413], [129.5, 418], [132, 432], [135, 440], [137.5, 446],
-  [141, 480], [662, 2600], [800, 2740],
+  // 4. the First Emperor
+  [141, 486], [144, 493], [147, 500], [150, 506], [152.5, 510], [155, 513], [157.5, 518], [160, 526], [162.5, 538], [165, 549], [167.5, 566], [170, 580], [173, 591], [175.5, 608], [178, 623], [181, 630], [184, 640], [187, 650],
+  [190, 690], [662, 2600], [800, 2740],
 ]);
 
 // ------------------------------------------------- paint and shape of land --
@@ -309,6 +311,76 @@ Object.assign(LOOKS, {
     },
   });
 }
+
+// =================================================== 4. The First Emperor ===
+Object.assign(LOOKS, {
+  qinEmperor: { skin: 4, top: 'robe', topCol: '#1e1a1c', legs: 'robe', legCol: '#1e1a1c', sleeve: '#1e1a1c', pattern: 'stripe', hat: 'mian', hair: 'bun', beard: 1, pose: 'stand' },
+  qinOfficial: { skin: 3, top: 'robe', topCol: '#3a2a2a', legs: 'robe', legCol: '#3a2a2a', sleeve: '#3a2a2a', hat: 'topknot', pose: 'kneel' },
+  wallWorker: { skin: 1, top: 'tunic', topCol: '#9a8460', legs: 'trousers', legCol: '#6a5a44', hair: 'bun', pose: 'walk', item: 'basket' },
+  farmer74: { skin: 3, top: 'coat', topCol: '#3a5a7a', sleeve: '#3a5a7a', legs: 'trousers', legCol: '#2a3a4a', hat: 'cap', hatCol: '#3a5a7a', pose: 'stand', item: 'shovel' },
+  farmer74b: { skin: 4, top: 'shirt', topCol: '#d8d0b8', sleeve: '#d8d0b8', legs: 'trousers', legCol: '#3a3a40', hat: 'wide', hatCol: '#c9a86a', pose: 'stand' },
+});
+KINDS.tchead = {
+  bake(mk) { return { spr: mk('tchead', [-18, -34, 22, 6], { pad: 5 }).piece([[-12, 4], [8, 4], [12, -4], [16, -12], [12, -16], [12, -24], [2, -30], [-10, -28], [-14, -14]], '#a8907a', { round: 4, paint: (g) => { g.fillStyle = 'rgba(40,26,18,.8)'; g.beginPath(); g.arc(6, -15, 1.4, 0, 7); g.fill(); g.strokeStyle = 'rgba(60,40,28,.7)'; g.lineWidth = 1.4; g.beginPath(); g.moveTo(4, -8); g.quadraticCurveTo(9, -9, 13, -6); g.stroke(); } }).piece(ellipse(-6, -28, 6, 5, 10), '#8a7460', { round: 2, lift: 1 }).finish({ shadowBlur: 3 }) }; },
+  draw(g, P, t, e, env) { const k = clamp(spring(t - e.foundAt, 6, 0.5), 0, 1.2); g.translate(0, 26 - k * 30); g.rotate((1 - Math.min(1, k)) * 0.4); put(g, P.spr, env.sh); },
+};
+{
+  // the last rivals fall; the black banner of Qin goes up; the First Emperor
+  [[486.4, 1, 'main'], [490.2, 2, 'mid'], [493.4, 3, 'main'], [497.2, 4, 'mid'], [501.6, 5, 'main'], [505.4, 7, 'mid']].forEach(([a, v, L], i) => add('banner', L, a, { v, z: 1, scale: L === 'mid' ? 0.9 : 1, popAt: 139.4 + i * 0.15, foldAt: EV.conquer[i], loud: 0.8 }));
+  add('banner', 'main', 498.6, { v: 0, z: 1.2, scale: 1.4, popAt: ev('qin') - 0.3, raise: (t) => sramp(t, ev('qin'), ev('qin') + 1.4), foldAt: ev('qinEnd') + 30, loud: 1.4 });
+  add('hall', 'main', 508, { v: 0, z: 0, wide: 20, popAt: ev('emperor') - 1.2, loud: 2.2 });
+  add('person', 'main', 504.2, { v: 'qinEmperor', z: 2.5, scale: P2 * 1.06, popAt: ev('emperor'), loud: 1.2, act: (t) => ({ head: -4 + Math.sin(t * 0.5) * 2, lean: -2, front: [-20, -40] }) });
+  [[507.6, 0], [510.4, 1], [513.2, 2]].forEach(([a, i]) => add('person', 'main', a, { v: 'qinOfficial', z: 2.6, scale: P2, flip: true, popAt: ev('emperor') + 0.5 + i * 0.25, act: (t) => ({ lean: 30 + Math.exp(-(((t - ev('emperor') - 1.2 - i * 0.3) / 0.5) ** 2)) * 20, head: 14 }) }));
+  // one width for every axle: two carts in the same ruts
+  add('cart', 'main', 517.6, { v: 0, z: 2, scale: 0.8, popAt: EV.std[3] - 0.3, move: (t) => clamp((t - EV.std[3]) * 1.4, 0, 9) });
+  add('cart', 'main', 512.4, { v: 1, z: 1.8, scale: 0.8, popAt: EV.std[3] + 0.2, move: (t) => clamp((t - EV.std[3] - 0.4) * 1.4, 0, 9) });
+  for (const [a, v] of [[484, 1], [520, 2], [524, 0]]) add('oak', 'mid', a, { v, scale: 0.55 });
+  grassRun(480, 526, 3.6, 'main', { skip: (a) => a > 500 && a < 516 });
+  // the wall, joined across the hills, piece by piece, with beacon towers
+  for (let a = 527, i = 0; a < 566; a += 2.2, i++) add('earthwall', 'mid', a, { v: 0, scale: 0.62, popAt: ev('wall') + i * 0.07, loud: 0.4 });
+  for (let a = 530, i = 0; a < 562; a += 2.9, i++) if (Math.abs(a - 546) > 2) add('earthwall', 'main', a, { v: 0, z: 1, scale: 1.0, popAt: ev('wall') + 0.4 + i * 0.09, loud: 0.5 });
+  for (const [a, L] of [[533, 'mid'], [546, 'main'], [557, 'mid']]) add('beacon', L, a, { v: 0, z: 1.1, scale: L === 'mid' ? 0.62 : 1, popAt: ev('wall') + 0.6 + (a - 530) * 0.06, loud: 0.8 });
+  ['wallWorker', 'wallWorker'].forEach((v, i) => add('person', 'main', 538 + i * 13, { v, z: 2, scale: P2, popAt: ev('wall') + 0.8, pace: 4.6, move: (t) => Math.max(0, t - ev('wall') - 1) * 0.6 }));
+  // the clay army, in rows going back into the pit
+  const ARMY = ev('army');
+  for (let a = 571, i = 0; a < 604; a += 2.6, i++) add('terracotta', 'main', a, { v: [0, 0, 1, 0, 2, 0, 1, 0, 3, 0, 0, 1, 2][i % 13], z: 1, scale: 1.08, popAt: ARMY + i * 0.07, loud: 0.5 });
+  for (let a = 568, i = 0; a < 607; a += 1.9, i++) add('terracotta', 'mid', a, { v: [0, 1, 0, 2, 0][i % 5], scale: 0.8, popAt: ARMY + 0.3 + i * 0.05, loud: 0.3 });
+  for (let a = 566, i = 0; a < 612; a += 1.5, i++) add('terracotta', 'far', a, { v: i % 3, scale: 0.6, popAt: ARMY + 0.5 + i * 0.04, loud: 0.2 });
+  add('tchorse', 'main', 588.2, { z: 1.2, scale: 0.9, popAt: ARMY + 0.6, loud: 0.8 }); add('tchorse', 'main', 591.4, { z: 1.1, scale: 0.9, popAt: ARMY + 0.7, loud: 0.8 });
+  // 1974: digging a well, a farmer finds a head
+  const FOUND = ev('found');
+  add('person', 'main', 621.6, { v: 'farmer74', z: 2, scale: P2, act: (t) => { const dig = t < FOUND ? Math.max(0, Math.sin(t * 3)) : 0, back = sramp(t, FOUND + 0.2, FOUND + 0.6); return { lean: 16 + dig * 14 - back * 22, head: 14 - back * 8, front: [-60 + dig * 50 - back * 60, -30], back: [-50 + dig * 50 - back * 50, -30] }; } });
+  add('person', 'main', 628.6, { v: 'farmer74b', z: 2, scale: P2, flip: true, act: (t) => { const k = sramp(t, FOUND + 0.4, FOUND + 1); return { lean: 4 + k * 16, head: 6 + k * 16, front: [-20 - k * 20, -20] }; } });
+  add('tchead', 'main', 625.2, { z: 2.2, scale: 1.3, popAt: FOUND - 0.4, foundAt: FOUND, over: true });
+  for (const [a, v] of [[616, 1], [634, 2]]) add('oak', 'main', a, { v, z: 0, scale: 0.85 });
+  add('banner', 'main', 638.6, { v: 0, z: 1, scale: 1.3, foldAt: ev('qinEnd'), loud: 1.2 });
+  grassRun(612, 660, 3.4, 'main', { skip: (a) => a > 620 && a < 630 });
+  grassRun(480, 660, 7, 'front', { s: 2 });
+
+  hook({
+    lights(t, c, L, Em, Sm) {
+      // beacon smoke, passed from tower to tower
+      if (near(546, c, 70) && t > ev('wall')) for (const [a, L2, k] of [[533, 'mid', 0], [546, 'main', 1], [557, 'mid', 2]]) Sm.push({ a: a + 0.3, layer: L2, h: L2 === 'mid' ? 84 : 136, t0: ev('wall') + 1.4 + k * 0.6, size: L2 === 'mid' ? 0.7 : 1.1, life: 6, every: 0.45, rise: 240, drift: 4, alpha: 0.7 });
+    },
+    ground(g, st, t, S, G) {
+      G.run(510, 528, (a0, a1) => { G.arc(a0, a1, -4, 2.4, 'rgba(70,50,30,.45)'); G.arc(a0, a1, -11, 2.4, 'rgba(70,50,30,.45)'); });
+      G.run(566, 610, (a0, a1) => { G.arc(a0, a1, -10, 14, 'rgba(70,52,34,.55)'); G.along(a0, a1, 5.2, (a) => { const [x0, y0] = G.rad(a, -3), [x1, y1] = G.rad(a, -17); g.strokeStyle = 'rgba(120,90,60,.6)'; g.lineWidth = 5; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke(); }); });
+      G.run(622.6, 627.6, (a0, a1) => G.arc(a0, a1, -8, 12, 'rgba(50,34,22,.85)'));
+    },
+    over(g, st, t, S) {
+      const { W, H } = st, por = st.aspectK > 0.4 ? 0 : 1, sc = por ? 0.95 : 1.55;
+      if (t > EV.std[0] - 1.6 && t < ev('stdOut') + 2) {
+        const out = ev('stdOut'), y = (k) => H * lerp(-0.3, por ? 0.26 : 0.24, k), sw = (i) => Math.sin(t * 0.7 + i * 2) * 2 * DEG;
+        const xs = por ? [0.2, 0.42, 0.62, 0.82] : [0.24, 0.42, 0.6, 0.78];
+        st.hang(g, st.fx.qinslip, W * xs[0], y(drop(t, EV.std[0], out)), sc * 0.9, sw(0));
+        const c0 = EV.std[1] - 1.6; if (t > c0) { st.hang(g, st.fx.knifecoin, W * (xs[1] - 0.04), y(drop(t, c0, EV.std[1])), sc, sw(1)); st.hang(g, st.fx.spadecoin, W * (xs[1] + 0.04), y(drop(t, c0 + 0.2, EV.std[1] + 0.1)), sc, sw(4)); }
+        st.hang(g, st.fx.banliang, W * xs[1], y(drop(t, EV.std[1] + 0.3, out + 0.15)), sc * 1.2, sw(2), 1, t * 0.4);
+        st.hang(g, st.fx.weight, W * xs[2], y(drop(t, EV.std[2], out + 0.3)), sc * 1.2, sw(3));
+      }
+      if (t > ev('faces') - 0.3 && t < ev('faces') + 5) st.hang(g, st.fx.faces, W * 0.5, H * lerp(-0.3, por ? 0.26 : 0.22, drop(t, ev('faces'), ev('faces') + 3.6)), por ? 1.1 : 1.7, Math.sin(t * 0.6) * 1.6 * DEG);
+    },
+  });
+}
 // the thread of silk: unwound from the reel, it runs on, stitched into the world, through everything
 const THREAD0 = 94.6;
 const threadEnd = (t) => (t < 40.4 ? -1e9 : t < 46.5 ? THREAD0 + (t - 40.4) * 9 : 1e9);
@@ -329,7 +401,7 @@ const moteK = track([[0, [255, 222, 170]], [12, [255, 190, 120]], [26, [255, 222
 const gradeK = track([[0, [255, 170, 95, 0.16]], [24, [255, 170, 95, 0.16]], [30, [255, 205, 150, 0.1]], [46, [255, 205, 150, 0.1]], [52, [255, 160, 90, 0.18]], [96, [255, 160, 90, 0.16]], [102, [255, 205, 150, 0.1]], [107, [255, 205, 150, 0.1]], [109, [150, 140, 130, 0.22]], [113, [150, 140, 130, 0.22]], [116, [255, 210, 160, 0.1]]]);
 const SUNS = [[-1, 11, -430, -78, 170], [24, 31, 430, 170, -60], [45, 52, -430, -40, 170], [96, 103, 430, 170, -60]];
 const NIGHTS = [[7, 27], [50, 99]];
-const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3]];
+const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3], [146.5, 148.5, 150.5, 152.5, 0.22], [168, 170.5, 173, 175, 0.12], [175.5, 177.5, 180.5, 182.5, 0.42]];
 
 function state(t, stage) {
   const c = cam(t), lights = [], emitters = [], smoke = [];
@@ -373,7 +445,7 @@ function sky(g, st, t, S) {
     st.hang(g, st.fx.moon, x, y, 1, Math.sin(t * 0.5) * 1.6 * DEG, 1, -0.35);
   }
   // in the long days a paper sun hangs on its thread
-  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138]]) {
+  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186]]) {
     if (t < t0 - 0.5 || t > t1 + 3) continue;
     const k = drop(t, t0, t1), sx = W * (st.aspectK > 0.4 ? 0.16 : 0.2), sy = H * lerp(-0.25, 0.13, k);
     g.globalCompositeOperation = 'screen'; const gl = g.createRadialGradient(sx, sy, 0, sx, sy, 300 * u); gl.addColorStop(0, `rgba(255,236,190,${0.35 * clamp(k)})`); gl.addColorStop(1, 'rgba(255,230,180,0)'); g.fillStyle = gl; g.fillRect(sx - 300 * u, sy - 300 * u, 600 * u, 600 * u); g.globalCompositeOperation = 'source-over';

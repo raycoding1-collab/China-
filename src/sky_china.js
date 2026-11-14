@@ -127,3 +127,29 @@ fxGroup(['mandate'], (mk) => ({
   mandate: mk('mandate', [-44, -100, 44, 100], { pad: 8 }).piece([[-36, -86], [36, -86], [36, 88], [-36, 88]], '#e8c96a', { round: 2, paint: (g) => { g.strokeStyle = 'rgba(160,110,40,.5)'; g.lineWidth = 1.4; g.strokeRect(-30, -78, 60, 160); glyph(g, 'm_tian', 0, -24, 1.6, 1, 'ink'); g.fillStyle = 'rgba(178,40,32,.9)'; g.fillRect(-10, 34, 20, 20); g.fillStyle = 'rgba(232,201,106,.9)'; g.fillRect(-6, 38, 4, 12); g.fillRect(2, 38, 4, 12); g.fillRect(-6, 42, 12, 3); } })
     .piece([[-42, -94], [42, -94], [42, -84], [-42, -84]], '#6a3a22', { round: 2, lift: 1.2 }).piece([[-42, 86], [42, 86], [42, 96], [-42, 96]], '#6a3a22', { round: 2, lift: 1.2 }).finish({ shadowBlur: 4 }),
 }));
+
+// ------------------------------------------------------- the First Emperor ---
+fxGroup(['qinslip', 'knifecoin', 'spadecoin', 'banliang', 'weight', 'faces'], (mk) => {
+  const r = rng(221), S = {};
+  const slip = mk('qinslip', [-44, -90, 44, 90], { pad: 6 });
+  for (let i = 0; i < 6; i++) { const x = -36 + i * 14.4; slip.piece([[x - 6.4, -84], [x + 6.4, -84], [x + 6.4, 84], [x - 6.4, 84]], i % 2 ? '#d8c08a' : '#ccb27a', { round: 1.5, rough: 0.3, lift: 0.8, thick: 0.8 }); }
+  S.qinslip = slip.piece([[-42, -60], [42, -60], [42, -57], [-42, -57]], '#7a5a3a', { round: 0.5, lift: 0.6 }).piece([[-42, 58], [42, 58], [42, 61], [-42, 61]], '#7a5a3a', { round: 0.5, lift: 0.6, paint: (g) => { const names = ['m_ri', 'm_yue', 'm_ren', 'm_mu', 'm_shan', 'm_tian']; for (let i = 0; i < 6; i++) for (let j = 0; j < 3; j++) glyph(g, names[(i + j * 2) % 6], -36 + i * 14.4, -40 + j * 40, 0.3, 1, 'ink'); } }).finish({ shadowBlur: 4 });
+  S.knifecoin = mk('knifecoin', [-14, -60, 14, 20], { pad: 5 }).piece([[-4, 16], [4, 16], [6, 6], [6, -30], [2, -52], [-6, -56], [-6, -30], [-6, 6]], '#7a8a6a', { round: 2, paint: (g) => { g.strokeStyle = 'rgba(40,50,30,.6)'; g.lineWidth = 1; g.beginPath(); g.arc(0, 10, 3, 0, 7); g.stroke(); } }).finish({ shadowBlur: 3 });
+  S.spadecoin = mk('spadecoin', [-24, -36, 24, 30], { pad: 5 }).piece([[-4, -30], [4, -30], [4, -16], [18, -10], [22, 24], [8, 18], [0, 26], [-8, 18], [-22, 24], [-18, -10], [-4, -16]], '#7a8a6a', { round: 2, paint: (g) => { g.strokeStyle = 'rgba(40,50,30,.6)'; g.lineWidth = 1; g.beginPath(); g.moveTo(0, -12); g.lineTo(0, 16); g.stroke(); } }).finish({ shadowBlur: 3 });
+  S.banliang = mk('banliang', [-28, -28, 28, 28], { pad: 5 }).piece(ellipse(0, 0, 25, 25, 26), '#a88a52', { round: 4, paint: (g) => { g.fillStyle = 'rgba(30,20,10,.92)'; g.fillRect(-6, -6, 12, 12); g.strokeStyle = 'rgba(70,50,24,.7)'; g.lineWidth = 1.4; g.beginPath(); g.arc(0, 0, 22, 0, 7); g.stroke(); glyph(g, 'm_ren', -15, 0, 0.26, 1, 'ink'); glyph(g, 'm_mu', 15, 0, 0.26, 1, 'ink'); } }).finish({ shadowBlur: 3 });
+  S.weight = mk('weight', [-30, -36, 30, 24], { pad: 5 }).piece([[-26, 20], [26, 20], [24, 4], [16, -12], [6, -18], [-6, -18], [-16, -12], [-24, 4]], '#8a7a52', { round: 6, paint: (g) => { glyph(g, 'm_tian', -8, 4, 0.3, 1, 'cut'); glyph(g, 'm_shan', 8, 4, 0.3, 1, 'cut'); } }).piece([[-6, -18], [-6, -28], [6, -28], [6, -18], [3, -18], [3, -24], [-3, -24], [-3, -18]], '#7a6a44', { round: 1.5, lift: 1 }).finish({ shadowBlur: 3 });
+  const f = mk('faces', [-110, -50, 110, 50], { pad: 8 }).piece([[-104, -44], [104, -44], [104, 44], [-104, 44]], '#e8dcc0', { round: 3, rough: 0.6 });
+  [[-66, 0], [0, 1], [66, 2]].forEach(([x, k]) => {
+    const nose = 10 + k * 2;
+    f.piece([[x - 18, 34], [x + 14, 34], [x + 18, 16], [x + nose + 8, 6], [x + 18, 0], [x + 18, -14], [x + 6, -26], [x - 14, -24], [x - 22, -4]], ['#a8907a', '#b09880', '#9a8470'][k], { round: 6, lift: 1.4, paint: (g) => {
+      g.fillStyle = 'rgba(40,26,18,.85)'; g.beginPath(); g.arc(x + 9, -2, 1.6, 0, 7); g.fill();
+      g.strokeStyle = 'rgba(60,40,28,.75)'; g.lineWidth = 1.8; g.lineCap = 'round';
+      if (k === 0) { g.beginPath(); g.moveTo(x + 6, 12); g.quadraticCurveTo(x + 14, 8, x + 22, 14); g.stroke(); }
+      if (k === 1) { g.fillStyle = 'rgba(80,58,40,.6)'; g.beginPath(); g.moveTo(x - 2, 18); g.lineTo(x + 16, 20); g.lineTo(x + 6, 34); g.fill(); }
+      if (k === 2) { g.beginPath(); g.moveTo(x + 4, 14); g.lineTo(x + 20, 10); g.stroke(); g.beginPath(); g.moveTo(x + 2, -8); g.lineTo(x + 14, -10); g.stroke(); }
+    } });
+    f.piece(k === 1 ? [[x - 16, -22], [x - 18, -36], [x + 4, -40], [x + 10, -26]] : ellipse(x - 10, -24, 8, 7, 10), '#8a7460', { round: 2, lift: 1 });
+  });
+  S.faces = f.finish({ shadowBlur: 4 });
+  return S;
+});

@@ -534,3 +534,124 @@ KINDS.pine = {
   },
   draw(g, P, t, e, env) { g.rotate(sway(t, e, 0.7)); put(g, P.spr, env.sh); },
 };
+
+// ========================================================== imperial China ===
+// A timber hall with a curved, upswept roof on a terrace: one plan, dressed for each dynasty.
+// v0 Qin, v1 Han, v2 Tang, v3 Song, v4 Ming/Qing palace (yellow tiles, double eaves), v5 a green-tiled temple, v6 a plain grey house.
+const HALLS = [
+  { tile: '#3a3a40', col: '#2a1c18', wall: '#c8b48a', base: '#a8865a', w: 120, h: 92, eave: 28, dbl: 0, trim: '#a8282a' },
+  { tile: '#4a4a50', col: '#a8322a', wall: '#dccca4', base: '#a89a84', w: 130, h: 96, eave: 30, dbl: 0, trim: '#2a2a2e' },
+  { tile: '#56605a', col: '#b8382a', wall: '#ece0c4', base: '#b0a48c', w: 150, h: 92, eave: 38, dbl: 0, trim: '#e8dcc0' },
+  { tile: '#3f5a58', col: '#a8402e', wall: '#e8dcc0', base: '#a8a090', w: 120, h: 100, eave: 32, dbl: 0, trim: '#4a7a6a' },
+  { tile: '#e0a438', col: '#a8282a', wall: '#a8282a', base: '#e8e4da', w: 160, h: 104, eave: 34, dbl: 1, trim: '#2f6a6a' },
+  { tile: '#3f6a52', col: '#a8282a', wall: '#d8c8a8', base: '#b0a898', w: 96, h: 84, eave: 26, dbl: 0, trim: '#e0a438' },
+  { tile: '#4a4a50', col: '#5a4434', wall: '#e8e2d4', base: '#9a9488', w: 80, h: 70, eave: 20, dbl: 0, trim: '#3a3a40' },
+];
+function roofPts(w, y0, rise, eave, tip) {
+  const pts = [];
+  // underside: an eave line that sweeps up at both corners
+  for (let i = 0; i <= 12; i++) { const f = i / 12, x = -w - eave + f * (w + eave) * 2, up = Math.pow(Math.abs(f * 2 - 1), 3); pts.push([x, y0 - up * tip]); }
+  // the slope above it, concave, up to the ridge
+  for (let i = 0; i <= 8; i++) { const f = i / 8, x = (w + eave) * (1 - f) + w * 0.42 * f, y = y0 - tip - rise * (1 - (1 - f) * (1 - f)); pts.push([x, y]); }
+  for (let i = 0; i <= 8; i++) { const f = i / 8, x = -(w * 0.42 * (1 - f) + (w + eave) * f), y = y0 - tip - rise * (1 - f * f); pts.push([x, y]); }
+  return pts;
+}
+KINDS.hall = {
+  bake(mk, v = 0) {
+    const H = HALLS[v % HALLS.length], r = rng(2700 + v), { w, h, eave } = H, base = v === 4 ? 30 : 18;
+    const sh = mk('hall' + v, [-w - eave - 30, -base - h - (H.dbl ? 130 : 90), w + eave + 30, 6]);
+    // terrace and steps
+    sh.piece([[-w - 16, 4], [-w - 12, -base], [w + 12, -base], [w + 16, 4]], H.base, { round: 2, paint: (g) => { g.strokeStyle = 'rgba(60,50,40,.3)'; g.lineWidth = 1; for (let y = -6; y > -base; y -= 6) { g.beginPath(); g.moveTo(-w - 14, y); g.lineTo(w + 14, y); g.stroke(); } if (v === 4) { g.fillStyle = 'rgba(160,150,140,.6)'; for (let x = -w - 8; x < w + 10; x += 12) g.fillRect(x, -base - 1, 3, -9); g.fillRect(-w - 12, -base - 10, w * 2 + 24, 2.5); } } });
+    sh.piece([[-22, 4], [-16, -base], [16, -base], [22, 4]], shade(H.base, -0.08), { round: 1, lift: 1, paint: (g) => { g.strokeStyle = 'rgba(40,30,20,.35)'; g.lineWidth = 1; for (let y = 0; y > -base; y -= 4) { g.beginPath(); g.moveTo(-20, y); g.lineTo(20, y); g.stroke(); } } });
+    // the body: columns, lattice doors and windows
+    const yb = -base, yt = -base - h, win = [];
+    for (let x = -w + 18; x < w - 18; x += 34) if (Math.abs(x + 9) > 20) win.push([x + 4, yt + 18, 18, h - 26]);
+    win.push([-12, yt + 14, 24, h - 14]);
+    sh.piece(rect(-w, yb, w, yt), H.wall, { round: 1.5, lift: 1.2, paint: (g) => {
+      for (const [x, y, ww, hh] of win) { g.fillStyle = 'rgba(40,24,16,.82)'; g.fillRect(x, y, ww, hh); g.strokeStyle = 'rgba(200,170,110,.55)'; g.lineWidth = 0.8; for (let yy = y + 4; yy < y + hh; yy += 5) { g.beginPath(); g.moveTo(x, yy); g.lineTo(x + ww, yy); g.stroke(); } for (let xx = x + 4; xx < x + ww; xx += 5) { g.beginPath(); g.moveTo(xx, y); g.lineTo(xx, y + hh); g.stroke(); } }
+      g.fillStyle = H.col; for (let x = -w; x <= w - 6; x += 34) g.fillRect(x, yt, 7, h);
+      g.fillStyle = H.trim; g.fillRect(-w, yt, w * 2, 8); g.fillStyle = 'rgba(255,240,200,.25)'; for (let x = -w + 6; x < w; x += 14) g.fillRect(x, yt + 2, 6, 3);
+    } });
+    // brackets, then the roof (twice for a palace)
+    sh.piece(rect(-w - 4, yt + 2, w + 4, yt - 12), shade(H.col, -0.1), { round: 1, lift: 1, paint: (g) => { g.fillStyle = H.trim; for (let x = -w; x < w; x += 12) g.fillRect(x, yt - 10, 7, 8); } });
+    const roof = (y0, ww, rise, ev, tip, col) => sh.piece(roofPts(ww, y0, rise, ev, tip), col, { round: 2.4, rough: 0.8, lift: 2, paint: (g) => { g.strokeStyle = rgb(shade(col, -0.35), 0.5); g.lineWidth = 1.2; for (let x = -ww - ev; x < ww + ev; x += 6) { g.beginPath(); g.moveTo(x * 0.5, y0 - tip - rise); g.lineTo(x, y0 + 2); g.stroke(); } g.fillStyle = rgb(shade(col, 0.25), 0.35); g.fillRect(-ww - ev, y0 - 4, (ww + ev) * 2, 3); } });
+    if (H.dbl) { roof(yt - 10, w + 8, 18, eave, 12, H.tile); sh.piece(rect(-w * 0.7, yt - 36, w * 0.7, yt - 62), H.wall, { round: 1, lift: 1.2, paint: (g) => { g.fillStyle = H.col; for (let x = -w * 0.7; x < w * 0.7; x += 22) g.fillRect(x, yt - 62, 5, 26); g.fillStyle = H.trim; g.fillRect(-w * 0.7, yt - 62, w * 1.4, 6); } }); roof(yt - 58, w * 0.72, 40, eave * 0.9, 12, H.tile); }
+    else roof(yt - 10, w, 54, eave, 16, H.tile);
+    const ry = H.dbl ? yt - 58 - 12 - 40 : yt - 10 - 16 - 54;
+    const rw = (H.dbl ? w * 0.72 : w) * 0.42;
+    sh.piece(rect(-rw - 4, ry + 3, rw + 4, ry - 7), shade(H.tile, -0.25), { round: 1.5, lift: 1.2 });
+    for (const s of [-1, 1]) sh.piece([[s * rw, ry + 3], [s * (rw + 6), ry - 14], [s * (rw - 2), ry - 18], [s * (rw - 8), ry - 6]], shade(H.tile, -0.3), { round: 1.5, lift: 1 });
+    return { spr: sh.finish({ shadowBlur: 7 }), windows: win };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 4, 5); },
+  glow: glowRects,
+};
+// The Qin wall: pounded earth, tamped in layers between boards. Short pieces, so the wall bends with the hills.
+KINDS.earthwall = {
+  bake(mk, v = 0) {
+    const r = rng(2800 + v), c = v === 1 ? '#8a8a8e' : '#b8955e', sh = mk('earthwall' + v, [-44, -80, 44, 6]);
+    if (v === 1) sh.piece([[-42, 4], [-40, -54], [-36, -54], [-36, -66], [-24, -66], [-24, -54], [-12, -54], [-12, -66], [0, -66], [0, -54], [12, -54], [12, -66], [24, -66], [24, -54], [36, -54], [36, -66], [40, -66], [42, 4]], c, { round: 1.2, rough: 0.6, paint: (g) => { g.strokeStyle = 'rgba(50,50,56,.35)'; g.lineWidth = 0.8; let row = 0; for (let y = 2; y > -54; y -= 6, row++) { g.beginPath(); g.moveTo(-42, y); g.lineTo(42, y); g.stroke(); for (let x = -42 + (row % 2) * 6; x < 42; x += 12) { g.beginPath(); g.moveTo(x, y); g.lineTo(x, y - 6); g.stroke(); } } } });
+    else sh.piece([[-42, 4], [-38, -50], [-30, -54], [30, -54], [38, -50], [42, 4]], c, { round: 2.4, rough: 1.4, paint: (g) => { g.strokeStyle = 'rgba(90,62,30,.35)'; g.lineWidth = 1.2; for (let y = 0; y > -54; y -= 5) { g.beginPath(); g.moveTo(-42, y); g.lineTo(42, y + (r() - 0.5)); g.stroke(); } } });
+    return { spr: sh.finish({ shadowBlur: 3 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 2, 3); },
+};
+// A beacon tower: smoke by day, fire by night, passed from tower to tower.
+KINDS.beacon = {
+  bake(mk, v = 0) {
+    const c = v === 1 ? '#8a8a8e' : '#b0905a', sh = mk('beacon' + v, [-40, -150, 40, 6]);
+    sh.piece([[-34, 4], [-28, -116], [28, -116], [34, 4]], c, { round: 2, paint: (g) => { g.strokeStyle = 'rgba(70,50,30,.3)'; g.lineWidth = 1; for (let y = 0; y > -116; y -= 6) { g.beginPath(); g.moveTo(-34, y); g.lineTo(34, y); g.stroke(); } g.fillStyle = 'rgba(30,20,14,.8)'; g.fillRect(-6, -30, 12, 34); } });
+    sh.piece([[-32, -114], [-32, -130], [-24, -130], [-24, -122], [-8, -122], [-8, -130], [8, -130], [8, -122], [24, -122], [24, -130], [32, -130], [32, -114]], shade(c, -0.06), { round: 1, lift: 1.2 });
+    return { spr: sh.finish({ shadowBlur: 4 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+};
+// A terracotta warrior: v0 an infantryman, v1 a kneeling archer, v2 an officer, v3 a general. Each face is its own.
+KINDS.terracotta = {
+  bake(mk, v = 0) {
+    const r = rng(2900 + v * 7), c = ['#a8907a', '#9a8470', '#b09880', '#a08a74'][v % 4], cd = shade(c, -0.15), sh = mk('tc' + v, [-30, -150, 30, 6]);
+    const kneel = v === 1, base = kneel ? -40 : 0;
+    sh.piece([[-16, 4], [16, 4], [16, -6], [-16, -6]], shade(c, -0.25), { round: 1 });
+    if (!kneel) { sh.piece([[-12, -6], [-3, -6], [-4, -50], [-12, -50]], cd, { round: 2 }); sh.piece([[3, -6], [12, -6], [12, -50], [4, -50]], c, { round: 2 }); }
+    else sh.piece([[-16, -6], [20, -6], [22, -22], [-4, -26], [-6, -44], [-16, -40]], cd, { round: 3 });
+    const y0 = kneel ? -40 : -50;
+    sh.piece([[-15, y0 + 2], [15, y0 + 2], [17, y0 - 50], [10, y0 - 58], [-10, y0 - 58], [-17, y0 - 50]], c, { round: 4, lift: 1.4, paint: (g) => { g.strokeStyle = 'rgba(70,50,36,.45)'; g.lineWidth = 1; for (let y = y0 - 4; y > y0 - 48; y -= 6) { g.beginPath(); g.moveTo(-15, y); g.lineTo(15, y); g.stroke(); for (let x = -14 + (((y / 6) | 0) % 2) * 4; x < 15; x += 8) { g.beginPath(); g.moveTo(x, y); g.lineTo(x, y - 6); g.stroke(); } } g.fillStyle = 'rgba(160,60,50,.25)'; g.fillRect(-15, y0 - 52, 30, 4); } });
+    sh.piece([[-8, y0 - 56], [8, y0 - 56], [7, y0 - 62], [-7, y0 - 62]], cd, { round: 1, lift: 1 });
+    // the head: its own nose, beard, moustache and hair
+    const hy = y0 - 62, nose = 10 + r() * 3, beard = r() < 0.6, tache = r() < 0.7;
+    sh.piece([[-9, hy], [6, hy], [9, hy - 6], [nose, hy - 12], [9, hy - 15], [9, hy - 22], [2, hy - 26], [-8, hy - 24], [-11, hy - 14]], shade(c, 0.06), { round: 3, lift: 1.2, paint: (g) => { g.fillStyle = 'rgba(40,26,18,.8)'; g.beginPath(); g.arc(4.5, hy - 15, 1, 0, 7); g.fill(); if (tache) { g.strokeStyle = 'rgba(60,40,28,.7)'; g.lineWidth = 1.4; g.beginPath(); g.moveTo(3, hy - 9); g.quadraticCurveTo(7, hy - 10, 10, hy - 7); g.stroke(); } if (beard) { g.fillStyle = 'rgba(80,58,40,.5)'; g.beginPath(); g.moveTo(-2, hy - 4); g.lineTo(6, hy - 3); g.lineTo(2, hy + 2); g.fill(); } } });
+    if (v === 2 || v === 3) sh.piece([[-10, hy - 22], [-12, hy - 34], [4, hy - 36], [8, hy - 26]], cd, { round: 2, lift: 1 });
+    else sh.piece(ellipse(-6, hy - 24, 5, 4.4, 10), cd, { round: 2, lift: 1 });
+    // arms
+    sh.piece(strip(-12, y0 - 52, kneel ? 6 : -14, y0 - 20, 7, 6), shade(c, 0.03), { round: 2, lift: 1.4 });
+    if (v === 3) sh.piece([[-10, y0 - 12], [10, y0 - 12], [8, y0 - 26], [-8, y0 - 26]], shade(c, 0.1), { round: 2, lift: 1.6 });
+    return { spr: sh.finish({ shadowBlur: 3 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 2, 3); },
+};
+KINDS.tchorse = {
+  bake(mk) {
+    const c = '#9a8470', cd = shade(c, -0.16), sh = mk('tchorse', [-70, -130, 70, 6]);
+    for (const [x, col] of [[-40, cd], [30, cd], [-32, c], [38, c]]) sh.piece([[x - 6, 4], [x + 6, 4], [x + 5, -56], [x - 5, -56]], col, { round: 2 });
+    sh.piece([[-54, -58], [-50, -84], [-20, -90], [30, -90], [48, -78], [50, -54], [-48, -50]], c, { round: 8, lift: 1.4 });
+    sh.piece([[30, -86], [42, -116], [56, -124], [64, -112], [52, -100], [48, -80]], c, { round: 4, lift: 1.6, paint: (g) => { g.fillStyle = 'rgba(40,26,18,.8)'; g.beginPath(); g.arc(54, -116, 1.4, 0, 7); g.fill(); } });
+    sh.piece([[38, -100], [44, -124], [50, -126], [46, -104]], cd, { round: 1, lift: 1 });
+    sh.piece([[-54, -74], [-64, -50], [-58, -48], [-50, -66]], cd, { round: 2, lift: 1 });
+    return { spr: sh.finish({ shadowBlur: 4 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+};
+// A two-wheeled cart drawn by a horse; its axle as wide as everyone else's.
+KINDS.cart = {
+  bake(mk, v = 0) {
+    const P = { h: bakeHorse(mk, 'cart' + v, ['#8a5a3a', '#a87a4a'][v % 2]) };
+    P.box = mk('cart-box' + v, [-60, -70, 90, 8]).piece([[-50, -20], [40, -20], [44, -50], [-54, -50]], '#8a6a44', { round: 2, paint: (g) => { g.strokeStyle = 'rgba(50,30,15,.5)'; g.lineWidth = 1.2; for (let x = -46; x < 40; x += 10) { g.beginPath(); g.moveTo(x, -20); g.lineTo(x, -48); g.stroke(); } } }).piece(strip(40, -28, 86, -46, 3.4, 3), '#5a3a22', { round: 1, lift: 1 }).piece([[-44, -50], [36, -50], [30, -66], [-36, -66]], '#c9a878', { round: 4, lift: 1.4 }).finish({ shadowBlur: 3 });
+    P.wheel = mk('cart-wheel', [-26, -26, 26, 26], { pad: 4 }).piece(ellipse(0, 0, 24, 24, 22), '#5a3a22', { round: 5 }).piece(ellipse(0, 0, 19, 19, 20), '#b89868', { round: 5, lift: 0.4, paint: (g) => { g.strokeStyle = '#5a3a22'; g.lineWidth = 2; for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6; g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(a) * 19, Math.sin(a) * 19); g.stroke(); } } }).finish({ shadowBlur: 2 });
+    return P;
+  },
+  draw(g, P, t, e, env) {
+    g.save(); g.translate(132, 0); drawHorse(g, P.h, t, e, env, e.move ? 'walk' : 'stand', 0); g.restore();
+    g.save(); g.translate(0, -14 + Math.abs(Math.sin(t * 4.4)) * 1); put(g, P.box, env.sh, 3, 4); g.restore();
+    const d = e.move ? e.move(t) * DEG * 1000 : 0; g.save(); g.translate(-6, -24); g.rotate(d / 24); put(g, P.wheel, env.sh * 0.5); g.restore();
+  },
+};
