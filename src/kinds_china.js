@@ -413,3 +413,124 @@ KINDS.sxtree = {
   },
   draw(g, P, t, e, env) { put(g, P.spr, env.sh, 4, 5); },
 };
+
+// ======================================================= a hundred schools ===
+// A war banner on a pole, cloth rippling; v picks the state's colour. e.raise(t) 0..1 runs it up the pole.
+const STATE_COL = ['#2a2628', '#b8322a', '#2f6a8a', '#c9a24a', '#5a7a3a', '#8a4a7a', '#e8e0cc', '#c8642a'];
+KINDS.banner = {
+  bake(mk, v = 0) {
+    const c = STATE_COL[v % STATE_COL.length], P = {};
+    P.pole = mk('banner-pole', [-4, -230, 6, 4], { pad: 4 }).piece(strip(0.5, 2, 0.5, -224, 3.4, 2.6), '#4a3423', { round: 1 }).piece(ellipse(0.5, -226, 3.4, 3.4, 8), '#c9a24a', { round: 1, lift: 0.8 }).finish({ shadowBlur: 2 });
+    P.cloth = [0, 1, 2, 3].map((k) => mk('banner-cloth' + v + k, [-2, -4, 66, 100], { pad: 4 }).piece([[0, 0], [16, 2 + k], [32, -1 + k], [48, 3 - k], [60, 1], [60, 70 + k * 2], [48, 74], [36, 92 - k * 3], [24, 74], [12, 78 + k], [0, 72]], c, { round: 2, rough: 0.6, paint: (g) => { g.strokeStyle = rgb(shade(c, 0.28), 0.6); g.lineWidth = 2.4; g.strokeRect(5, 6, 50, 58); g.fillStyle = rgb(shade(c, v === 6 ? -0.5 : 0.4), 0.85); g.beginPath(); g.arc(30, 34, 11, 0, 7); g.fill(); } }).finish({ shadowBlur: 3 }));
+    return P;
+  },
+  draw(g, P, t, e, env) {
+    put(g, P.pole, env.sh, 2, 3);
+    const k = e.raise ? e.raise(t) : 1; if (k <= 0) return;
+    const f = Math.floor((t * 5 + e.a) % 4);
+    g.save(); g.translate(2, -220 + (1 - k) * 120); g.rotate(fbm(t * 0.8 + e.a, 4) * 6 * DEG); g.scale(1, 0.6 + 0.4 * k); put(g, P.cloth[f], env.sh * 0.6, 2, 3); g.restore();
+  },
+};
+// A horse in profile; e.gait 'walk' | 'gallop' | 'stand'; e.col for coat.
+function bakeHorse(mk, id, col) {
+  const P = {}, r = rng(2300 + id.length), cd = shade(col, -0.18);
+  for (const s of ['F', 'B']) P['leg' + s] = mk('horse-leg' + s + id, [-6, -6, 8, 60]).piece([[-5, -4], [5, -4], [4, 26], [3, 50], [5, 56], [-4, 56], [-3, 26]], s === 'B' ? cd : col, { round: 2 }).piece([[-4, 52], [5, 52], [5.5, 57], [-4.5, 57]], '#2a2220', { round: 1, lift: 0.5 }).finish({ shadowBlur: 2 });
+  P.body = mk('horse-body' + id, [-66, -44, 52, 14]).piece([[-56, -18], [-48, -36], [-12, -40], [26, -38], [44, -26], [46, -6], [32, 8], [-40, 8], [-56, -2]], col, { round: 10, rough: 0.8, paint: (g) => { g.fillStyle = rgb(shade(col, 0.18), 0.4); g.beginPath(); g.ellipse(-20, -30, 26, 6, 0, 0, 7); g.fill(); } })
+    .piece([[-54, -24], [-66, -10], [-64, 12], [-58, 4], [-56, -12]], shade(col, -0.35), { round: 3, rough: 1.4, lift: 0.8 }).finish({ shadowBlur: 3 });
+  P.neck = mk('horse-neck' + id, [-8, -66, 46, 10]).piece([[-6, 6], [-2, -22], [10, -50], [22, -60], [32, -54], [42, -32], [36, -26], [24, -36], [16, -18], [12, 6]], col, { round: 4, paint: (g) => { g.fillStyle = 'rgba(20,12,8,.9)'; g.beginPath(); g.arc(26, -50, 1.6, 0, 7); g.fill(); } })
+    .piece([[-4, -20], [6, -48], [18, -60], [16, -52], [6, -36], [2, -16]], shade(col, -0.4), { round: 2, rough: 1.4, lift: 0.8 }).piece([[20, -60], [22, -68], [26, -60]], col, { round: 1, lift: 0.6 }).finish({ shadowBlur: 2 });
+  return P;
+}
+function drawHorse(g, P, t, e, env, gait = 'walk', ph0 = 0) {
+  const pace = gait === 'gallop' ? 11 : gait === 'walk' ? 4.4 : 0, ph = t * pace + ph0, amp = gait === 'gallop' ? 30 : gait === 'walk' ? 14 : 0;
+  g.save(); g.translate(0, -56 - (gait === 'gallop' ? Math.abs(Math.sin(ph)) * 6 : 0));
+  for (const [x, o, s] of [[-38, 0, 'B'], [30, Math.PI * (gait === 'gallop' ? 0.3 : 1), 'B'], [-30, Math.PI * (gait === 'gallop' ? 0.5 : 1), 'F'], [38, gait === 'gallop' ? 0.2 : 0, 'F']]) { g.save(); g.translate(x, 0); g.rotate(Math.sin(ph + o) * amp * DEG); put(g, P['leg' + s], env.sh, 2, 3); g.restore(); }
+  put(g, P.body, env.sh, 3, 4);
+  g.save(); g.translate(36, -28); g.rotate((Math.sin(ph) * (gait === 'gallop' ? 8 : 3) + fbm(t * 0.4 + e.a, 2) * 4) * DEG); put(g, P.neck, env.sh * 0.6); g.restore();
+  g.restore();
+}
+KINDS.horse = {
+  bake(mk, v = 0) { return bakeHorse(mk, 'h' + v, ['#8a5a3a', '#c9b08a', '#3a2c26', '#a87a4a'][v % 4]); },
+  draw(g, P, t, e, env) { drawHorse(g, P, t, e, env, e.gait || (e.move ? 'walk' : 'stand'), e.a); },
+};
+// A war chariot: two horses, a box on big spoked wheels, a driver and a warrior with a dagger-axe.
+KINDS.chariot = {
+  bake(mk, v = 0) {
+    const P = { h1: bakeHorse(mk, 'c1' + v, '#8a5a3a'), h2: bakeHorse(mk, 'c2' + v, '#6a4430') };
+    P.box = mk('chariot-box' + v, [-50, -60, 70, 8]).piece([[-40, -10], [36, -10], [38, -50], [-38, -50]], '#7a4a2a', { round: 2, paint: (g) => { g.strokeStyle = 'rgba(40,20,10,.5)'; g.lineWidth = 1.4; for (let x = -32; x < 36; x += 9) { g.beginPath(); g.moveTo(x, -10); g.lineTo(x, -48); g.stroke(); } } }).piece(strip(36, -18, 68, -40, 4, 3), '#5a3a22', { round: 1, lift: 1 }).finish({ shadowBlur: 3 });
+    P.wheel = mk('chariot-wheel', [-34, -34, 34, 34], { pad: 4 }).piece(ellipse(0, 0, 32, 32, 26), '#5a3a22', { round: 6, paint: (g) => { g.fillStyle = 'rgba(0,0,0,0)'; } }).piece(ellipse(0, 0, 26, 26, 24), '#c8a878', { round: 6, lift: 0.4, paint: (g) => { g.strokeStyle = '#5a3a22'; g.lineWidth = 2; for (let k = 0; k < 18; k++) { const a = k * Math.PI / 9; g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(a) * 26, Math.sin(a) * 26); g.stroke(); } } }).piece(ellipse(0, 0, 5, 5, 10), '#4a2a18', { round: 1.5, lift: 1 }).finish({ shadowBlur: 2 });
+    P.driver = KINDS.person.bake(mk, 'charioteer'); P.warrior = KINDS.person.bake(mk, 'zhouSoldier');
+    return P;
+  },
+  draw(g, P, t, e, env) {
+    const gait = e.gait || 'gallop', ph = t * 11;
+    g.save(); g.translate(150, 0); drawHorse(g, P.h2, t, e, env, gait, 1.2); g.restore();
+    g.save(); g.translate(130, 4); drawHorse(g, P.h1, t, e, env, gait, 0); g.restore();
+    const bob = Math.abs(Math.sin(ph)) * 2;
+    g.save(); g.translate(0, -36 - bob);
+    g.save(); g.translate(-14, -40); drawPerson(g, P.warrior, t, e, env, { lean: 4, head: 0, back: [-30, -20], front: [-60 + Math.sin(t * 1.4) * 10, -40] }); g.restore();
+    g.save(); g.translate(18, -40); drawPerson(g, P.driver, t, e, env, { lean: 10, head: -4, back: [-60, -30], front: [-70, -30] }); g.restore();
+    put(g, P.box, env.sh, 3, 4);
+    g.restore();
+    const d = e.move ? e.move(t) * DEG * 1000 : t * 30;
+    g.save(); g.translate(0, -32); g.rotate(d / 32); put(g, P.wheel, env.sh * 0.5); g.restore();
+  },
+};
+// The apricot tree Confucius was said to teach under, in blossom.
+KINDS.apricot = {
+  bake(mk, v = 0) {
+    const r = rng(2400 + v), sh = mk('apricot' + v, [-100, -220, 100, 6]);
+    sh.piece([[-8, 2], [-6, -70], [-40, -120], [-70, -138], [-64, -144], [-34, -128], [-4, -100], [2, -170], [8, -170], [8, -110], [44, -140], [74, -150], [72, -142], [40, -124], [12, -76], [10, 2]], '#4a3428', { round: 2, paint: (g) => dab(g, r, 20, [-10, -160, 10, 0], ['rgba(20,12,8,.4)'], 8, 1.6) });
+    for (const [x, y, rr] of [[-60, -150, 40], [56, -158, 42], [0, -184, 50], [-24, -140, 34], [26, -136, 34]]) sh.piece(ellipse(x, y, rr, rr * 0.7, 14), '#f2d6d6', { round: 8, rough: 2, seg: 10, lift: 1.4, paint: (g) => { for (let i = 0; i < 40; i++) { g.fillStyle = r() < 0.5 ? 'rgba(220,130,150,.6)' : 'rgba(255,245,245,.7)'; g.beginPath(); g.arc(x + (r() - 0.5) * rr * 1.8, y + (r() - 0.5) * rr * 1.3, 2 + r() * 2.4, 0, 7); g.fill(); } } });
+    return { spr: sh.finish() };
+  },
+  draw(g, P, t, e, env) { g.rotate(sway(t, e, 0.8)); put(g, P.spr, env.sh); },
+};
+// An ox, walking slowly; e.rider: a look for someone riding it (Laozi, in the legend, rode west on one).
+KINDS.ox = {
+  bake(mk, v = 0) {
+    const c = ['#6a5a4a', '#8a6a4a'][v % 2], P = {};
+    for (const s of ['F', 'B']) P['leg' + s] = mk('ox-leg' + s + v, [-8, -6, 10, 46]).piece([[-6, -4], [6, -4], [5, 38], [6, 44], [-5, 44], [-4, 22]], s === 'B' ? shade(c, -0.18) : c, { round: 2.5 }).finish({ shadowBlur: 2 });
+    P.body = mk('ox-body' + v, [-70, -56, 56, 10]).piece([[-62, -6], [-64, -32], [-44, -48], [20, -50], [44, -40], [50, -18], [40, 4], [-50, 6]], c, { round: 10, paint: (g) => { g.fillStyle = rgb(shade(c, 0.2), 0.35); g.beginPath(); g.ellipse(-10, -40, 34, 6, 0, 0, 7); g.fill(); } }).piece([[-60, -28], [-72, -10], [-68, -8], [-58, -20]], c, { round: 1, lift: 0.8 }).finish();
+    P.head = mk('ox-head' + v, [-10, -30, 40, 22]).piece([[-6, -8], [10, -14], [26, -8], [34, 6], [26, 16], [10, 12], [-4, 6]], shade(c, -0.05), { round: 5, paint: (g) => { g.fillStyle = 'rgba(15,10,10,.9)'; g.beginPath(); g.arc(16, -4, 1.5, 0, 7); g.fill(); } }).piece([[2, -10], [-2, -22], [6, -28], [8, -20], [6, -12]], '#e0d6c0', { round: 2, lift: 1 }).finish({ shadowBlur: 3 });
+    if (LOOKS.laozi) P.rider = KINDS.person.bake(mk, 'laozi');
+    return P;
+  },
+  draw(g, P, t, e, env) {
+    const walk = e.move ? 1 : 0, ph = t * 2.6 + e.a;
+    g.save(); g.translate(0, -44);
+    for (const [x, o, s] of [[-44, 0, 'B'], [30, Math.PI, 'B'], [-36, Math.PI, 'F'], [38, 0, 'F']]) { g.save(); g.translate(x, 0); g.rotate(Math.sin(ph + o) * 12 * walk * DEG); put(g, P['leg' + s], env.sh, 2, 3); g.restore(); }
+    g.translate(0, Math.abs(Math.cos(ph)) * 1.4 * walk); put(g, P.body, env.sh, 3, 4);
+    g.save(); g.translate(46, -26); g.rotate((fbm(t * 0.3 + e.a, 5) * 6 + 10) * DEG); put(g, P.head, env.sh * 0.6); g.restore();
+    if (e.rider && P.rider) { g.save(); g.translate(-8, -40); drawPerson(g, P.rider, t, e, env, { lean: 2 + Math.sin(ph) * 2, head: fbm(t * 0.3, 7) * 4, back: [-20, -10], front: [-40, -50] }); g.restore(); }
+    g.restore();
+  },
+};
+// A ledge of rock, a thin fall of water, and below it a stone worn hollow.
+KINDS.waterfall = {
+  bake(mk) {
+    const r = rng(2500), P = {};
+    P.rock = mk('wf-rock', [-90, -170, 90, 6]).piece([[-86, 4], [-80, -60], [-66, -120], [-40, -160], [-6, -166], [4, -140], [-10, -100], [-4, -60], [10, -40], [40, -36], [70, -20], [86, 4]], '#7a7468', { round: 6, rough: 2, paint: (g) => { dab(g, r, 60, [-80, -160, 80, 0], ['rgba(40,40,36,.35)', 'rgba(200,196,186,.25)', 'rgba(70,100,60,.4)'], 8, 3); } })
+      .piece([[20, 4], [22, -14], [46, -22], [70, -12], [74, 4]], '#8a847a', { round: 6, lift: 1.4, paint: (g) => { g.fillStyle = 'rgba(40,40,36,.5)'; g.beginPath(); g.ellipse(46, -19, 10, 3.4, 0, 0, 7); g.fill(); } })
+      .finish({ shadowBlur: 5 });
+    return P;
+  },
+  draw(g, P, t, e, env) {
+    put(g, P.rock, env.sh, 3, 4);
+    // the fall: a few ribbons of white paper water sliding down
+    g.save(); g.lineCap = 'round';
+    for (let i = 0; i < 4; i++) { g.strokeStyle = `rgba(${210 + i * 10},${230 + i * 6},245,.85)`; g.lineWidth = 3 - i * 0.5; g.setLineDash([14, 10]); g.lineDashOffset = -t * 60 - i * 9; g.beginPath(); g.moveTo(2 + i * 2, -150); g.quadraticCurveTo(30 + i * 3, -120, 44 + i * 1.5, -22); g.stroke(); }
+    g.setLineDash([]); for (let i = 0; i < 6; i++) { const k = ((t * 1.6 + i / 6) % 1); g.fillStyle = `rgba(230,240,250,${0.7 * (1 - k)})`; g.beginPath(); g.arc(46 + Math.cos(i * 2.1) * k * 18, -22 - Math.sin(i * 1.3 + 1) * k * 12, 2 * (1 - k) + 0.6, 0, 7); g.fill(); }
+    g.restore();
+  },
+};
+// A gnarled pine with flat, layered pads of needles, the tree of a thousand ink paintings.
+KINDS.pine = {
+  bake(mk, v = 0) {
+    const r = rng(2600 + v), h = 190 + v * 20, sh = mk('pine' + v, [-110, -h - 40, 110, 6]);
+    sh.piece([[-8, 2], [-4, -h * 0.4], [-14, -h * 0.6], [-6, -h * 0.66], [2, -h * 0.5], [6, -h * 0.8], [-2, -h], [6, -h], [14, -h * 0.78], [12, -h * 0.5], [30, -h * 0.66], [36, -h * 0.62], [16, -h * 0.4], [10, 2]], '#5a4434', { round: 2, paint: (g) => dab(g, r, 30, [-14, -h, 30, 0], ['rgba(30,20,14,.4)', 'rgba(160,130,100,.25)'], 8, 1.6) });
+    for (const [x, y, w] of [[-34, -h * 0.62, 50], [40, -h * 0.66, 46], [4, -h * 0.86, 56], [-20, -h * 1.02, 38], [26, -h * 1.0, 32]]) sh.piece([[x - w, y + 4], [x - w * 0.7, y - 12], [x - w * 0.2, y - 18], [x + w * 0.4, y - 16], [x + w, y - 4], [x + w * 0.6, y + 6], [x - w * 0.5, y + 7]], '#3f5a44', { round: 5, rough: 1.8, seg: 10, lift: 1.4, paint: (g) => dab(g, r, 30, [x - w, y - 16, x + w, y + 4], ['rgba(90,130,90,.45)', 'rgba(20,40,26,.4)'], 6, 1.6) });
+    return { spr: sh.finish() };
+  },
+  draw(g, P, t, e, env) { g.rotate(sway(t, e, 0.7)); put(g, P.spr, env.sh); },
+};

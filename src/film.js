@@ -34,7 +34,9 @@ const cam = monotone([
   // (the rest of the film is laid out chapter by chapter)
   // 2. bronze and bone
   [48.5, 124], [51, 136], [54, 148], [57, 163], [59.5, 180], [62, 186], [70, 189], [80, 192], [85, 202], [87.5, 230], [90, 244], [94.5, 250.5], [97, 262],
-  [100, 300], [662, 2600], [800, 2740],
+  // 3. a hundred schools
+  [99.5, 304], [102, 311], [106, 316], [108.5, 336], [111, 348], [113.5, 360], [116, 377], [118.7, 387], [121.5, 396], [124, 405], [126.5, 413], [129.5, 418], [132, 432], [135, 440], [137.5, 446],
+  [141, 480], [662, 2600], [800, 2740],
 ]);
 
 // ------------------------------------------------- paint and shape of land --
@@ -233,6 +235,80 @@ const FOUNDRY_A = 153;
     },
   });
 }
+
+// ================================================== 3. A hundred schools ===
+Object.assign(LOOKS, {
+  zhouKing: { skin: 3, top: 'robe', topCol: '#2a2228', legs: 'robe', legCol: '#2a2228', sleeve: '#2a2228', pattern: 'stripe', hat: 'mian', hair: 'bun', beard: 1, pose: 'stand' },
+  zhouOfficial: { skin: 4, top: 'robe', topCol: '#7a3a2a', legs: 'robe', legCol: '#7a3a2a', sleeve: '#7a3a2a', hat: 'topknot', beard: 1, pose: 'stand' },
+  charioteer: { skin: 3, top: 'tunic', topCol: '#6a5040', sleeve: '#6a5040', legs: 'trousers', legCol: '#4a3a30', hat: 'helmet', hatCol: '#5a4a3a', pose: 'stand' },
+  zhouSoldier: { skin: 3, top: 'coat', topCol: '#5a4a3a', sleeve: '#5a4a3a', legs: 'trousers', legCol: '#3a3028', hat: 'helmet', hatCol: '#4a4038', pose: 'stand', item: 'ge' },
+  zhouSoldierW: { skin: 4, top: 'coat', topCol: '#6a5038', sleeve: '#6a5038', legs: 'trousers', legCol: '#3a3028', hat: 'helmet', hatCol: '#4a4038', pose: 'walk', item: 'ge' },
+  redSoldier: { skin: 3, top: 'coat', topCol: '#8a3a2a', sleeve: '#8a3a2a', legs: 'trousers', legCol: '#3a2a24', hat: 'helmet', hatCol: '#5a3a2a', pose: 'stand', item: 'ge' },
+  redSoldierW: { skin: 4, top: 'coat', topCol: '#8a3a2a', sleeve: '#8a3a2a', legs: 'trousers', legCol: '#3a2a24', hat: 'helmet', hatCol: '#5a3a2a', pose: 'walk', item: 'ge' },
+  confucius: { skin: 4, top: 'robe', topCol: '#3a4a5a', legs: 'robe', legCol: '#3a4a5a', sleeve: '#3a4a5a', hat: 'topknot', beard: 1, beardCol: '#c8c0b0', hairCol: '#c8c0b0', pose: 'sit' },
+  pupil: { skin: 3, top: 'robe', topCol: '#c8b890', legs: 'robe', legCol: '#c8b890', sleeve: '#c8b890', hat: 'topknot', pose: 'kneel', item: 'scroll' },
+  pupil2: { skin: 4, top: 'robe', topCol: '#8a9a7a', legs: 'robe', legCol: '#8a9a7a', sleeve: '#8a9a7a', hat: 'topknot', pose: 'kneel' },
+  sageA: { skin: 4, top: 'robe', topCol: '#5a3a4a', legs: 'robe', legCol: '#5a3a4a', sleeve: '#5a3a4a', hat: 'topknot', beard: 1, pose: 'stand', item: 'scroll' },
+  sageB: { skin: 3, top: 'robe', topCol: '#4a5a3a', legs: 'robe', legCol: '#4a5a3a', sleeve: '#4a5a3a', hair: 'bald', beard: 1, beardCol: '#d8d0c4', pose: 'stand' },
+  daoist: { skin: 4, top: 'robe', topCol: '#d8d0bc', legs: 'robe', legCol: '#d8d0bc', sleeve: '#d8d0bc', hat: 'topknot', beard: 1, beardCol: '#e0dcd4', hairCol: '#e0dcd4', pose: 'sit' },
+  laozi: { skin: 4, top: 'robe', topCol: '#b8a888', legs: 'robe', legCol: '#b8a888', sleeve: '#b8a888', hair: 'bald', beard: 1, beardCol: '#eeeae2', pose: 'sit' },
+  sunzi: { skin: 3, top: 'robe', topCol: '#2a3a3a', legs: 'robe', legCol: '#2a3a3a', sleeve: '#2a3a3a', hat: 'topknot', beard: 1, pose: 'stand', item: 'scroll' },
+});
+{
+  // the Zhou king at his altar; the Mandate lowered to him from heaven (and nearly taken back)
+  add('shanghall', 'main', 302, { z: 0, wide: 16 });
+  add('person', 'main', 312.6, { v: 'zhouKing', z: 2, scale: P2, popAt: ev('zhou'), act: (t) => { const up = sramp(t, ev('mandate') + 1.2, ev('mandate') + 2), take = sramp(t, ev('take') - 0.2, ev('take') + 0.3) * (1 - sramp(t, ev('take') + 1.1, ev('take') + 1.6)); return { head: -up * 18 - take * 10, lean: -up * 3, front: [-120 * up - take * 40, -30 * up], back: [-110 * up - take * 30, -30 * up] }; } });
+  add('person', 'main', 308.8, { v: 'zhouOfficial', z: 1.5, scale: P2, popAt: ev('zhou') + 0.3, act: (t) => ({ lean: 18, head: 10 }) });
+  for (const [a, v] of [[316.6, 1], [319.4, 0]]) add('ding', 'main', a, { v, z: 1.5, scale: 0.75, popAt: ev('zhou') + 0.6 });
+  for (const [a, v] of [[298, 1], [324, 2], [330, 0]]) add('oak', 'main', a, { v, z: 0, scale: 0.9 });
+  grassRun(296, 328, 3.6, 'main', { skip: (a) => a > 306 && a < 322 });
+  // five hundred years of war: banners up and down, chariots, marching men
+  const W0 = ev('war');
+  [[333, 1], [337.4, 2], [341.6, 3], [346, 4], [350.4, 5], [354.6, 7], [358.6, 0]].forEach(([a, v], i) => add('banner', 'mid', a, { v, scale: 0.9, popAt: W0 + i * 0.3, raise: (t) => sramp(t, W0 + i * 0.3, W0 + 0.8 + i * 0.3) * (1 - sramp(t, W0 + 3.4 + ((i * 5) % 7) * 0.22, W0 + 3.9 + ((i * 5) % 7) * 0.22)), loud: 0.6 }));
+  add('chariot', 'main', 333, { z: 3, scale: 0.85, from: W0 - 0.5, to: W0 + 9, move: (t) => Math.max(0, t - W0 + 0.4) * 3.2 });
+  add('chariot', 'mid', 362, { scale: 0.6, from: W0, to: W0 + 9, flip: true, move: (t) => -Math.max(0, t - W0) * 2.6 });
+  ['zhouSoldierW', 'zhouSoldierW', 'zhouSoldierW'].forEach((v, i) => add('person', 'main', 344 + i * 2.6, { v, z: 2, scale: P2, popAt: W0 + 0.6 + i * 0.2, pace: 5.6, move: (t) => Math.max(0, t - W0) * 1.1 }));
+  ['redSoldierW', 'redSoldierW'].forEach((v, i) => add('person', 'main', 366 + i * 2.6, { v, z: 2, scale: P2, flip: true, popAt: W0 + 1 + i * 0.2, pace: 5.6, move: (t) => -Math.max(0, t - W0) * 1.1 }));
+  for (const [a, v, s] of [[338, 2, 0.7], [352, 0, 0.8], [366, 4, 0.7]]) add('karst', 'far', a, { v, scale: s });
+  grassRun(328, 372, 3.4, 'main');
+  // the thinkers: an argument, Confucius under the apricot tree, a Daoist by falling water, Laozi on his ox
+  [['sageA', 378.4, false, 0], ['sageB', 382.2, true, 1.3]].forEach(([v, a, flip, ph], i) => add('person', 'main', a, { v, scale: P2, z: 2, flip, popAt: ev('argue') - 0.6 + i * 0.3, act: (t) => {
+    const turn = Math.sin((t - ev('argue')) * 2.4 + ph) > 0, k = sramp(t, ev('argue'), ev('argue') + 0.6);
+    return { lean: 4 + (turn ? 10 : 0) * k, head: (turn ? -6 + Math.sin(t * 9) * 5 : 6) * k, front: turn ? [-120 + Math.sin(t * 8 + ph) * 30, -30] : [-40, -40], back: turn ? [-30 + Math.sin(t * 6) * 20, -40] : [10, -10] };
+  } }));
+  add('apricot', 'main', 394, { z: 0, scale: 1.1 });
+  add('person', 'main', 391.6, { v: 'confucius', z: 2, scale: P2, popAt: ev('kongzi') - 0.4, act: (t) => { const k = sramp(t, ev('kongzi'), ev('kongzi') + 0.6); return { lean: 6, head: 4 + Math.sin(t * 0.9) * 2, front: [-60 - 80 * k + Math.sin(t * 1.6) * 10 * k, -60 + 30 * k], back: [-40, -50] }; } });
+  [['pupil', 397.6], ['pupil2', 400.2], ['pupil', 402.6]].forEach(([v, a], i) => add('person', 'main', a, { v, z: 2, scale: P2, flip: true, popAt: ev('kongzi') + 0.3 + i * 0.2, act: (t) => { const bow = Math.exp(-(((t - ev('kongzi') - 2.4 - i * 0.25) / 0.5) ** 2)); return { lean: 18 + bow * 26, head: 10 + bow * 10 }; } }));
+  add('waterfall', 'main', 414, { z: 0, scale: 1.2 });
+  add('person', 'main', 410.2, { v: 'daoist', z: 2, scale: P2, act: (t) => ({ lean: 2, head: -6 + Math.sin(t * 0.4) * 2, front: [-20, -100], back: [-24, -96] }) });
+  add('ox', 'main', 426, { z: 2, flip: true, rider: 1, move: (t) => -clamp((t - 120) * 0.45, 0, 7) });
+  add('bamboo', 'main', 404, { v: 1, z: 0 }); add('pine', 'mid', 416, { v: 0, scale: 0.6 });
+  for (const [a, v, s] of [[402, 1, 0.8], [418, 3, 0.9], [430, 5, 0.75]]) add('karst', 'far', a, { v, scale: s });
+  grassRun(374, 432, 3.4, 'main', { skip: (a) => (a > 390 && a < 404) || (a > 409 && a < 420) });
+  // Sunzi: two armies face each other; the red one thinks better of it and goes home
+  const SZ = ev('sunzi'), HOME = ev('home');
+  add('person', 'main', 440.4, { v: 'sunzi', z: 2, scale: P2, popAt: SZ - 0.6, act: (t) => ({ head: 8, front: [-70, -60], back: [-30, -20] }) });
+  add('rock', 'main', 440.4, { v: 1, z: 1.5, scale: 1.2 });
+  ['zhouSoldier', 'zhouSoldier', 'zhouSoldier'].forEach((v, i) => add('person', 'main', 432.4 + i * 2.4, { v, z: 2 + i * 0.1, scale: P2, popAt: SZ + 0.2 + i * 0.15 }));
+  ['redSoldier', 'redSoldier', 'redSoldier'].forEach((v, i) => {
+    add('person', 'main', 446.6 + i * 2.4, { v, z: 2 + i * 0.1, scale: P2, flip: true, popAt: SZ + 0.4 + i * 0.15, foldAt: HOME + 0.3 + i * 0.18, act: (t) => { const k = sramp(t, HOME - 0.6, HOME); return { lean: 2 - k * 4, head: k * -14, front: [-34 + k * 30, -62 + k * 50] }; } });
+    add('person', 'main', 446.6 + i * 2.4, { v: 'redSoldierW', z: 2 + i * 0.1, scale: P2, popAt: HOME + 0.55 + i * 0.18, pace: 5.2, move: (t) => clamp((t - HOME - 0.9 - i * 0.18) * 2.0, 0, 14), act: (t) => (t < HOME + 0.9 + i * 0.18 ? { walk: undefined, head: -6 } : {}) });
+  });
+  add('banner', 'main', 430.6, { v: 0, z: 1, popAt: SZ }); add('banner', 'main', 452.4, { v: 1, z: 1, popAt: SZ + 0.2, flip: true });
+  grassRun(432, 470, 3.6, 'main', { skip: (a) => a > 430 && a < 454 });
+  grassRun(296, 470, 7, 'front', { s: 2 });
+
+  hook({
+    sky(g, st, t, S) {
+      const { W, H } = st;
+      if (t < ev('mandate') - 0.5 || t > ev('take') + 5) return;
+      // lowered from the sky; tugged back up a little at "which heaven could take away"; let down again
+      const k = drop(t, ev('mandate'), ev('take') + 3.2), tug = sramp(t, ev('take') - 0.1, ev('take') + 0.5) * (1 - sramp(t, ev('take') + 1.2, ev('take') + 1.9));
+      const [kx] = st.place('main', 312.6 + 2.8, 0, t);
+      st.hang(g, st.fx.mandate, kx, H * lerp(-0.4, st.aspectK > 0.4 ? 0.2 : 0.26, k) - tug * H * 0.14, st.aspectK > 0.4 ? 0.9 : 0.7, Math.sin(t * 0.8) * 2 * DEG - tug * 0.05);
+    },
+  });
+}
 // the thread of silk: unwound from the reel, it runs on, stitched into the world, through everything
 const THREAD0 = 94.6;
 const threadEnd = (t) => (t < 40.4 ? -1e9 : t < 46.5 ? THREAD0 + (t - 40.4) * 9 : 1e9);
@@ -246,11 +322,11 @@ const NIGHT = ['#0a102b', '#11193c', '#1a2650', '#2e3a66'], DUSK = ['#141b3c', '
 const W_ = [255, 252, 244];
 const skyK = track([
   [0, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [5, ['#262f5a', '#57497c', '#b0627a', '#e08f5e']], [9, DUSK], [13, ['#0c1230', '#131c42', '#1e2a56', '#35426e']],
-  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [48.5, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [51, DUSK], [54, NIGHT], [95, NIGHT], [99, DAWN], [103, DAY],
+  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [48.5, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [51, DUSK], [54, NIGHT], [95, NIGHT], [99, DAWN], [103, DAY], [107, DAY], [109, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [113, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [116, DAY],
 ]);
-const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [48.5, [244, 200, 180]], [51, [130, 110, 140]], [54, [66, 72, 116]], [95, [66, 72, 116]], [99, [200, 180, 175]], [103, W_]]);
+const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [48.5, [244, 200, 180]], [51, [130, 110, 140]], [54, [66, 72, 116]], [95, [66, 72, 116]], [99, [200, 180, 175]], [103, W_], [107, W_], [109, [210, 200, 196]], [113, [210, 200, 196]], [116, W_]]);
 const moteK = track([[0, [255, 222, 170]], [12, [255, 190, 120]], [26, [255, 222, 170]], [46, [255, 222, 170]], [52, [255, 190, 120]], [98, [255, 222, 170]]]);
-const gradeK = track([[0, [255, 170, 95, 0.16]], [24, [255, 170, 95, 0.16]], [30, [255, 205, 150, 0.1]], [46, [255, 205, 150, 0.1]], [52, [255, 160, 90, 0.18]], [96, [255, 160, 90, 0.16]], [102, [255, 205, 150, 0.1]]]);
+const gradeK = track([[0, [255, 170, 95, 0.16]], [24, [255, 170, 95, 0.16]], [30, [255, 205, 150, 0.1]], [46, [255, 205, 150, 0.1]], [52, [255, 160, 90, 0.18]], [96, [255, 160, 90, 0.16]], [102, [255, 205, 150, 0.1]], [107, [255, 205, 150, 0.1]], [109, [150, 140, 130, 0.22]], [113, [150, 140, 130, 0.22]], [116, [255, 210, 160, 0.1]]]);
 const SUNS = [[-1, 11, -430, -78, 170], [24, 31, 430, 170, -60], [45, 52, -430, -40, 170], [96, 103, 430, 170, -60]];
 const NIGHTS = [[7, 27], [50, 99]];
 const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3]];
@@ -297,7 +373,7 @@ function sky(g, st, t, S) {
     st.hang(g, st.fx.moon, x, y, 1, Math.sin(t * 0.5) * 1.6 * DEG, 1, -0.35);
   }
   // in the long days a paper sun hangs on its thread
-  for (const [t0, t1] of [[30.5, 45]]) {
+  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138]]) {
     if (t < t0 - 0.5 || t > t1 + 3) continue;
     const k = drop(t, t0, t1), sx = W * (st.aspectK > 0.4 ? 0.16 : 0.2), sy = H * lerp(-0.25, 0.13, k);
     g.globalCompositeOperation = 'screen'; const gl = g.createRadialGradient(sx, sy, 0, sx, sy, 300 * u); gl.addColorStop(0, `rgba(255,236,190,${0.35 * clamp(k)})`); gl.addColorStop(1, 'rgba(255,230,180,0)'); g.fillStyle = gl; g.fillRect(sx - 300 * u, sy - 300 * u, 600 * u, 600 * u); g.globalCompositeOperation = 'source-over';
