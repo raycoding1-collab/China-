@@ -269,3 +269,18 @@ fxGroup(['gehong'], (mk) => ({
     g.strokeStyle = 'rgba(200,60,40,.8)'; g.lineWidth = 1.6; g.beginPath(); g.ellipse(32, -6, 7, 40, 0, 0, 7); g.stroke();
   } }).finish({ shadowBlur: 4 }),
 }));
+
+// ------------------------------------------------------------------ today ---
+// Chang'e 4 on the far side of the Moon: a gold-foil lander and the little Yutu-2 rover; Chang'e 6's ascender.
+fxGroup(['c4', 'yutu', 'ascender'], (mk) => ({
+  c4: mk('c4', [-50, -80, 50, 6], { pad: 6 }).piece(strip(-24, -26, -40, 2, 2.6, 2.2), '#8c8a86', { round: 0.8 }).piece(strip(24, -26, 40, 2, 2.6, 2.2), '#8c8a86', { round: 0.8 })
+    .piece([[-26, -16], [-28, -46], [28, -46], [26, -16]], '#c9a24a', { round: 2, paint: (g) => { g.strokeStyle = 'rgba(120,80,20,.5)'; g.lineWidth = 0.9; for (let i = 0; i < 12; i++) { g.beginPath(); g.moveTo(-26 + i * 4.6, -46); g.lineTo(-25 + i * 4.6 - (i % 3), -16); g.stroke(); } } })
+    .piece([[-48, -50], [-28, -44], [-28, -36], [-48, -42]], '#2a3a6a', { round: 0.8, lift: 1, paint: (g) => { g.strokeStyle = 'rgba(160,190,230,.6)'; g.lineWidth = 0.6; g.beginPath(); g.moveTo(-38, -48); g.lineTo(-38, -38); g.stroke(); } })
+    .piece([[48, -50], [28, -44], [28, -36], [48, -42]], '#2a3a6a', { round: 0.8, lift: 1 })
+    .piece(strip(10, -46, 14, -70, 1.4, 1), '#8c8a86', { round: 0.4, lift: 0.6 }).piece(ellipse(15, -72, 7, 3, 10), '#e8e6e0', { round: 0.8, lift: 0.8 }).finish({ shadowBlur: 4 }),
+  yutu: mk('yutu', [-26, -40, 26, 8], { pad: 5 }).piece([[-18, -10], [18, -10], [16, -22], [-16, -22]], '#d8d0b8', { round: 2, paint: (g) => { g.fillStyle = 'rgba(200,170,90,.6)'; g.fillRect(-16, -22, 32, 4); } })
+    .piece([[-26, -24], [-6, -24], [-8, -28], [-24, -28]], '#2a3a6a', { round: 0.6, lift: 1 }).piece([[6, -24], [26, -24], [24, -28], [8, -28]], '#2a3a6a', { round: 0.6, lift: 1 })
+    .piece(strip(8, -22, 10, -36, 1.4, 1.2), '#8c8a86', { round: 0.4, lift: 0.6 }).piece(rect(6, -40, 16, -35), '#4a4a50', { round: 0.6, lift: 0.8 })
+    .piece(ellipse(-14, -6, 4, 4, 8), '#5a5a5e', { round: 1, lift: 1 }).piece(ellipse(0, -6, 4, 4, 8), '#5a5a5e', { round: 1, lift: 1 }).piece(ellipse(14, -6, 4, 4, 8), '#5a5a5e', { round: 1, lift: 1 }).finish({ shadowBlur: 2 }),
+  ascender: mk('ascender', [-16, -30, 16, 4], { pad: 4 }).piece([[-12, 2], [-12, -18], [-6, -26], [6, -26], [12, -18], [12, 2]], '#c9a24a', { round: 2 }).piece(rect(-14, -12, -10, -4), '#2a3a6a', { round: 0.5, lift: 0.6 }).piece(rect(10, -12, 14, -4), '#2a3a6a', { round: 0.5, lift: 0.6 }).finish({ shadowBlur: 2 }),
+}));

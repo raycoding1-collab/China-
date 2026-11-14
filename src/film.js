@@ -56,13 +56,14 @@ const cam = monotone([
   [486, 1916], [489, 1928], [492, 1942], [495, 1950], [498, 1960], [501, 1972], [504, 1979], [507, 1987], [510, 2000], [513, 2006], [516, 2012], [519, 2020], [522, 2026],
   // 13. opening up
   [525.5, 2064], [528.5, 2071], [531.5, 2080], [534, 2096], [537, 2104], [540, 2112], [542.5, 2130], [546, 2138], [549.5, 2148], [552.5, 2172], [555.5, 2180], [558.5, 2186], [561.5, 2208], [564, 2218], [567, 2228], [570, 2236], [573, 2244],
-  [576, 2280], [662, 2600], [800, 2740],
+  // 14. today, 15. the long thread
+  [576, 2280], [579, 2290], [582, 2304], [585, 2318], [588, 2330], [591, 2342], [594, 2352], [597, 2358], [600, 2362], [604, 2368], [607, 2382], [610, 2394], [613, 2408], [616, 2418], [619, 2434], [622, 2446], [625, 2458], [628, 2472], [631, 2484], [640, 2498], [650, 2512], [662, 2526], [800, 2666],
 ]);
 
 // ------------------------------------------------- paint and shape of land --
 const ZONES = [
   [-200, 28, [148, 134, 86]], [33, 50, [196, 164, 104]], [56, 76, [112, 140, 82]], [80, 110, [104, 132, 76]],
-  [116, 182, [150, 132, 92]], [186, 214, [128, 120, 88]], [222, 272, [150, 104, 78]], [280, 704, [176, 150, 108]], [710, 772, [214, 182, 122]], [778, 1196, [168, 150, 104]], [1200, 1288, [176, 160, 120]], [1290, 1312, [44, 86, 126]], [1316, 1352, [168, 150, 104]], [1356, 1384, [150, 150, 96]], [1390, 1476, [168, 150, 104]], [1480, 1526, [44, 86, 126]], [1530, 1544, [204, 178, 120]], [1548, 1668, [168, 150, 104]], [1672, 1700, [44, 86, 126]], [1704, 1740, [120, 100, 84]], [1744, 1802, [168, 150, 104]], [1804, 1858, [120, 116, 110]], [1860, 2060, [168, 150, 104]], [2062, 2092, [140, 136, 128]], [2094, 2130, [130, 130, 128]], [2134, 2166, [150, 140, 110]], [2170, 2196, [150, 146, 140]], [2200, 9999, [110, 130, 84]],
+  [116, 182, [150, 132, 92]], [186, 214, [128, 120, 88]], [222, 272, [150, 104, 78]], [280, 704, [176, 150, 108]], [710, 772, [214, 182, 122]], [778, 1196, [168, 150, 104]], [1200, 1288, [176, 160, 120]], [1290, 1312, [44, 86, 126]], [1316, 1352, [168, 150, 104]], [1356, 1384, [150, 150, 96]], [1390, 1476, [168, 150, 104]], [1480, 1526, [44, 86, 126]], [1530, 1544, [204, 178, 120]], [1548, 1668, [168, 150, 104]], [1672, 1700, [44, 86, 126]], [1704, 1740, [120, 100, 84]], [1744, 1802, [168, 150, 104]], [1804, 1858, [120, 116, 110]], [1860, 2060, [168, 150, 104]], [2062, 2092, [140, 136, 128]], [2094, 2130, [130, 130, 128]], [2134, 2166, [150, 140, 110]], [2170, 2196, [150, 146, 140]], [2200, 2268, [110, 130, 84]], [2272, 2316, [110, 110, 116]], [2318, 2378, [130, 140, 96]], [2382, 2404, [130, 124, 112]], [2406, 2430, [214, 186, 128]], [2434, 2470, [208, 182, 124]], [2476, 9999, [204, 170, 124]],
 ];
 const SEAS = [[1290, 1312], [1480, 1526], [1672, 1700]];
 function zoneColor(a) {
@@ -1043,6 +1044,116 @@ function sparkAt(t) {
   const i = Math.floor(d), f = d - i, a = lerp(SPARK[i][0], SPARK[i + 1][0], f) + 3;
   return [a, 168 * 0.9 - Math.sin(f * Math.PI) * 20];
 }
+
+// ================================================================= 14. Today ===
+Object.assign(LOOKS, {
+  cityA: { skin: 4, top: 'coat', topCol: '#3e5a7a', sleeve: '#3e5a7a', legs: 'trousers', legCol: '#2c2c33', hair: 'short', pose: 'walk', item: 'phone' },
+  cityB: { skin: 3, top: 'hoodie', topCol: '#d0533c', sleeve: '#d0533c', legs: 'trousers', legCol: '#2f3b52', hair: 'bob', pose: 'stand', item: 'phone' },
+  cityC: { skin: 6, top: 'dress', topCol: '#2f6f6a', legs: 'skirt', legCol: '#2f6f6a', sleeve: '#2f6f6a', hair: 'long', pose: 'stand', item: 'phone' },
+  cityD: { skin: 4, top: 'shirt', topCol: '#e9e4d8', sleeve: '#e9e4d8', legs: 'trousers', legCol: '#3a3a40', hair: 'bald', beard: 1, beardCol: '#cfc6b8', pose: 'stand', item: 'phone' },
+  cityKid: { skin: 4, top: 'hoodie', topCol: '#e3b341', sleeve: '#e3b341', legs: 'trousers', legCol: '#34507a', hair: 'bob', pose: 'stand', small: 0.66, item: 'phone' },
+  planter: { skin: 3, top: 'coat', topCol: '#3a5a3a', sleeve: '#3a5a3a', legs: 'trousers', legCol: '#3a3a30', hat: 'wide', hatCol: '#c9a86a', pose: 'stand', item: 'shovel' },
+});
+const GANTRY_A = 2352;
+{
+  const NOW = ev('today'), TR = ev('hsr'), LA = ev('launch'), COAL = ev('coal'), SOL = ev('solar'), TREE = ev('trees');
+  // a city at night: the Pearl, towers, people and their screens
+  add('pearl', 'main', 2290, { z: 0, scale: 0.85, wide: 10, winOn: () => 0.9, winCol: [255, 220, 240] });
+  add('twist', 'main', 2298, { v: 0, z: 0, scale: 0.9, winOn: (t, w) => (hash(w * 7) < 0.4 ? 0 : 0.7) });
+  for (const [a, v] of [[2282, 4], [2304, 5], [2310, 1]]) add('tower', 'main', a, { v, z: 0, scale: 0.85, winOn: (t, w) => (hash(w * 3 + a) < 0.45 ? 0 : 0.65) });
+  for (let a = 2276, i = 0; a < 2320; a += 3.2, i++) add('tower', 'mid', a, { v: i % 7, scale: 0.55, winOn: (t, w) => (hash(w * 5 + i) < 0.5 ? 0 : 0.55) });
+  [['cityA', 2284], ['cityB', 2287], ['cityKid', 2292.6], ['cityC', 2295], ['cityD', 2301.4], ['cityB', 2306]].forEach(([v, a], i) => add('person', 'main', a, { v, z: 2.4, scale: P2, flip: i % 2 === 1, screenAt: NOW + 0.3 + i * 0.25, pace: 4.2, move: v === 'cityA' ? (t) => clamp((t - 574) * 0.5, 0, 6) : undefined }));
+  for (const a of [2280, 2296.4, 2312]) add('lamp', 'main', a, { v: 1, z: 1, lit: () => 1 });
+  // the high-speed line on its viaduct, through the karst
+  for (let a = 2314; a < 2350; a += 3.3) add('viaduct', 'main', a, { z: 1, scale: 1 });
+  add('bullet', 'main', 2312, { z: 1.4, scale: 0.75, y: 84 * 1 - 4, ground: false, wide: 30, from: TR - 0.6, to: TR + 9, prof: () => 0, move: (t) => Math.max(0, t - TR + 0.5) * 6.4 });
+  for (const [a, v, s] of [[2318, 1, 0.9], [2328, 4, 1], [2338, 2, 0.85], [2346, 0, 0.95]]) add('karst', 'far', a, { v, scale: s });
+  for (const [a, v] of [[2322, 2], [2336, 0]]) add('karst', 'mid', a, { v, scale: 0.5 });
+  // a rocket from the gantry
+  add('gantry', 'main', GANTRY_A, { z: 1, popAt: LA - 2.2, loud: 1 });
+  // coal, and the sun and wind
+  for (const [a, L, s] of [[2384, 'mid', 0.6], [2390, 'main', 0.9], [2396, 'main', 0.8]]) add('coolingtower', L, a, { z: 0.5, scale: s, popAt: COAL - 0.4 + (a - 2384) * 0.04 });
+  add('factory', 'main', 2401, { v: 1, z: 0.4, popAt: COAL });
+  for (let a = 2407, i = 0; a < 2428; a += 3.2, i++) add('solar', 'main', a, { z: 1, scale: 1.1, popAt: SOL + i * 0.12, loud: 0.6 });
+  for (let a = 2405, i = 0; a < 2432; a += 2.4, i++) add('solar', 'mid', a, { scale: 0.7, popAt: SOL + 0.3 + i * 0.07, loud: 0.3 });
+  for (const [a, sp, sc, i] of [[2410, 0.6, 0.85, 0], [2416, 0.75, 0.75, 1], [2422, 0.5, 0.9, 2], [2428, 0.7, 0.8, 3]]) add('turbine', 'mid', a, { speed: sp, scale: sc, popAt: SOL + 0.6 + i * 0.25, loud: 0.6 });
+  add('car', 'main', 2404, { z: 3, scale: 0.9, from: SOL - 1, move: (t) => (t - SOL) * 2.4, lit: () => 0 });
+  // trees against the desert, row after row
+  for (let a = 2436, i = 0; a < 2466; a += 2.6, i++) add('poplar', 'main', a, { v: i % 3, z: 1, popAt: TREE + i * 0.16, loud: 0.5 });
+  for (let a = 2434, i = 0; a < 2470; a += 1.9, i++) add('poplar', 'mid', a, { v: i % 3, scale: 0.6, popAt: TREE + 0.3 + i * 0.1, loud: 0.3 });
+  for (let a = 2432, i = 0; a < 2474; a += 1.5, i++) add('poplar', 'far', a, { v: i % 3, scale: 0.5, popAt: TREE + 0.6 + i * 0.07, loud: 0.2 });
+  add('person', 'main', 2448.6, { v: 'planter', z: 2, scale: P2, popAt: TREE + 0.4, act: (t) => { const k = Math.max(0, Math.sin(t * 3)); return { lean: 14 + k * 12, front: [-60 + k * 40, -30], back: [-50 + k * 40, -30] }; } });
+  add('bamboo', 'main', 2468, { v: 1, z: 0 });
+  add('panda', 'main', 2466.4, { z: 1.6, scale: 1.1 });
+  grassRun(2350, 2404, 3.6, 'main', { skip: (a) => a > 2382 && a < 2404 });
+  grassRun(2276, 2474, 7, 'front', { s: 2 });
+}
+
+// ======================================================= 15. The long thread ===
+const THREAD_END = 2477;
+{
+  // the uncut board ahead, and a needle waiting at the end of the thread
+  for (let a = 2482, i = 0; a < 2580; a += 4.5 + R() * 5, i++) { const tilt = (R() - 0.5) * 7; add('blank', 'main', a, { v: (R() * 5) | 0, z: R() < 0.5 ? 0 : 2, scale: 0.7 + R() * 0.7, loud: 0.9, rot: () => tilt }); }
+  for (let a = 2480; a < 2590; a += 7) add('blank', 'mid', a, { v: (R() * 5) | 0, scale: 0.55 });
+  for (let a = 2580, i = 0; a < 2700; a += 3.6 + R() * 4.2, i++) { const tilt = (R() - 0.5) * 8; add('blank', 'main', a, { v: (R() * 5) | 0, z: R() < 0.5 ? 0 : 2, scale: 0.55 + R() * 0.75, popAt: ev('pull', 630.6) + 4.5 + (a - 2580) * 0.035 + R() * 0.3, loud: 0.25, rot: () => tilt }); }
+  for (let a = 2590; a < 2700; a += 8) add('blank', 'mid', a, { v: (R() * 5) | 0, scale: 0.5, popAt: ev('pull', 630.6) + 5 + (a - 2590) * 0.035 });
+  for (let a = 2486; a < 2590; a += 14) add('blank', 'far', a, { v: (R() * 5) | 0, scale: 0.3 });
+}
+hook({
+  lights(t, c, L) {
+    if (t > 573 && t < 609 && near(2296, c, 80)) { for (const a of [2280, 2296.4, 2312]) L.push({ a, h: 120, r: 300, k: 0.75, color: [235, 240, 255] }); L.push({ a: 2290, h: 200, r: 600, k: 0.5, color: [255, 180, 220] }); }
+    if (t > ev('hsr') - 1 && t < ev('hsr') + 9) L.push({ a: 2312 + Math.max(0, t - ev('hsr') + 0.5) * 6.4 + 7, h: 90, r: 420, k: 0.7, color: [255, 240, 210] });
+    const LA = ev('launch'); if (t > LA && t < LA + 3) L.push({ a: GANTRY_A + 0.9, h: 40, r: 900, k: 1.4 * Math.exp(-(t - LA) * 0.8), color: [255, 200, 130] });
+  },
+  ground(g, st, t, S, G) {
+    // green creeping out over the sand as the trees go in
+    const TREE = ev('trees'), k = sramp(t, TREE, TREE + 5);
+    if (k > 0) G.run(2434, 2470, (a0, a1) => { const e = lerp(2434, 2470, k); if (e > a0) G.arc(a0, Math.min(a1, e), -8, 14, 'rgba(96,130,70,.55)'); });
+    // the needle at the end of the thread
+    if (near(THREAD_END, G.c, 60)) { const [x, y] = G.rad(THREAD_END + 0.4, -6), rel = (THREAD_END - G.c) * DEG; g.save(); g.translate(x, y); g.rotate(rel + 0.6); g.fillStyle = '#c8ccd2'; g.beginPath(); g.moveTo(-1.6, 0); g.lineTo(0, -62); g.lineTo(1.6, 0); g.lineTo(0, 10); g.closePath(); g.fill(); g.strokeStyle = 'rgba(60,64,70,.8)'; g.lineWidth = 0.8; g.stroke(); g.fillStyle = 'rgba(40,40,44,.9)'; g.beginPath(); g.ellipse(0, -54, 0.8, 3.4, 0, 0, 7); g.fill(); g.restore(); }
+  },
+  sky(g, st, t, S) {
+    const { W, H } = st, LA = ev('launch');
+    if (t > LA - 0.3 && t < LA + 3.4) {
+      const [gx, gy] = st.place('main', GANTRY_A + 0.9, 0, t), k = clamp((t - LA) / 3.2) ** 1.6, rx = gx + k * W * 0.1, ry = lerp(gy - 20 * st.eu, -H * 0.2, k);
+      g.globalCompositeOperation = 'screen'; st.stamp(g, st.dot(255, 200, 120, '255,240,210'), rx, ry + 40 * st.eu, 60 * st.eu, 0.9); g.globalCompositeOperation = 'source-over';
+      g.save(); g.translate(rx, ry); g.scale(st.eu * 0.9, st.eu * 0.9); g.rotate(k * 0.12); put(g, st.fx.rocket, 0); g.restore();
+    }
+  },
+  over(g, st, t, S) {
+    const { W, H } = st, FS = ev('farside'), C6 = ev('change6'), OUT = ev('farsideOut');
+    if (t < FS - 0.2 || t > OUT + 1.6) return;
+    const up = clamp(spring(t - FS, 5.0, 0.6), 0, 1.25), out = sramp(t, OUT, OUT + 1.3), veil = clamp(up) * (1 - out);
+    g.fillStyle = `rgba(4,5,10,${0.78 * veil})`; g.fillRect(0, 0, W, H);
+    g.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 110; i++) { const x = hash(i * 17 + 3) * W, y = hash(i * 29 + 7) * H * 0.62, tw = 0.6 + 0.4 * Math.sin(t * (1 + hash(i)) + i), rr = (0.8 + hash(i * 3) * 1.3) * st.dpr * 0.6; g.fillStyle = `rgba(230,236,255,${0.75 * veil * tw * (0.3 + hash(i * 5) * 0.7)})`; g.fillRect(x, y, rr, rr); }
+    g.globalCompositeOperation = 'source-over';
+    // no Earth in this sky: from the far side it can never be seen. Only the relay satellite, hanging out beyond the Moon.
+    if (t > FS + 0.5) st.hang(g, st.fx.sat, W * 0.72, H * lerp(-0.2, 0.15, drop(t, FS + 0.6, OUT - 0.3)), 0.9, Math.sin(t * 0.4) * 2 * DEG, 1, Math.sin(t * 0.3) * 0.3);
+    const por = W < H, base = por ? W * 1.5 / 470 : Math.max(W / 760, H * 0.95 / 470);
+    const cx = W * 0.5 - (por ? 60 : 30) * base, cy = H * (por ? 0.64 : 0.68) + (1 - Math.min(1, up)) * H * 0.9 + out * H * 0.9;
+    g.save(); g.translate(cx, cy); g.rotate((1 - Math.min(1, up)) * 0.2); g.scale(base, base);
+    put(g, st.fx.lunar, 0.6, 8, 12);
+    const ys = (x) => -40 + (x / 440) ** 2 * 70, land = FS + 1.4, lk = smooth(clamp((t - (land - 1.4)) / 1.4));
+    // Chang'e 4 comes down; Yutu-2 rolls off and away, leaving two tracks
+    const lx = 10, ly = ys(lx) + 2 - (1 - lk) * 760;
+    g.strokeStyle = `rgba(210,205,195,${0.35 * (1 - out)})`; g.lineWidth = 0.8; g.beginPath(); g.moveTo(lx, ly - 80); g.lineTo(lx, -900); g.stroke();
+    if (t < land + 0.2) { g.globalCompositeOperation = 'screen'; st.stamp(g, st.dot(255, 200, 140, '255,230,190'), lx, ly + 4, 40, 0.6 * clamp((land + 0.2 - t) * 3)); g.globalCompositeOperation = 'source-over'; }
+    const rx = lx + 30 + clamp((t - land - 1) / 4) * 120;
+    if (t > land + 0.8) { g.strokeStyle = 'rgba(70,66,62,.6)'; g.lineWidth = 2; for (const dy of [3, 7]) { g.beginPath(); for (let x = lx + 30; x <= rx; x += 4) { const y = ys(x) + dy; x === lx + 30 ? g.moveTo(x, y) : g.lineTo(x, y); } g.stroke(); } g.save(); g.translate(rx, ys(rx) + 4); g.scale(1.2, 1.2 * clamp(spring(t - land - 0.8, 9, 0.5), 0, 1.3)); put(g, st.fx.yutu, 0.4, 2, 3); g.restore(); }
+    g.save(); g.translate(lx, ly); g.scale(1.25, 1.25); put(g, st.fx.c4, 0.5, 4, 6); g.restore();
+    // 2024: Chang'e 6 scoops up rock, and its ascender lifts off for home
+    if (t > C6 - 0.6) {
+      const kx = -200, k6 = smooth(clamp((t - (C6 - 0.6)) / 1.2)), ky = ys(kx) + 2 - (1 - k6) * 760;
+      g.strokeStyle = `rgba(210,205,195,${0.35 * (1 - out)})`; g.lineWidth = 0.8; g.beginPath(); g.moveTo(kx, ky - 80); g.lineTo(kx, -900); g.stroke();
+      g.save(); g.translate(kx, ky); g.scale(1.2, 1.2); put(g, st.fx.c4, 0.5, 4, 6);
+      const arm = sramp(t, C6 + 0.8, C6 + 1.6) * (1 - sramp(t, C6 + 2.4, C6 + 3)); g.strokeStyle = '#8c8a86'; g.lineWidth = 2; g.beginPath(); g.moveTo(26, -30); g.lineTo(26 + arm * 22, -30 + arm * 26); g.stroke(); g.restore();
+      const asc = t - (C6 + 3.2); if (asc > 0) { const ay = ky - 46 * 1.2 - asc * asc * 160; g.globalCompositeOperation = 'screen'; st.stamp(g, st.dot(255, 200, 140, '255,240,210'), kx, ay + 30, 30, Math.min(1, asc * 3)); g.globalCompositeOperation = 'source-over'; g.save(); g.translate(kx, ay); g.scale(1.2, 1.2); put(g, st.fx.ascender, 0.3, 2, 3); g.restore(); }
+      else { g.save(); g.translate(kx, ky - 46 * 1.2); g.scale(1.2, 1.2); put(g, st.fx.ascender, 0.3, 2, 3); g.restore(); }
+    }
+    g.restore();
+  },
+});
 // the thread of silk: unwound from the reel, it runs on, stitched into the world, through everything
 const THREAD0 = 94.6;
 const threadEnd = (t) => (t < 40.4 ? -1e9 : t < 46.5 ? THREAD0 + (t - 40.4) * 9 : 1e9);
@@ -1056,14 +1167,14 @@ const NIGHT = ['#0a102b', '#11193c', '#1a2650', '#2e3a66'], DUSK = ['#141b3c', '
 const W_ = [255, 252, 244];
 const skyK = track([
   [0, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [5, ['#262f5a', '#57497c', '#b0627a', '#e08f5e']], [9, DUSK], [13, ['#0c1230', '#131c42', '#1e2a56', '#35426e']],
-  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [48.5, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [51, DUSK], [54, NIGHT], [95, NIGHT], [99, DAWN], [103, DAY], [107, DAY], [109, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [113, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [116, DAY], [238, DAY], [241, ['#6a8ab0', '#a8b0c0', '#e8d0b0', '#f6c890']], [256, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [260, DAY], [290, DAY], [294, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [297.5, DUSK], [300, NIGHT], [315, NIGHT], [318.5, DAWN], [321, DAY], [328, DAY], [330.5, DUSK], [332.5, NIGHT], [338, NIGHT], [340.5, DAWN], [343, DAY], [427, DAY], [430, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [438, ['#4a3a3a', '#6a4a40', '#8a5a48', '#a87a5a']], [446, ['#4a3a3a', '#6a4a40', '#8a5a48', '#a87a5a']], [449, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [457, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [462, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [465, ['#3a2a2a', '#5a3a32', '#8a4a3a', '#a86a4a']], [471, ['#2a2224', '#3a2a2a', '#5a3a34', '#6a4a40']], [474, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [478, DAY], [490, DAY], [493, ['#8a8a90', '#a8a49c', '#c8b8a0', '#d8c4a0']], [497, ['#5a5a66', '#7a7680', '#9a9090', '#a89a90']], [507, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [510, DUSK], [512.5, NIGHT], [522, NIGHT], [525.5, DAWN], [528, DAY], [550, DAY], [553, ['#5a5a6a', '#7a7078', '#a08a80', '#b89a88']], [558.5, DUSK], [561.5, NIGHT],
+  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [48.5, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [51, DUSK], [54, NIGHT], [95, NIGHT], [99, DAWN], [103, DAY], [107, DAY], [109, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [113, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [116, DAY], [238, DAY], [241, ['#6a8ab0', '#a8b0c0', '#e8d0b0', '#f6c890']], [256, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [260, DAY], [290, DAY], [294, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [297.5, DUSK], [300, NIGHT], [315, NIGHT], [318.5, DAWN], [321, DAY], [328, DAY], [330.5, DUSK], [332.5, NIGHT], [338, NIGHT], [340.5, DAWN], [343, DAY], [427, DAY], [430, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [438, ['#4a3a3a', '#6a4a40', '#8a5a48', '#a87a5a']], [446, ['#4a3a3a', '#6a4a40', '#8a5a48', '#a87a5a']], [449, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [457, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [462, ['#7a8aa0', '#a8aab0', '#d8ccb8', '#e8d8b8']], [465, ['#3a2a2a', '#5a3a32', '#8a4a3a', '#a86a4a']], [471, ['#2a2224', '#3a2a2a', '#5a3a34', '#6a4a40']], [474, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [478, DAY], [490, DAY], [493, ['#8a8a90', '#a8a49c', '#c8b8a0', '#d8c4a0']], [497, ['#5a5a66', '#7a7680', '#9a9090', '#a89a90']], [507, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [510, DUSK], [512.5, NIGHT], [522, NIGHT], [525.5, DAWN], [528, DAY], [550, DAY], [553, ['#5a5a6a', '#7a7078', '#a08a80', '#b89a88']], [558.5, DUSK], [561.5, NIGHT], [574, ['#05081a', '#0a1028', '#121c3c', '#1e2c50']], [606, ['#05081a', '#0a1028', '#121c3c', '#1e2c50']], [610, DAWN], [613, DAY], [625, DAY], [628.5, DUSK], [632, ['#101a3c', '#2a3060', '#6a5a7a', '#a87a7a']], [642, ['#101a3c', '#2a3060', '#6a5a7a', '#a87a7a']], [650, ['#2c3a6a', '#6c6a96', '#e3a07a', '#f7c98a']], [662, ['#3f6aa0', '#7aa0c8', '#e2c8b0', '#f8d8a8']],
 ]);
-const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [48.5, [244, 200, 180]], [51, [130, 110, 140]], [54, [66, 72, 116]], [95, [66, 72, 116]], [99, [200, 180, 175]], [103, W_], [107, W_], [109, [210, 200, 196]], [113, [210, 200, 196]], [116, W_], [238, W_], [241, [255, 236, 214]], [256, [240, 200, 180]], [260, W_], [290, W_], [294, [244, 200, 180]], [297.5, [110, 104, 140]], [300, [60, 70, 116]], [315, [60, 70, 116]], [318.5, [200, 180, 175]], [321, W_], [328, W_], [330.5, [110, 104, 140]], [332.5, [56, 64, 108]], [338, [56, 64, 108]], [340.5, [200, 180, 175]], [343, W_], [427, W_], [430, [210, 200, 196]], [438, [180, 140, 126]], [446, [180, 140, 126]], [449, [236, 230, 224]], [457, [236, 230, 224]], [462, [236, 230, 224]], [465, [190, 140, 120]], [471, [120, 96, 92]], [474, [240, 210, 196]], [478, W_], [490, W_], [493, [226, 214, 200]], [497, [176, 170, 176]], [507, [196, 190, 190]], [510, [110, 104, 140]], [512.5, [60, 68, 112]], [522, [60, 68, 112]], [525.5, [200, 180, 175]], [528, W_], [550, W_], [553, [176, 166, 170]], [558.5, [100, 96, 128]], [561.5, [50, 58, 100]]]);
+const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [48.5, [244, 200, 180]], [51, [130, 110, 140]], [54, [66, 72, 116]], [95, [66, 72, 116]], [99, [200, 180, 175]], [103, W_], [107, W_], [109, [210, 200, 196]], [113, [210, 200, 196]], [116, W_], [238, W_], [241, [255, 236, 214]], [256, [240, 200, 180]], [260, W_], [290, W_], [294, [244, 200, 180]], [297.5, [110, 104, 140]], [300, [60, 70, 116]], [315, [60, 70, 116]], [318.5, [200, 180, 175]], [321, W_], [328, W_], [330.5, [110, 104, 140]], [332.5, [56, 64, 108]], [338, [56, 64, 108]], [340.5, [200, 180, 175]], [343, W_], [427, W_], [430, [210, 200, 196]], [438, [180, 140, 126]], [446, [180, 140, 126]], [449, [236, 230, 224]], [457, [236, 230, 224]], [462, [236, 230, 224]], [465, [190, 140, 120]], [471, [120, 96, 92]], [474, [240, 210, 196]], [478, W_], [490, W_], [493, [226, 214, 200]], [497, [176, 170, 176]], [507, [196, 190, 190]], [510, [110, 104, 140]], [512.5, [60, 68, 112]], [522, [60, 68, 112]], [525.5, [200, 180, 175]], [528, W_], [550, W_], [553, [176, 166, 170]], [558.5, [100, 96, 128]], [561.5, [50, 58, 100]], [574, [36, 42, 76]], [606, [36, 42, 76]], [610, [200, 180, 175]], [613, W_], [625, W_], [628.5, [150, 130, 150]], [632, [90, 90, 130]], [642, [90, 90, 130]], [650, [200, 182, 176]], [662, [255, 250, 240]]]);
 const moteK = track([[0, [255, 222, 170]], [12, [255, 190, 120]], [26, [255, 222, 170]], [46, [255, 222, 170]], [52, [255, 190, 120]], [98, [255, 222, 170]]]);
 const gradeK = track([[0, [255, 170, 95, 0.16]], [24, [255, 170, 95, 0.16]], [30, [255, 205, 150, 0.1]], [46, [255, 205, 150, 0.1]], [52, [255, 160, 90, 0.18]], [96, [255, 160, 90, 0.16]], [102, [255, 205, 150, 0.1]], [107, [255, 205, 150, 0.1]], [109, [150, 140, 130, 0.22]], [113, [150, 140, 130, 0.22]], [116, [255, 210, 160, 0.1]]]);
-const SUNS = [[-1, 11, -430, -78, 170], [24, 31, 430, 170, -60], [45, 52, -430, -40, 170], [96, 103, 430, 170, -60]];
-const NIGHTS = [[7, 27], [50, 99], [296, 319], [330, 341], [510, 526], [559, 700]];
-const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3], [146.5, 148.5, 150.5, 152.5, 0.22], [168, 170.5, 173, 175, 0.12], [175.5, 177.5, 180.5, 182.5, 0.42], [287, 289, 292.5, 294.5, 0.2], [299, 303, 314, 317, 0.45], [325, 326.5, 328.5, 330, 0.3], [369, 371, 373.5, 375.5, 0.25], [396, 398, 401.5, 403.5, 0.12], [448, 450, 455, 457.5, 0.4], [467, 469, 471.5, 473.5, 0.15], [511, 513, 520, 522.5, 0.2], [553, 555, 558, 560, 0.3]];
+const SUNS = [[-1, 11, -430, -78, 170], [24, 31, 430, 170, -60], [45, 52, -430, -40, 170], [96, 103, 430, 170, -60], [607, 614, 430, 170, -60], [624, 630, -430, -40, 170]];
+const NIGHTS = [[7, 27], [50, 99], [296, 319], [330, 341], [510, 526], [559, 612], [628, 654]];
+const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3], [146.5, 148.5, 150.5, 152.5, 0.22], [168, 170.5, 173, 175, 0.12], [175.5, 177.5, 180.5, 182.5, 0.42], [287, 289, 292.5, 294.5, 0.2], [299, 303, 314, 317, 0.45], [325, 326.5, 328.5, 330, 0.3], [369, 371, 373.5, 375.5, 0.25], [396, 398, 401.5, 403.5, 0.12], [448, 450, 455, 457.5, 0.4], [467, 469, 471.5, 473.5, 0.15], [511, 513, 520, 522.5, 0.2], [553, 555, 558, 560, 0.3], [596, 597, 606, 607, 0], [619, 621, 624, 626, 0.12]];
 
 function state(t, stage) {
   const c = cam(t), lights = [], emitters = [], smoke = [];
@@ -1080,7 +1191,7 @@ function state(t, stage) {
     stars: nightK + pull * lerp(1, 0.22, sramp(t, 640, 652)),
     sun, cloud: 1 - nightK * 0.4, snow: 0,
     motes: 0.4 + 0.25 * nightK, moteColor: moteK(t),
-    emit: true, screen: 0, blink: 0, bloom: 0.16 + 0.34 * nightK, grade: gradeK(t), rays: 1,
+    emit: true, screen: 0, blink: sramp(t, 573, 575) * (1 - sramp(t, 607, 610)), bloom: 0.16 + 0.34 * nightK, grade: gradeK(t), rays: 1,
     zoom, pull, rustle: Math.exp(-(((t - ev('rustle', -9)) / 0.5) ** 2)) * 0.9, shake: Math.exp(-(((t - ev('quake', -9) + 0.3) / 0.6) ** 2)) * 1.2, threadLift: (a) => threadLift(a, t),
     fade: Math.max(1 - sramp(t, 0.1, 3.4), sramp(t, DURATION - 3.5, DURATION)),
   };
@@ -1107,7 +1218,7 @@ function sky(g, st, t, S) {
     st.hang(g, st.fx.moon, x, y, 1, Math.sin(t * 0.5) * 1.6 * DEG, 1, -0.35);
   }
   // in the long days a paper sun hangs on its thread
-  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186], [188, 226], [262, 290], [344, 356], [358, 402], [404, 426], [480, 490], [528, 550]]) {
+  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186], [188, 226], [262, 290], [344, 356], [358, 402], [404, 426], [480, 490], [528, 550], [614, 626]]) {
     if (t < t0 - 0.5 || t > t1 + 3) continue;
     const k = drop(t, t0, t1), sx = W * (st.aspectK > 0.4 ? 0.16 : 0.2), sy = H * lerp(-0.25, 0.13, k);
     g.globalCompositeOperation = 'screen'; const gl = g.createRadialGradient(sx, sy, 0, sx, sy, 300 * u); gl.addColorStop(0, `rgba(255,236,190,${0.35 * clamp(k)})`); gl.addColorStop(1, 'rgba(255,230,180,0)'); g.fillStyle = gl; g.fillRect(sx - 300 * u, sy - 300 * u, 600 * u, 600 * u); g.globalCompositeOperation = 'source-over';
@@ -1135,13 +1246,14 @@ function groundFx(g, st, t, S) {
   run(38, 48, (a0, a1) => along(a0, a1, 0.55, (a) => { const [x0, y0] = rad(a, -4), [x1, y1] = rad(a + 0.25, -15); g.strokeStyle = 'rgba(120,90,50,.42)'; g.lineWidth = 2.2; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke(); }));
   for (const f of HOOK.ground) f(g, st, t, S, GF);
   // The thread. From the reel it rises, then runs on just under the edge of the world, stitched in.
-  const end = threadEnd(t);
+  const end = Math.min(threadEnd(t), THREAD_END), glow = smooth(S.pull || 0);
   if (end > THREAD0 - 1) run(THREAD0 - 2, end, (a0, a1) => {
     const H = (a) => (a < THREAD0 + 2 ? lerp(52, -12, smooth((a - THREAD0) / 2)) : -12) + (S.threadLift ? S.threadLift(a) : 0);
     g.save(); g.lineCap = 'round';
     g.strokeStyle = 'rgba(120,80,20,.35)'; g.lineWidth = 3.2; g.setLineDash([9, 7]); g.beginPath();
     for (let a = Math.max(a0, THREAD0); a <= a1; a += 0.25) { const [x, y] = rad(a, H(a) - 1.2); a === Math.max(a0, THREAD0) ? g.moveTo(x, y + 1.5) : g.lineTo(x, y + 1.5); } g.stroke();
-    g.strokeStyle = 'rgba(244,206,108,.95)'; g.lineWidth = 2; g.beginPath();
+    if (glow > 0.01) { g.save(); g.globalCompositeOperation = 'lighter'; g.strokeStyle = `rgba(255,200,90,${0.35 * glow})`; g.lineWidth = 10 + 10 * glow; g.beginPath(); for (let a = Math.max(a0, THREAD0); a <= a1; a += 0.5) { const [x, y] = rad(a, H(a)); a === Math.max(a0, THREAD0) ? g.moveTo(x, y) : g.lineTo(x, y); } g.stroke(); g.restore(); }
+    g.strokeStyle = 'rgba(244,206,108,.95)'; g.lineWidth = 2 + 3 * glow; g.beginPath();
     for (let a = Math.max(a0, THREAD0); a <= a1; a += 0.25) { const [x, y] = rad(a, H(a)); a === Math.max(a0, THREAD0) ? g.moveTo(x, y) : g.lineTo(x, y); } g.stroke();
     g.restore();
     // the shine running along it as it is drawn out

@@ -353,7 +353,6 @@
   "millet": 29.0,
   "rice": 32.2,
   "silk": 37.1,
-  "thread": 40.4,
   "king": 48.0,
   "pour": 52.6,
   "vessels": 54.5,
@@ -484,6 +483,20 @@
   "poverty": 542.4,
   "tanks": 555.6,
   "spark": 562.4,
-  "allLit": 566.2
+  "allLit": 566.2,
+  "today": 575.0,
+  "hsr": 581.0,
+  "launch": 594.4,
+  "farside": 596.8,
+  "change6": 601.0,
+  "farsideOut": 606.6,
+  "coal": 609.4,
+  "solar": 612.6,
+  "trees": 619.4,
+  "thread": 629.3,
+  "pull": 630.6,
+  "blank": 639.1,
+  "title": 647.6,
+  "end": 662.0
  }
 }

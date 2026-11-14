@@ -1128,3 +1128,92 @@ KINDS.farmhouse = {
   draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
   glow: glowRects,
 };
+
+// =================================================================== today ===
+// A TV tower with two pink spheres on three legs, Shanghai's Pearl.
+KINDS.pearl = {
+  bake(mk) {
+    const sh = mk('pearl', [-70, -470, 70, 6]), win = [];
+    for (const s of [-1, 0, 1]) sh.piece([[s * 40 - 6, 4], [s * 40 + 6, 4], [s * 10 + 4, -150], [s * 10 - 4, -150]], '#d8d4cc', { round: 2, lift: s ? 1 : 1.4 });
+    sh.piece(rect(-8, -150, 8, -330), '#d8d4cc', { round: 2, lift: 1.2 });
+    sh.piece(ellipse(0, -150, 46, 46, 24), '#c86a8a', { round: 6, lift: 1.6, paint: (g) => { g.fillStyle = 'rgba(255,255,255,.2)'; g.beginPath(); g.ellipse(-14, -164, 12, 20, -0.3, 0, 7); g.fill(); for (let x = -36; x <= 36; x += 9) win.push([x - 2, -152, 4, 6]); paintRects(win)(g); } });
+    sh.piece(ellipse(0, -330, 28, 28, 20), '#c86a8a', { round: 5, lift: 1.6, paint: (g) => { g.fillStyle = 'rgba(255,255,255,.2)'; g.beginPath(); g.ellipse(-8, -340, 8, 12, -0.3, 0, 7); g.fill(); } });
+    sh.piece(strip(0, -356, 0, -466, 6, 2), '#c8c4bc', { round: 1, lift: 1 });
+    sh.piece(ellipse(0, -400, 9, 9, 12), '#c86a8a', { round: 2, lift: 1.2 });
+    return { spr: sh.finish({ shadowBlur: 6 }), windows: win };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 4, 5); },
+  glow(g, P, t, e, env, p) { glowRects(g, P, t, e, env, p); if (p < 0.6 || !(env.S.blink > 0)) return; g.globalCompositeOperation = 'lighter'; for (const y of [-150, -330]) { const gr = g.createRadialGradient(0, y, 0, 0, y, 60); gr.addColorStop(0, `rgba(255,120,190,${0.35 * env.S.blink})`); gr.addColorStop(1, 'rgba(255,120,190,0)'); g.fillStyle = gr; g.fillRect(-60, y - 60, 120, 120); } g.globalCompositeOperation = 'source-over'; },
+};
+// A pier and a length of viaduct deck for the high-speed line.
+KINDS.viaduct = {
+  bake(mk) { return { spr: mk('viaduct', [-60, -86, 60, 6]).piece([[-10, 4], [10, 4], [8, -70], [-8, -70]], '#b8b4ac', { round: 2 }).piece(rect(-58, -70, 58, -84), '#c8c4bc', { round: 1.5, lift: 1.2, paint: (g) => { g.fillStyle = 'rgba(80,80,80,.3)'; g.fillRect(-58, -73, 116, 3); } }).finish({ shadowBlur: 4 }) }; },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+};
+// The high-speed train: a long white nose and carriages that follow the curve of the world.
+KINDS.bullet = {
+  bake(mk) {
+    const P = {}, win = []; for (let x = -100; x < 96; x += 16) win.push([x, -34, 11, 9]);
+    P.nose = mk('bullet-nose', [-110, -50, 140, 6]).piece([[-108, -6], [-108, -44], [40, -44], [96, -32], [134, -10], [134, -4], [-108, -4]], '#eef0f0', { round: 6, paint: (g) => { paintRects(win.filter(([x]) => x < 40))(g); g.fillStyle = '#2a4a8a'; g.fillRect(-108, -16, 236, 4); g.fillStyle = '#c8322a'; g.fillRect(-108, -12, 236, 2); g.fillStyle = 'rgba(30,40,60,.85)'; g.beginPath(); g.moveTo(70, -38); g.lineTo(100, -28); g.lineTo(84, -26); g.lineTo(60, -36); g.fill(); } }).finish({ shadowBlur: 3 });
+    P.car = mk('bullet-car', [-112, -50, 112, 6]).piece(rect(-108, -4, 108, -44), '#eef0f0', { round: 6, paint: (g) => { paintRects(win)(g); g.fillStyle = '#2a4a8a'; g.fillRect(-108, -16, 216, 4); g.fillStyle = '#c8322a'; g.fillRect(-108, -12, 216, 2); } }).finish({ shadowBlur: 3 });
+    P.win = win;
+    return P;
+  },
+  draw(g, P, t, e, env) {
+    const sc = e.scale || 1, a0 = e.a + (e.move ? e.move(t) : 0), pr = e.prof || (() => 0), lift = e.y || 0, r0 = 1000 + pr(a0) + lift;
+    for (let k = 1; k <= 4; k++) { const off = -224 * k, dr = (off * sc) / r0, r1 = 1000 + pr(a0 + dr / DEG) + lift; g.save(); g.translate((Math.sin(dr) * r1) / sc, (r0 - Math.cos(dr) * r1) / sc); g.rotate(dr); put(g, P.car, env.sh, 2, 3); g.restore(); }
+    put(g, P.nose, env.sh, 2, 3);
+  },
+  glow(g, P, t, e, env, p) {
+    if (p < 0.6) return; const k = e.lit ? e.lit(t) : 1; if (k < 0.01) return;
+    const sc = e.scale || 1, a0 = e.a + (e.move ? e.move(t) : 0), pr = e.prof || (() => 0), lift = e.y || 0, r0 = 1000 + pr(a0) + lift;
+    g.globalCompositeOperation = 'lighter'; g.fillStyle = `rgba(255,236,200,${0.8 * k})`;
+    for (let c = 0; c <= 4; c++) { const off = -224 * c, dr = (off * sc) / r0, r1 = 1000 + pr(a0 + dr / DEG) + lift; g.save(); g.translate((Math.sin(dr) * r1) / sc, (r0 - Math.cos(dr) * r1) / sc); g.rotate(dr); for (const [x, y, w, h] of P.win) if (c || x < 40) g.fillRect(x, y, w, h); g.restore(); }
+    const gr = g.createRadialGradient(134, -10, 0, 134, -10, 60); gr.addColorStop(0, `rgba(255,250,230,${0.8 * k})`); gr.addColorStop(1, 'rgba(255,250,230,0)'); g.fillStyle = gr; g.fillRect(74, -70, 120, 120);
+    g.globalCompositeOperation = 'source-over';
+  },
+};
+KINDS.coolingtower = {
+  bake(mk) {
+    const sh = mk('coolingtower', [-80, -200, 80, 6]), pts = [];
+    for (let i = 0; i <= 10; i++) { const f = i / 10, w = 60 - Math.sin(f * Math.PI * 0.8) * 22 + f * 4; pts.push([w, -f * 180]); }
+    sh.piece([...pts, ...pts.slice().reverse().map(([x, y]) => [-x, y])], '#b8b4ac', { round: 4, paint: (g) => { g.fillStyle = 'rgba(60,60,60,.15)'; g.fillRect(20, -180, 40, 184); } });
+    return { spr: sh.finish({ shadowBlur: 5 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+};
+// A row of solar panels on frames, tilted at the sky.
+KINDS.solar = {
+  bake(mk) {
+    const sh = mk('solar', [-70, -60, 70, 6]);
+    for (const x of [-46, 0, 46]) { sh.piece(strip(x, 4, x + 6, -24, 3, 3), '#8a8a90', { round: 0.6 }); sh.piece([[x - 22, -16], [x + 18, -40], [x + 26, -30], [x - 14, -6]], '#2a3a6a', { round: 1, lift: 1.4, paint: (g) => { g.strokeStyle = 'rgba(160,190,230,.6)'; g.lineWidth = 0.8; for (let k = 1; k < 4; k++) { g.beginPath(); g.moveTo(x - 22 + k * 10, -16 - k * 6); g.lineTo(x - 14 + k * 10, -6 - k * 6); g.stroke(); } } }); }
+    return { spr: sh.finish({ shadowBlur: 3 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 2, 3); },
+};
+// A poplar, tall and narrow: the tree planted by the billion against the deserts.
+KINDS.poplar = {
+  bake(mk, v = 0) {
+    const r = rng(3900 + v), h = 150 + v * 14, sh = mk('poplar' + v, [-30, -h - 10, 30, 6]);
+    sh.piece(strip(0, 2, 0, -h * 0.4, 5, 3.4), '#6a5a48', { round: 1 });
+    sh.piece([[-6, -h * 0.25], [-18, -h * 0.5], [-14, -h * 0.85], [0, -h], [14, -h * 0.85], [18, -h * 0.5], [6, -h * 0.25]], ['#5a8a4a', '#6a9a52', '#4f7a42'][v % 3], { round: 8, rough: 1.6, lift: 1.2, paint: (g) => dab(g, r, 30, [-16, -h, 16, -h * 0.3], ['rgba(140,180,100,.5)', 'rgba(40,70,40,.4)'], 5, 1.6) });
+    return { spr: sh.finish() };
+  },
+  draw(g, P, t, e, env) { g.rotate(sway(t, e, 1.2)); put(g, P.spr, env.sh); },
+};
+// A giant panda among the bamboo, chewing.
+KINDS.panda = {
+  bake(mk) {
+    const P = {};
+    P.body = mk('panda', [-40, -70, 44, 6]).piece([[-34, 4], [-36, -30], [-24, -50], [6, -54], [24, -40], [28, -10], [24, 4]], '#efece4', { round: 12, paint: (g) => { g.fillStyle = '#222024'; g.beginPath(); g.ellipse(-8, -34, 22, 12, 0.2, 0, 7); g.fill(); g.beginPath(); g.ellipse(-22, -4, 10, 8, 0, 0, 7); g.fill(); g.beginPath(); g.ellipse(14, -2, 10, 7, 0, 0, 7); g.fill(); } }).finish({ shadowBlur: 3 });
+    P.head = mk('panda-head', [-26, -26, 26, 22]).piece(ellipse(0, 0, 21, 18, 18), '#f4f2ec', { round: 6, paint: (g) => { g.fillStyle = '#222024'; for (const s of [-1, 1]) { g.beginPath(); g.ellipse(s * 8, -2, 5, 6.4, s * 0.5, 0, 7); g.fill(); g.beginPath(); g.arc(s * 14, -15, 6, 0, 7); g.fill(); } g.fillStyle = '#f4f2ec'; for (const s of [-1, 1]) { g.beginPath(); g.arc(s * 8, -3, 1.4, 0, 7); g.fill(); } g.fillStyle = '#222024'; g.beginPath(); g.ellipse(0, 7, 3, 2, 0, 0, 7); g.fill(); } }).finish({ shadowBlur: 3 });
+    P.stalk = mk('panda-stalk', [-4, -50, 6, 4], { pad: 3 }).piece(strip(0, 2, 2, -46, 2.6, 2), '#7a9a52', { round: 0.6 }).piece([[2, -40], [14, -48], [6, -38]], '#6a9448', { round: 1, lift: 0.6 }).finish({ shadowBlur: 2 });
+    return P;
+  },
+  draw(g, P, t, e, env) {
+    put(g, P.body, env.sh, 2, 3);
+    const chew = Math.sin(t * 6) * 0.04;
+    g.save(); g.translate(18, -58); g.rotate(-0.4 + Math.sin(t * 3) * 0.08); put(g, P.stalk, env.sh * 0.5); g.restore();
+    g.save(); g.translate(10, -60); g.rotate(fbm(t * 0.4, 3) * 0.08 + chew); g.scale(1, 1 + chew); put(g, P.head, env.sh * 0.6); g.restore();
+  },
+};
