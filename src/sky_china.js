@@ -211,3 +211,27 @@ fxGroup(['fullmoon', 'homecard'], (mk) => {
   } }).finish({ shadowBlur: 4 });
   return S;
 });
+
+// --------------------------------------------------------------- the Song ---
+fxGroup(['compass', 'needle', 'jiaozi'], (mk) => {
+  const S = {};
+  S.compass = mk('compass', [-56, -40, 56, 40], { pad: 6 }).piece(ellipse(0, 0, 52, 34, 28), '#8a6a44', { round: 6, paint: (g) => { g.strokeStyle = 'rgba(40,26,14,.5)'; g.lineWidth = 1.4; g.beginPath(); g.ellipse(0, 0, 46, 29, 0, 0, 7); g.stroke(); for (let k = 0; k < 24; k++) { const a = k * Math.PI / 12; g.beginPath(); g.moveTo(Math.cos(a) * 40, Math.sin(a) * 25); g.lineTo(Math.cos(a) * 46, Math.sin(a) * 29); g.stroke(); } } }).piece(ellipse(0, 0, 34, 21, 24), '#6a9aa8', { round: 5, lift: 0.8, paint: (g) => { g.fillStyle = 'rgba(230,245,250,.35)'; g.beginPath(); g.ellipse(-10, -6, 14, 4, -0.2, 0, 7); g.fill(); } }).finish({ shadowBlur: 4 });
+  // the needle, magnetised and floated on water, cut in the shape of a little fish
+  S.needle = mk('needle', [-30, -8, 30, 8], { pad: 4 }).piece([[-26, 0], [-16, -5], [14, -5], [24, 0], [14, 5], [-16, 5]], '#4a4e56', { round: 3, paint: (g) => { g.fillStyle = '#c8322a'; g.beginPath(); g.moveTo(14, -5); g.lineTo(24, 0); g.lineTo(14, 5); g.fill(); g.fillStyle = '#efe6d0'; g.beginPath(); g.arc(10, -1, 1.4, 0, 7); g.fill(); } }).piece([[-26, 0], [-32, -6], [-30, 0], [-32, 6]], '#4a4e56', { round: 1, lift: 0.6 }).finish({ shadowBlur: 2 });
+  S.jiaozi = mk('jiaozi', [-12, -20, 12, 20], { pad: 3 }).piece(rect(-10, -18, 10, 18), '#e6d8b0', { round: 1, rough: 0.3, paint: (g) => { g.strokeStyle = 'rgba(40,30,24,.8)'; g.lineWidth = 1; g.strokeRect(-8, -16, 16, 32); g.fillStyle = 'rgba(40,30,24,.6)'; for (let y = -12; y < 6; y += 3) g.fillRect(-6, y, 12, 1); g.fillStyle = 'rgba(178,40,32,.9)'; g.fillRect(-5, 8, 5, 5); g.fillRect(1, 8, 5, 5); } }).finish({ shadowBlur: 2 });
+  return S;
+});
+// A firework, cut from paper: a burst of petals that opens, droops and fades.
+export function burst(g, st, x, y, d, col, n = 26, size = 1) {
+  if (d < 0 || d > 2.6) return;
+  const u = st.eu * size, open = 1 - Math.exp(-d * 3.4), fade = 1 - clamp((d - 1.2) / 1.4), R = 110 * u * open;
+  g.globalCompositeOperation = 'lighter';
+  if (d < 0.5) st.stamp(g, st.dot(255, 230, 180, '255,250,235'), x, y, 90 * u * (1 - d * 1.6), 0.9 * (1 - d * 2));
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2 + d * 0.1, px = x + Math.cos(a) * R, py = y + Math.sin(a) * R * 0.92 + d * d * 26 * u;
+    st.stamp(g, st.dot(col[0], col[1], col[2], '255,248,230'), px, py, 7 * u * (0.6 + 0.4 * fade), fade);
+    g.strokeStyle = `rgba(${col[0]},${col[1]},${col[2]},${0.55 * fade})`; g.lineWidth = Math.max(1, 2 * u);
+    g.beginPath(); g.moveTo(x + Math.cos(a) * R * 0.55, y + Math.sin(a) * R * 0.5 + d * d * 10 * u); g.lineTo(px, py); g.stroke();
+  }
+  g.globalCompositeOperation = 'source-over';
+}

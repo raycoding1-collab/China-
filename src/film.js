@@ -9,7 +9,7 @@ import './kinds_nature.js';
 import './kinds_built.js';
 import './kinds_modern.js';
 import './kinds_china.js';
-import { makeFx, hang2, glyph, crack, SEIS_DRAGONS, TEAR } from './sky_china.js';
+import { makeFx, hang2, glyph, crack, SEIS_DRAGONS, TEAR, burst } from './sky_china.js';
 import { BlurSheet } from './engine.js';
 import { EV, DURATION } from './timeline.js';
 
@@ -44,15 +44,17 @@ const cam = monotone([
   [241.5, 900], [244, 905], [247.5, 911], [250, 926], [252.5, 935], [255.5, 942], [258, 952],
   // 7. the Tang
   [260.5, 982], [263, 992], [266, 1001], [268.5, 1016], [272, 1023], [275, 1029], [277.5, 1044], [281, 1056], [285, 1066], [287.5, 1086], [291, 1093], [294, 1102], [297, 1116], [301, 1119], [306, 1121], [312, 1123], [315.5, 1128],
-  [318.5, 1200], [662, 2600], [800, 2740],
+  // 8. the Song
+  [318.5, 1206], [321, 1216], [323.5, 1234], [326, 1246], [329, 1252], [331.5, 1262], [334, 1266], [337.5, 1272], [340, 1290], [342.5, 1302], [345, 1316], [347.5, 1326], [350.5, 1334], [354, 1340],
+  [357, 1370], [662, 2600], [800, 2740],
 ]);
 
 // ------------------------------------------------- paint and shape of land --
 const ZONES = [
   [-200, 28, [148, 134, 86]], [33, 50, [196, 164, 104]], [56, 76, [112, 140, 82]], [80, 110, [104, 132, 76]],
-  [116, 182, [150, 132, 92]], [186, 214, [128, 120, 88]], [222, 272, [150, 104, 78]], [280, 704, [176, 150, 108]], [710, 772, [214, 182, 122]], [778, 9999, [168, 150, 104]],
+  [116, 182, [150, 132, 92]], [186, 214, [128, 120, 88]], [222, 272, [150, 104, 78]], [280, 704, [176, 150, 108]], [710, 772, [214, 182, 122]], [778, 1196, [168, 150, 104]], [1200, 1288, [176, 160, 120]], [1290, 1312, [44, 86, 126]], [1316, 9999, [168, 150, 104]],
 ];
-const SEAS = [];
+const SEAS = [[1290, 1312]];
 function zoneColor(a) {
   for (let i = 0; i < ZONES.length; i++) {
     const [a0, a1, c] = ZONES[i];
@@ -575,6 +577,116 @@ const LIBAI_A = 1122;
     },
   });
 }
+
+// ============================================================== 8. The Song ===
+Object.assign(LOOKS, {
+  songMan: { skin: 4, top: 'robe', topCol: '#4a6a7a', legs: 'robe', legCol: '#4a6a7a', sleeve: '#4a6a7a', hat: 'futou', hatCol: '#1e1a1c', pose: 'walk' },
+  songLady: { skin: 6, top: 'robe', topCol: '#c87a8a', legs: 'skirt', legCol: '#5a6a8a', sleeve: '#c87a8a', hair: 'bun', pose: 'walk' },
+  songPorter: { skin: 1, top: 'tunic', topCol: '#a89a7a', legs: 'trousers', legCol: '#5a4a3a', hat: 'cone', hatCol: '#c9a86a', pose: 'walk', item: 'basket' },
+  alchemist: { skin: 4, top: 'robe', topCol: '#3a3a5a', legs: 'robe', legCol: '#3a3a5a', sleeve: '#3a3a5a', hat: 'topknot', beard: 1, beardCol: '#e0dcd4', hairCol: '#e0dcd4', pose: 'kneel' },
+  alchemistSoot: { skin: 2, top: 'robe', topCol: '#2a2a3a', legs: 'robe', legCol: '#2a2a3a', sleeve: '#2a2a3a', hair: 'curly', hairCol: '#1a1614', beard: 1, beardCol: '#3a3430', pose: 'kneel' },
+  fwBoy: { skin: 4, top: 'tunic', topCol: '#c8642a', legs: 'trousers', legCol: '#3a3a40', hair: 'bun', pose: 'stand', small: 0.66 },
+  merchantA: { skin: 4, top: 'robe', topCol: '#7a5a2a', legs: 'robe', legCol: '#7a5a2a', sleeve: '#7a5a2a', hat: 'futou', hatCol: '#1e1a1c', beard: 1, pose: 'stand' },
+  merchantB: { skin: 3, top: 'robe', topCol: '#2a5a4a', legs: 'robe', legCol: '#2a5a4a', sleeve: '#2a5a4a', hat: 'soft', hatCol: '#3a2a22', pose: 'stand' },
+  biSheng: { skin: 4, top: 'tunic', topCol: '#6a5a4a', sleeve: '#6a5a4a', legs: 'trousers', legCol: '#3a3a40', apron: '#d8d0b8', hat: 'scarf', hatCol: '#3a3a40', pose: 'stand' },
+});
+const FW = [332.4, 333.3, 334.1, 334.9, 335.9, 336.8, 337.6], FW_RACK = 1263, FW_COL = [[255, 120, 80], [255, 200, 90], [160, 220, 255], [255, 140, 170], [200, 255, 150], [255, 210, 120], [255, 110, 70]];
+const fwPos = (st, i) => [st.W * [0.3, 0.62, 0.45, 0.76, 0.24, 0.55, 0.7][i], st.H * [0.2, 0.14, 0.27, 0.22, 0.12, 0.08, 0.3][i] * (st.aspectK > 0.4 ? 1 : 0.85) + st.H * (st.aspectK > 0.4 ? 0 : 0.06)];
+{
+  // Kaifeng: a river, the rainbow bridge, shops, crowds, someone carrying a load over the arch
+  const BR = 1222;
+  add('rainbowbridge', 'main', BR, { z: 1.5, scale: 1.2, y: -4, wide: 10 });
+  add('barge', 'main', BR - 1, { v: 1, z: 1, over: true, y: 2, scale: 0.8, move: (t) => (t - 318) * 0.4 });
+  add('person', 'main', BR - 7, { v: 'songPorter', z: 2, scale: P2, pace: 4.4, move: (t) => clamp((t - 317) * 0.9, 0, 14), lift: (t) => { const dx = clamp((t - 317) * 0.9, 0, 14) - 7, x = dx * DEG * 1000 / 1.2; return Math.abs(x) < 120 ? (Math.sin(((x + 120) / 240) * Math.PI) * 62 + 10) * 1.2 - 4 : 0; } });
+  for (const [a, v] of [[1205, 0], [1212.4, 1], [1233, 2], [1240.4, 0]]) add('shop', 'main', a, { v, z: 0, winOn: (t, i) => 0.7 * sramp(t, 330, 332) * (1 - sramp(t, 338, 340)) });
+  [['songMan', 1209], ['songLady', 1236.6], ['songMan', 1244]].forEach(([v, a], i) => add('person', 'main', a, { v, z: 2.2, scale: P2, flip: i === 1, pace: 4.2, move: (t) => (i === 1 ? -1 : 1) * clamp((t - 317) * 0.45, 0, 6) }));
+  for (const a of [1200, 1247]) add('willow', 'main', a, { v: 1, z: 0, scale: 0.9 });
+  // an alchemist and his stove: a flash, a puff, a new hairstyle
+  const BANG = ev('bang');
+  add('furnace', 'main', 1253.4, { z: 1.5, scale: 1.2 });
+  add('person', 'main', 1250, { v: 'alchemist', z: 2, scale: P2, foldAt: BANG + 0.06, act: (t) => ({ lean: 22, head: 18, front: [-60 + Math.sin(t * 4) * 16, -40], back: [-50 + Math.sin(t * 4 + 1) * 16, -40] }) });
+  add('person', 'main', 1249.4, { v: 'alchemistSoot', z: 2, scale: P2, popAt: 1e9, repopAt: BANG + 0.5, act: (t) => ({ lean: -14, head: -10 + Math.sin(t * 7) * 2, front: [-150, 30], back: [-140, 40] }) });
+  // fireworks at night: a rack of rockets, lanterns, a crowd looking up
+  add('rocketrack', 'main', FW_RACK, { z: 1.4, scale: 1.2 });
+  for (const a of [1258, 1278]) add('redlantern', 'main', a, { z: 1, scale: 1.1, lit: (t) => sramp(t, 330, 331.5) * (1 - sramp(t, 338.5, 340)) });
+  [['songMan', 1267.4], ['fwBoy', 1269.8], ['songLady', 1272.2], ['merchantB', 1275]].forEach(([v, a], i) => add('person', 'main', a, { v, z: 2, scale: P2, act: (t) => (t > FW[0] - 0.4 && t < 339 ? { walk: undefined, head: -26 + Math.sin(t * 2 + i) * 6, lean: -4, front: i === 1 ? [-160, -10] : [-20, -20] } : { walk: undefined }) }));
+  add('shop', 'main', 1283, { v: 2, z: 0, winOn: (t) => 0.75 * sramp(t, 330, 332) * (1 - sramp(t, 338.5, 340)) });
+  // out at sea: a junk steering by compass
+  for (let a = 1290; a < 1312; a += 4) add('wave', 'main', a, { v: (R() * 4) | 0, z: 4, loud: 0.2, ground: false, y: -2 });
+  for (let a = 1288; a < 1314; a += 6) add('wave', 'front', a, { v: (R() * 4) | 0, scale: 1.6, ground: false, loud: 0.2 });
+  add('junk', 'main', 1300, { v: 0, z: 3, ground: false, y: 10, move: (t) => (t - 338) * 0.35 });
+  add('junk', 'mid', 1306, { v: 1, scale: 0.5, ground: false, y: 4, move: (t) => (t - 338) * 0.3 });
+  // merchants paying in paper
+  add('person', 'main', 1318.6, { v: 'merchantA', z: 2, scale: P2, act: (t) => (t > ev('money') - 0.4 && t < ev('money') + 2 ? { front: [-110, -20], lean: 6 } : {}) });
+  add('person', 'main', 1323.4, { v: 'merchantB', z: 2, scale: P2, flip: true, act: (t) => (t > ev('money') + 0.6 && t < ev('money') + 2.6 ? { front: [-100, -20], head: 6 } : {}) });
+  add('shop', 'main', 1327, { v: 1, z: 0 });
+  // Bi Sheng and his clay type
+  add('hall', 'main', 1340, { v: 6, z: 0, wide: 10 });
+  add('person', 'main', 1334.4, { v: 'biSheng', z: 2, scale: P2, act: (t) => { const k = Math.max(0, Math.sin(t * 3)); return { lean: 10 + k * 6, head: 18, front: [-70 + k * 20, -40], back: [-60 + k * 20, -30] }; } });
+  add('seat', 'main', 1337, { z: 1.8, scale: 1.4 });
+  grassRun(1196, 1290, 3.6, 'main', { skip: (a) => (a > 1203 && a < 1286) });
+  grassRun(1314, 1352, 3.6, 'main', { skip: (a) => a > 1316 && a < 1344 });
+  grassRun(1196, 1352, 7, 'front', { s: 2, skip: (a) => a > 1288 && a < 1314 });
+
+  hook({
+    lights(t, c, L, Em, Sm, st) {
+      if (near(1253, c, 50) && t > 320 && t < 334) {
+        L.push({ a: 1253.4, h: 20, r: 200, k: 0.6, color: [255, 150, 80] });
+        const f = Math.exp(-(((t - BANG) / 0.18) ** 2)); if (f > 0.01) L.push({ a: 1253.4, h: 70, r: 900, k: 1.6 * f, color: [255, 230, 190] });
+        if (t > BANG) Sm.push({ a: 1253.4, h: 70, t0: BANG, t1: BANG + 1.4, size: 1.8, life: 3.2, every: 0.12, rise: 120, drift: 2, alpha: 0.9 });
+      }
+      if (near(FW_RACK, c, 60) && t > 329 && t < 341) {
+        for (const a of [1258, 1278]) L.push({ a: a + 1, h: 120, r: 260, k: 0.7 * sramp(t, 330, 331.5) * (1 - sramp(t, 338.5, 340)), color: [255, 140, 90] });
+        if (st) FW.forEach((t0, i) => { const d = t - t0; if (d < 0 || d > 1.8) return; const [x, y] = fwPos(st, i), c2 = FW_COL[i]; L.push({ screen: [x, y + st.H * 0.2], r: 1400, k: 0.6 * Math.exp(-d * 2), color: c2 }); });
+      }
+    },
+    ground(g, st, t, S, G) {
+      G.river(1214, 1230, -6, 14, 'rgba(70,110,120,.92)', 'rgba(220,240,250,.45)');
+      if (t > ev('money') - 0.2 && t < ev('money') + 3) {
+        // paper money, passing from hand to hand
+        for (let i = 0; i < 6; i++) { const k = clamp((t - ev('money') - i * 0.22) / 1.3); if (k <= 0 || k >= 1) continue; const a = lerp(1319.4, 1322.6, k), [x, y] = G.rad(a, 110 + Math.sin(k * Math.PI) * 40); g.save(); g.translate(x, y); g.rotate((a - G.c) * DEG + Math.sin(t * 6 + i) * 0.3); g.scale(1.2, 1.2 * (0.4 + 0.6 * Math.abs(Math.sin(t * 5 + i)))); put(g, st.fx.jiaozi, 0.3, 1, 2); g.restore(); }
+      }
+    },
+    over(g, st, t, S) {
+      const { W, H } = st, por = st.aspectK > 0.4 ? 0 : 1;
+      // rockets up from the rack, and the bursts
+      if (t > FW[0] - 1.2 && t < 341) {
+        const [rx, ry] = st.place('main', FW_RACK + 0.4, 120, t);
+        FW.forEach((t0, i) => {
+          const [x, y] = fwPos(st, i), up = t - (t0 - 0.9);
+          if (up > 0 && up < 0.9) { const k = up / 0.9, px = lerp(rx, x, k), py = lerp(ry, y, k * (2 - k)); g.globalCompositeOperation = 'lighter'; for (let j = 0; j < 8; j++) st.stamp(g, st.dot(255, 200, 120, '255,240,200'), lerp(rx, px, 1 - j * 0.05), lerp(ry, py, 1 - j * 0.05), (5 - j * 0.5) * st.eu, 0.9 - j * 0.1); g.globalCompositeOperation = 'source-over'; }
+          burst(g, st, x, y, t - t0, FW_COL[i], 24 + (i % 3) * 4, por ? 0.8 : 1.1);
+        });
+      }
+      // the compass: the needle swings, and settles pointing south
+      if (t > ev('compass') - 0.3 && t < ev('compass') + 5.6) {
+        const k = drop(t, ev('compass'), ev('compass') + 4.8), x = W * (por ? 0.5 : 0.3), y = H * lerp(-0.25, por ? 0.24 : 0.21, k), sc = por ? 1.1 : 1.5;
+        st.hang(g, st.fx.compass, x, y, sc, Math.sin(t * 0.6) * 1.5 * DEG);
+        const sw = Math.sin(t * 0.6) * 1.5 * DEG, len = y + 20, cx = x - Math.sin(sw) * len, cy = -20 + Math.cos(sw) * len;
+        const d = t - ev('compass'), ang = Math.PI / 2 + 2.4 * Math.exp(-d * 1.1) * Math.cos(d * 5.5);
+        g.save(); g.translate(cx, cy); g.scale(st.eu * sc, st.eu * sc * 0.62); g.rotate(ang); put(g, st.fx.needle, 0.3, 1, 2); g.restore();
+      }
+      // Bi Sheng's type, then printed pages leaving like a flock
+      if (t > ev('type') - 0.3 && t < 355) {
+        const k = drop(t, ev('type'), 353.4); st.hang(g, st.fx.typetray, W * (por ? 0.5 : 0.62), H * lerp(-0.3, por ? 0.24 : 0.19, k), por ? 0.85 : 1.3, Math.sin(t * 0.8 + 1) * 2 * DEG);
+      }
+      const P0 = ev('pages');
+      if (t > P0 - 0.2 && t < P0 + 6) {
+        const [px, py] = st.place('main', 1336, 80, t), u = st.eu;
+        for (let i = 0; i < 26; i++) {
+          const a = t - P0 - i * 0.07; if (a < 0) continue;
+          const hx = 0.35 + hash(i * 3) * 0.9, hy = 0.9 + hash(i * 5) * 0.5, sp = (150 + hash(i * 7) * 120) * u;
+          const x = px + hx * a * sp + Math.sin(a * 1.7 + i) * 30 * u * Math.min(1, a), y = py - hy * a * sp * 0.8 + a * a * 6 * u + Math.sin(a * 2.3 + i * 2) * 14 * u;
+          if (x > W + 60 || y < -60) continue;
+          const flap = Math.sin(t * (9 + hash(i) * 4) + i), s2 = u * (1.1 + hash(i * 11) * 0.5) * Math.min(1, a * 4);
+          g.save(); g.translate(x, y); g.rotate(-0.5 + Math.sin(a + i) * 0.2);
+          for (const side of [-1, 1]) { g.save(); g.scale(side * s2, s2 * (0.25 + 0.75 * Math.abs(flap))); g.rotate(flap > 0 ? -0.2 : 0.2); put(g, st.fx.page, 0); g.restore(); }
+          g.restore();
+        }
+      }
+    },
+  });
+}
 // the thread of silk: unwound from the reel, it runs on, stitched into the world, through everything
 const THREAD0 = 94.6;
 const threadEnd = (t) => (t < 40.4 ? -1e9 : t < 46.5 ? THREAD0 + (t - 40.4) * 9 : 1e9);
@@ -588,18 +700,18 @@ const NIGHT = ['#0a102b', '#11193c', '#1a2650', '#2e3a66'], DUSK = ['#141b3c', '
 const W_ = [255, 252, 244];
 const skyK = track([
   [0, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [5, ['#262f5a', '#57497c', '#b0627a', '#e08f5e']], [9, DUSK], [13, ['#0c1230', '#131c42', '#1e2a56', '#35426e']],
-  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [48.5, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [51, DUSK], [54, NIGHT], [95, NIGHT], [99, DAWN], [103, DAY], [107, DAY], [109, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [113, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [116, DAY], [238, DAY], [241, ['#6a8ab0', '#a8b0c0', '#e8d0b0', '#f6c890']], [256, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [260, DAY], [290, DAY], [294, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [297.5, DUSK], [300, NIGHT], [315, NIGHT], [318.5, DAWN], [321, DAY],
+  [23, ['#0c1230', '#131c42', '#1e2a56', '#35426e']], [27, DAWN], [31, DAY], [46, DAY], [48.5, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [51, DUSK], [54, NIGHT], [95, NIGHT], [99, DAWN], [103, DAY], [107, DAY], [109, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [113, ['#6a6a76', '#8a8580', '#a89a88', '#b8a890']], [116, DAY], [238, DAY], [241, ['#6a8ab0', '#a8b0c0', '#e8d0b0', '#f6c890']], [256, ['#5a6a98', '#a890a8', '#f0b088', '#f8c888']], [260, DAY], [290, DAY], [294, ['#34406c', '#80628a', '#dc8c62', '#f6b76a']], [297.5, DUSK], [300, NIGHT], [315, NIGHT], [318.5, DAWN], [321, DAY], [328, DAY], [330.5, DUSK], [332.5, NIGHT], [338, NIGHT], [340.5, DAWN], [343, DAY],
 ]);
-const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [48.5, [244, 200, 180]], [51, [130, 110, 140]], [54, [66, 72, 116]], [95, [66, 72, 116]], [99, [200, 180, 175]], [103, W_], [107, W_], [109, [210, 200, 196]], [113, [210, 200, 196]], [116, W_], [238, W_], [241, [255, 236, 214]], [256, [240, 200, 180]], [260, W_], [290, W_], [294, [244, 200, 180]], [297.5, [110, 104, 140]], [300, [60, 70, 116]], [315, [60, 70, 116]], [318.5, [200, 180, 175]], [321, W_]]);
+const ambK = track([[0, [244, 214, 196]], [5, [176, 150, 164]], [9, [96, 98, 138]], [13, [58, 70, 114]], [23, [58, 70, 114]], [27, [200, 180, 175]], [31, W_], [46, W_], [48.5, [244, 200, 180]], [51, [130, 110, 140]], [54, [66, 72, 116]], [95, [66, 72, 116]], [99, [200, 180, 175]], [103, W_], [107, W_], [109, [210, 200, 196]], [113, [210, 200, 196]], [116, W_], [238, W_], [241, [255, 236, 214]], [256, [240, 200, 180]], [260, W_], [290, W_], [294, [244, 200, 180]], [297.5, [110, 104, 140]], [300, [60, 70, 116]], [315, [60, 70, 116]], [318.5, [200, 180, 175]], [321, W_], [328, W_], [330.5, [110, 104, 140]], [332.5, [56, 64, 108]], [338, [56, 64, 108]], [340.5, [200, 180, 175]], [343, W_]]);
 const moteK = track([[0, [255, 222, 170]], [12, [255, 190, 120]], [26, [255, 222, 170]], [46, [255, 222, 170]], [52, [255, 190, 120]], [98, [255, 222, 170]]]);
 const gradeK = track([[0, [255, 170, 95, 0.16]], [24, [255, 170, 95, 0.16]], [30, [255, 205, 150, 0.1]], [46, [255, 205, 150, 0.1]], [52, [255, 160, 90, 0.18]], [96, [255, 160, 90, 0.16]], [102, [255, 205, 150, 0.1]], [107, [255, 205, 150, 0.1]], [109, [150, 140, 130, 0.22]], [113, [150, 140, 130, 0.22]], [116, [255, 210, 160, 0.1]]]);
 const SUNS = [[-1, 11, -430, -78, 170], [24, 31, 430, 170, -60], [45, 52, -430, -40, 170], [96, 103, 430, 170, -60]];
-const NIGHTS = [[7, 27], [50, 99], [296, 319]];
-const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3], [146.5, 148.5, 150.5, 152.5, 0.22], [168, 170.5, 173, 175, 0.12], [175.5, 177.5, 180.5, 182.5, 0.42], [287, 289, 292.5, 294.5, 0.2], [299, 303, 314, 317, 0.45]];
+const NIGHTS = [[7, 27], [50, 99], [296, 319], [330, 341]];
+const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3], [146.5, 148.5, 150.5, 152.5, 0.22], [168, 170.5, 173, 175, 0.12], [175.5, 177.5, 180.5, 182.5, 0.42], [287, 289, 292.5, 294.5, 0.2], [299, 303, 314, 317, 0.45], [325, 326.5, 328.5, 330, 0.3]];
 
 function state(t, stage) {
   const c = cam(t), lights = [], emitters = [], smoke = [];
-  for (const f of HOOK.lights) f(t, c, lights, emitters, smoke);
+  for (const f of HOOK.lights) f(t, c, lights, emitters, smoke, stage);
   let nightK = 0; for (const [a0, a1] of NIGHTS) nightK = Math.max(nightK, sramp(t, a0, a0 + 5) * (1 - sramp(t, a1 - 4, a1)));
   let sun = null;
   for (const [t0, t1, x, y0, y1] of SUNS) if (t > t0 && t < t1) sun = { x, y: lerp(y0, y1, smooth((t - t0) / (t1 - t0))), k: 1 };
@@ -639,7 +751,7 @@ function sky(g, st, t, S) {
     st.hang(g, st.fx.moon, x, y, 1, Math.sin(t * 0.5) * 1.6 * DEG, 1, -0.35);
   }
   // in the long days a paper sun hangs on its thread
-  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186], [188, 226], [262, 290]]) {
+  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186], [188, 226], [262, 290], [344, 356]]) {
     if (t < t0 - 0.5 || t > t1 + 3) continue;
     const k = drop(t, t0, t1), sx = W * (st.aspectK > 0.4 ? 0.16 : 0.2), sy = H * lerp(-0.25, 0.13, k);
     g.globalCompositeOperation = 'screen'; const gl = g.createRadialGradient(sx, sy, 0, sx, sy, 300 * u); gl.addColorStop(0, `rgba(255,236,190,${0.35 * clamp(k)})`); gl.addColorStop(1, 'rgba(255,230,180,0)'); g.fillStyle = gl; g.fillRect(sx - 300 * u, sy - 300 * u, 600 * u, 600 * u); g.globalCompositeOperation = 'source-over';

@@ -435,6 +435,13 @@
   "frost": 305.4,
   "raise": 308.5,
   "lower": 310.9,
-  "home": 311.3
+  "home": 311.3,
+  "song": 317.8,
+  "bang": 327.3,
+  "fireworks": 332.4,
+  "compass": 340.0,
+  "money": 342.9,
+  "type": 347.0,
+  "pages": 350.8
  }
 }

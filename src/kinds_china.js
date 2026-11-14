@@ -842,3 +842,61 @@ KINDS.tangroom = {
     g.globalCompositeOperation = 'source-over';
   },
 };
+
+// ================================================================ the Song ===
+// The rainbow bridge of Kaifeng: a timber arch over the river, as in the Qingming scroll.
+KINDS.rainbowbridge = {
+  bake(mk) {
+    const sh = mk('rainbowbridge', [-130, -90, 130, 8]), pts = [], top = [];
+    for (let i = 0; i <= 16; i++) { const f = i / 16, x = -120 + f * 240, y = -Math.sin(f * Math.PI) * 62; top.push([x, y - 10]); pts.push([x, y]); }
+    sh.piece([...top, ...pts.slice().reverse().map(([x, y]) => [x, y + 6])], '#7a5236', { round: 3, paint: (g) => { g.strokeStyle = 'rgba(40,24,12,.55)'; g.lineWidth = 1.4; for (let i = 0; i <= 24; i++) { const f = i / 24, x = -118 + f * 236, y = -Math.sin(f * Math.PI) * 62; g.beginPath(); g.moveTo(x, y - 10); g.lineTo(x + 3, y + 6); g.stroke(); } } });
+    const rail = top.map(([x, y]) => [x, y - 16]);
+    sh.piece([...rail, ...top.slice().reverse().map(([x, y]) => [x, y - 10])], '#a8322a', { round: 1.5, lift: 1, paint: (g) => { g.strokeStyle = 'rgba(60,20,10,.5)'; g.lineWidth = 1; for (let i = 0; i <= 16; i++) { const [x, y] = rail[i]; g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + 6); g.stroke(); } } });
+    for (const x of [-124, 118]) sh.piece(rect(x, 6, x + 8, -14), '#5a3a22', { round: 1, lift: 1 });
+    return { spr: sh.finish({ shadowBlur: 5 }), arc: (x) => -Math.sin(((x + 120) / 240) * Math.PI) * 62 - 10 };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+};
+// A shop front with an awning and a hanging sign (teahouse, wine shop, cloth seller).
+KINDS.shop = {
+  bake(mk, v = 0) {
+    const cols = ['#c84a2a', '#2f6a6a', '#c9a24a'], c = cols[v % 3], sh = mk('shop' + v, [-70, -150, 70, 6]), win = [[-40, -70, 28, 34], [12, -70, 28, 34]];
+    sh.piece(rect(-60, 4, 60, -96), '#e0d4b8', { round: 2, paint: (g) => { paintRects(win, 'rgba(40,28,20,.82)')(g); g.fillStyle = '#5a3a22'; for (const x of [-60, -6, 54]) g.fillRect(x, -96, 6, 100); g.fillStyle = 'rgba(40,28,20,.82)'; g.fillRect(-8, -36, 16, 40); } });
+    sh.piece([[-72, -60], [72, -60], [64, -36], [-64, -36]], c, { round: 2, lift: 1.6, paint: (g) => { g.fillStyle = 'rgba(255,255,255,.2)'; for (let x = -68; x < 70; x += 16) g.fillRect(x, -60, 8, 24); } });
+    sh.piece(roofPts(60, -96, 26, 14, 8), '#4a4a50', { round: 2, lift: 1.6 });
+    sh.piece(rect(40, -130, 54, -98), c, { round: 1, lift: 1, paint: (g) => { g.fillStyle = 'rgba(255,240,210,.85)'; g.fillRect(44, -126, 6, 3); g.fillRect(44, -118, 6, 3); g.fillRect(44, -110, 6, 3); } });
+    return { spr: sh.finish({ shadowBlur: 5 }), windows: win };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+  glow: glowRects,
+};
+// The alchemist's stove: a tripod cauldron over a little fire.
+KINDS.furnace = {
+  bake(mk) {
+    return { spr: mk('furnace', [-36, -70, 36, 6]).piece([[-26, 4], [-22, -30], [22, -30], [26, 4]], '#7a5a44', { round: 4, paint: (g) => { g.fillStyle = 'rgba(30,14,8,.9)'; g.beginPath(); g.ellipse(0, -10, 9, 8, 0, 0, 7); g.fill(); } })
+      .piece([[-24, -30], [24, -30], [18, -56], [-18, -56]], '#5a5a4a', { round: 5, lift: 1.4, paint: (g) => { g.fillStyle = 'rgba(200,200,180,.25)'; g.fillRect(-16, -52, 6, 20); } }).piece(ellipse(0, -57, 19, 4, 12), '#3a3a30', { round: 2, lift: 0.8 }).finish({ shadowBlur: 3 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 2, 3); },
+  glow(g, P, t, e, env, p) { if (p < 0.6) return; g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(0, -10, 0, 0, -10, 22); gr.addColorStop(0, `rgba(255,170,80,${0.8 * (0.85 + 0.15 * Math.sin(t * 9))})`); gr.addColorStop(1, 'rgba(255,90,30,0)'); g.fillStyle = gr; g.fillRect(-22, -32, 44, 44); g.globalCompositeOperation = 'source-over'; },
+};
+// A rack of fire arrows: rockets lean on it, waiting to go up.
+KINDS.rocketrack = {
+  bake(mk) {
+    const sh = mk('rocketrack', [-40, -130, 40, 6]);
+    sh.piece([[-30, 4], [-6, -120], [0, -120], [-24, 4]], '#5a4030', { round: 1 }).piece([[30, 4], [6, -120], [0, -120], [24, 4]], '#5a4030', { round: 1, lift: 0.8 }).piece(rect(-22, -40, 22, -46), '#5a4030', { round: 0.8, lift: 0.8 });
+    for (const [x0, a] of [[-26, 0.36], [-12, 0.28], [10, -0.24], [24, -0.34]]) { const x1 = x0 + Math.sin(a) * 120, y1 = -Math.cos(a) * 120; sh.piece(strip(x0, 2, x1, y1, 1.8, 1.6), '#7a5a3a', { round: 0.5, lift: 1.2 }); sh.piece(strip(x0 + (x1 - x0) * 0.62, 2 + (y1 - 2) * 0.62, x0 + (x1 - x0) * 0.9, 2 + (y1 - 2) * 0.9, 7, 6), '#b8322a', { round: 1.5, lift: 1.4, paint: (g) => { g.fillStyle = 'rgba(240,210,120,.8)'; g.fillRect(x0 + (x1 - x0) * 0.74 - 4, 2 + (y1 - 2) * 0.74, 8, 2); } }); }
+    return { spr: sh.finish({ shadowBlur: 3 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 2, 3); },
+};
+// A Song junk: a deep hull, battened sails like folded fans, a stern rudder.
+KINDS.junk = {
+  bake(mk, v = 0) {
+    const sh = mk('junk' + v, [-150, -270, 150, 16]), hull = v ? '#5a3a22' : '#6a4228';
+    sh.piece([[-140, -46], [-126, 8], [110, 10], [142, -40], [116, -30], [-110, -30]], hull, { round: 4, paint: (g) => { g.strokeStyle = 'rgba(30,18,10,.5)'; g.lineWidth = 1.2; for (let y = -26; y < 10; y += 6) { g.beginPath(); g.moveTo(-130, y); g.lineTo(130, y); g.stroke(); } g.fillStyle = '#a8322a'; g.fillRect(-138, -46, 30, 8); g.fillStyle = 'rgba(240,220,170,.9)'; g.beginPath(); g.arc(120, -28, 5, 0, 7); g.fill(); g.fillStyle = 'rgba(20,14,10,.9)'; g.beginPath(); g.arc(120, -28, 2, 0, 7); g.fill(); } });
+    const sail = (x, y0, w, h) => { sh.piece(strip(x, y0 + 4, x, y0 - h - 16, 4, 3), '#3a2a1c', { round: 1, lift: 1 }); sh.piece([[x - w * 0.6, y0], [x - w * 0.5, y0 - h], [x + w * 0.5, y0 - h * 1.06], [x + w * 0.6, y0]], '#b88a5a', { round: 3, lift: 2, paint: (g) => { g.strokeStyle = 'rgba(60,34,18,.7)'; g.lineWidth = 2; for (let k = 1; k < 7; k++) { const yy = y0 - (h * k) / 7; g.beginPath(); g.moveTo(x - w * 0.56, yy); g.quadraticCurveTo(x, yy + 6, x + w * 0.58, yy - 2); g.stroke(); } } }); };
+    sail(-60, -40, 60, 130); sail(10, -40, 80, 190); sail(84, -40, 50, 110);
+    return { spr: sh.finish({ shadowBlur: 7 }) };
+  },
+  draw(g, P, t, e, env) { g.translate(0, Math.sin(t * 1.3 + e.a) * 3); g.rotate(Math.sin(t * 0.9 + e.a * 2) * 2.2 * DEG); put(g, P.spr, env.sh, 5, 6); },
+};
