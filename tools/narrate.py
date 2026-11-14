@@ -26,7 +26,7 @@ SAY = [
   (r'\b1405\b', 'fourteen oh five'), (r'\b1644\b', 'sixteen forty-four'), (r'\b1912\b', 'nineteen twelve'), (r'\b1937\b', 'nineteen thirty-seven'),
   (r'\b1949\b', 'nineteen forty-nine'), (r'\b1972\b', 'nineteen seventy-two'), (r'\b1978\b', 'nineteen seventy-eight'), (r'\b1989\b', 'nineteen eighty-nine'),
   (r'\b2008\b', 'two thousand and eight'), (r'\b2015\b', 'twenty fifteen'), (r'\b2019\b', 'twenty nineteen'), (r'\b2024\b', 'twenty twenty-four'),
-  (r'\b1\.4 billion\b', 'one point four billion'),
+  (r'\b1\.4 billion\b', 'one point four billion'), (r'\b2025\b', 'twenty twenty-five'), (r'\bHefei\b', 'Huh-fay'), (r'\bGuizhou\b', 'Gway-joe'),
   (r'\bZheng He\b', 'Jerng Huh'), (r'\bZhang Qian\b', 'Jahng Chee-en'), (r'\bZhang Heng\b', 'Jahng Hung'), (r'\bCai Lun\b', 'Tsai Lun'),
   (r'\bDeng Xiaoping\b', 'Dung Shao-ping'), (r'\bWu Zetian\b', 'Woo Zuh-tee-en'), (r'\bSunzi\b', 'Soon-zuh'), (r'\bMao Zedong\b', 'Mao Zuh-dong'),
   (r"\bChang'an\b", 'Chahng-ahn'), (r'\bLi Bai\b', 'Lee Bye'), (r'\bBi Sheng\b', 'Bee Shung'), (r'\bTu Youyou\b', 'Too Yo-yo'),
