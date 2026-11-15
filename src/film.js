@@ -327,7 +327,7 @@ Object.assign(LOOKS, {
   [[333, 1], [337.4, 2], [341.6, 3], [346, 4], [350.4, 5], [354.6, 7], [358.6, 0]].forEach(([a, v], i) => add('banner', 'mid', a, { v, scale: 0.9, popAt: W0 + i * 0.3, raise: (t) => sramp(t, W0 + i * 0.3, W0 + 0.8 + i * 0.3) * (1 - sramp(t, W0 + 3.4 + ((i * 5) % 7) * 0.22, W0 + 3.9 + ((i * 5) % 7) * 0.22)), loud: 0.6 }));
   add('chariot', 'main', 333, { z: 3, scale: 0.85, from: W0 - 0.5, to: W0 + 9, move: (t) => Math.max(0, t - W0 + 0.4) * 3.2 });
   add('chariot', 'mid', 362, { scale: 0.6, from: W0, to: W0 + 9, flip: true, move: (t) => -Math.max(0, t - W0) * 2.6 });
-  ['zhouSoldierW', 'zhouSoldierW', 'zhouSoldierW'].forEach((v, i) => add('person', 'main', 344 + i * 2.6, { v, z: 2, scale: P2, popAt: W0 + 0.6 + i * 0.2, pace: 5.6, move: (t) => Math.max(0, t - W0) * 1.1 }));
+  ['zhouSoldierW', 'zhouSoldierW', 'zhouSoldierW'].forEach((v, i) => add('person', 'main', 344 + i * 2.6, { v, z: 2, scale: P2, popAt: W0 + 0.6 + i * 0.2, pace: 5.6, move: (t) => clamp((t - W0) * 1.1, 0, 9), foldAt: ev('kongzi') - 0.6 + i * 0.12 }));
   ['redSoldierW', 'redSoldierW'].forEach((v, i) => add('person', 'main', 366 + i * 2.6, { v, z: 2, scale: P2, flip: true, popAt: W0 + 1 + i * 0.2, pace: 5.6, move: (t) => -Math.max(0, t - W0) * 1.1 }));
   for (const [a, v, s] of [[338, 2, 0.7], [352, 0, 0.8], [366, 4, 0.7]]) add('karst', 'far', a, { v, scale: s });
   grassRun(328, 372, 3.4, 'main');
@@ -390,7 +390,7 @@ KINDS.tchead = {
   add('banner', 'main', 498.6, { v: 0, z: 1.2, scale: 1.4, popAt: ev('qin') - 0.3, raise: (t) => sramp(t, ev('qin'), ev('qin') + 1.4), foldAt: ev('qinEnd') + 30, loud: 1.4 });
   add('hall', 'main', 508, { v: 0, z: 0, wide: 20, popAt: ev('emperor') - 1.2, loud: 2.2 });
   add('person', 'main', 504.2, { v: 'qinEmperor', z: 2.5, scale: P2 * 1.06, popAt: ev('emperor'), loud: 1.2, act: (t) => ({ head: -4 + Math.sin(t * 0.5) * 2, lean: -2, front: [-20, -40] }) });
-  [[507.6, 0], [510.4, 1], [513.2, 2]].forEach(([a, i]) => add('person', 'main', a, { v: 'qinOfficial', z: 2.6, scale: P2, flip: true, popAt: ev('emperor') + 0.5 + i * 0.25, act: (t) => ({ lean: 30 + Math.exp(-(((t - ev('emperor') - 1.2 - i * 0.3) / 0.5) ** 2)) * 20, head: 14 }) }));
+  [[508, 0], [511.6, 1], [515.2, 2]].forEach(([a, i]) => add('person', 'main', a, { v: 'qinOfficial', z: 2.6, scale: P2, flip: true, popAt: ev('emperor') + 0.5 + i * 0.25, act: (t) => ({ lean: 30 + Math.exp(-(((t - ev('emperor') - 1.2 - i * 0.3) / 0.5) ** 2)) * 20, head: 14 }) }));
   // one width for every axle: two carts in the same ruts
   add('cart', 'main', 517.6, { v: 0, z: 2, scale: 0.8, popAt: EV.std[3] - 0.3, move: (t) => clamp((t - EV.std[3]) * 1.4, 0, 9) });
   add('cart', 'main', 512.4, { v: 1, z: 1.8, scale: 0.8, popAt: EV.std[3] + 0.2, move: (t) => clamp((t - EV.std[3] - 0.4) * 1.4, 0, 9) });
@@ -400,7 +400,7 @@ KINDS.tchead = {
   for (let a = 527, i = 0; a < 566; a += 2.2, i++) add('earthwall', 'mid', a, { v: 0, scale: 0.62, popAt: ev('wall') + i * 0.07, loud: 0.4 });
   for (let a = 530, i = 0; a < 562; a += 2.9, i++) if (Math.abs(a - 546) > 2) add('earthwall', 'main', a, { v: 0, z: 1, scale: 1.0, popAt: ev('wall') + 0.4 + i * 0.09, loud: 0.5 });
   for (const [a, L] of [[533, 'mid'], [546, 'main'], [557, 'mid']]) add('beacon', L, a, { v: 0, z: 1.1, scale: L === 'mid' ? 0.62 : 1, popAt: ev('wall') + 0.6 + (a - 530) * 0.06, loud: 0.8 });
-  ['wallWorker', 'wallWorker'].forEach((v, i) => add('person', 'main', 538 + i * 13, { v, z: 2, scale: P2, popAt: ev('wall') + 0.8, pace: 4.6, move: (t) => Math.max(0, t - ev('wall') - 1) * 0.6 }));
+  ['wallWorker', 'wallWorker'].forEach((v, i) => add('person', 'main', 538 + i * 13, { v, z: 2, scale: P2, popAt: ev('wall') + 0.8, pace: 4.6, move: (t) => clamp((t - ev('wall') - 1) * 0.6, 0, 3.6) }));
   // the clay army, in rows going back into the pit
   const ARMY = ev('army');
   for (let a = 571, i = 0; a < 604; a += 2.6, i++) add('terracotta', 'main', a, { v: [0, 0, 1, 0, 2, 0, 1, 0, 3, 0, 0, 1, 2][i % 13], z: 1, scale: 1.08, popAt: ARMY + i * 0.07, loud: 0.5 });
@@ -535,9 +535,9 @@ Object.assign(LOOKS, {
   for (const [a, v] of [[894, 0], [918, 1]]) add('pine', 'main', a, { v, z: 0, scale: 0.85 });
   // Buddhism takes root: a carved cliff, a wooden pagoda, monks with lamps, a fig tree growing
   add('cliffbuddha', 'main', 938, { z: 0, wide: 18, popAt: ev('buddha') - 0.4, loud: 2.4, winOn: (t, i) => sramp(t, ev('buddha') + 1.5 + (i % 5) * 0.3, ev('buddha') + 2 + (i % 5) * 0.3) * 0.7 });
-  add('pagoda', 'main', 954, { z: 0, wide: 10 });
-  add('person', 'main', 927.4, { v: 'monk2', z: 2, scale: P2, pace: 4, move: (t) => (t - 246) * 0.35 });
-  add('person', 'main', 946.4, { v: 'monk3', z: 2, scale: P2, act: (t) => ({ lean: 30 + Math.sin(t * 0.6) * 4, head: 14, front: [-100, -60], back: [-90, -60] }) });
+  add('pagoda', 'main', 956.8, { z: 0, wide: 10 });
+  add('person', 'main', 926.6, { v: 'monk2', z: 2, scale: P2, pace: 4, move: (t) => clamp((t - 246) * 0.35, 0, 1.0), act: (t) => (t > 248.9 ? { walk: undefined, head: -6 } : {}) });
+  add('person', 'main', 948.7, { v: 'monk3', z: 2, scale: P2, act: (t) => ({ lean: 30 + Math.sin(t * 0.6) * 4, head: 14, front: [-100, -60], back: [-90, -60] }) });
   add('person', 'main', 924, { v: 'carver', z: 1.6, scale: P2, act: (t) => { const k = Math.max(0, Math.sin(t * 5)); return { front: [-130 + k * 30, -30], back: [-110 + k * 30, -40], lean: 4 }; } });
   add('bodhi', 'main', 949.6, { z: 1.2, scale: 1.05, grow: (t) => sramp(t, ev('root'), ev('root') + 3.2) });
   for (const [a, v, s] of [[928, 2, 0.6], [948, 0, 0.7]]) add('karst', 'far', a, { v, scale: s });
@@ -580,8 +580,8 @@ const LIBAI_A = 1122;
 {
   // the Grand Canal: dug, then filled, then busy
   const C0 = ev('canal');
-  add('barge', 'main', 984, { v: 0, z: 3.5, over: true, y: 2, from: C0 + 2.6, popAt: C0 + 2.8, move: (t) => (t - C0 - 2.8) * 1.6 });
-  add('barge', 'main', 1004, { v: 1, z: 3.5, flip: true, over: true, y: 2, from: C0 + 3.2, popAt: C0 + 3.4, move: (t) => -(t - C0 - 3.4) * 1.2 });
+  add('barge', 'main', 984, { v: 0, z: 3.5, over: true, y: 2, from: C0 + 2.6, popAt: C0 + 2.8, to: C0 + 16, move: (t) => clamp((t - C0 - 2.8) * 1.6, 0, 18) });
+  add('barge', 'main', 1004, { v: 1, z: 3.5, flip: true, over: true, y: 2, from: C0 + 3.2, popAt: C0 + 3.4, to: C0 + 16, move: (t) => -clamp((t - C0 - 3.4) * 1.2, 0, 14) });
   ['digger', 'digger'].forEach((v, i) => add('person', 'main', 989 + i * 9, { v, z: 2, scale: P2, flip: i === 1, foldAt: C0 + 2.4 + i * 0.3, act: (t) => { const k = Math.max(0, Math.sin(t * 3 + i)); return { lean: 16 + k * 14, front: [-60 + k * 50, -30], back: [-50 + k * 50, -30] }; } }));
   for (const [a, v] of [[980, 0], [996, 1], [1010, 2]]) add('willow', 'main', a, { v, z: 0 });
   for (const [a, v] of [[986, 1], [1002, 0]]) add('willow', 'mid', a, { v, scale: 0.55 });
@@ -595,7 +595,7 @@ const LIBAI_A = 1122;
   [['tangLady', 1046], ['tangMan', 1054]].forEach(([v, a], i) => add('person', 'main', a, { v, z: 2.2, scale: P2, flip: i === 1, pace: 4.2, move: (t) => (i ? -1 : 1) * clamp((t - 276) * 0.5, 0, 6) }));
   add('camel', 'main', 1072, { v: 0, z: 2, flip: true, popAt: ev('persia') - 0.6, move: (t) => -clamp((t - ev('persia')) * 1.1, 0, 8) });
   add('person', 'main', 1076.6, { v: 'persian', z: 2.3, scale: P2, flip: true, popAt: ev('persia') - 0.3, pace: 4.2, move: (t) => -clamp((t - ev('persia')) * 1.1, 0, 8) });
-  add('camel', 'mid', 1060, { v: 1, scale: 0.6, move: (t) => (t - 276) * 0.4 });
+  add('camel', 'mid', 1060, { v: 1, scale: 0.6, move: (t) => clamp((t - 276) * 0.4, 0, 10) });
   // Wu Zetian
   add('dais', 'main', 1092, { z: 0.5, scale: 1.1, popAt: ev('wu') - 0.5, loud: 1.4 });
   add('person', 'main', 1092, { v: 'wuZetian', z: 1, scale: P2 * 1.06, y: 44, popAt: ev('wu'), loud: 1.2, act: (t) => ({ head: -2 + Math.sin(t * 0.5) * 2, front: [-20, -30] }) });
@@ -648,7 +648,7 @@ const fwPos = (st, i) => [st.W * [0.3, 0.62, 0.45, 0.76, 0.24, 0.55, 0.7][i], st
   // Kaifeng: a river, the rainbow bridge, shops, crowds, someone carrying a load over the arch
   const BR = 1222;
   add('rainbowbridge', 'main', BR, { z: 1.5, scale: 1.2, y: -4, wide: 10 });
-  add('barge', 'main', BR - 1, { v: 1, z: 1, over: true, y: 2, scale: 0.8, move: (t) => (t - 318) * 0.4 });
+  add('barge', 'main', BR - 1, { v: 1, z: 1, over: true, y: 2, scale: 0.8, move: (t) => clamp((t - 318) * 0.4, 0, 5) });
   add('person', 'main', BR - 7, { v: 'songPorter', z: 2, scale: P2, pace: 4.4, move: (t) => clamp((t - 317) * 0.9, 0, 14), lift: (t) => { const dx = clamp((t - 317) * 0.9, 0, 14) - 7, x = dx * DEG * 1000 / 1.2; return Math.abs(x) < 120 ? (Math.sin(((x + 120) / 240) * Math.PI) * 62 + 10) * 1.2 - 4 : 0; } });
   for (const [a, v] of [[1205, 0], [1212.4, 1], [1233, 2], [1240.4, 0]]) add('shop', 'main', a, { v, z: 0, winOn: (t, i) => 0.7 * sramp(t, 330, 332) * (1 - sramp(t, 338, 340)) });
   [['songMan', 1209], ['songLady', 1236.6], ['songMan', 1244]].forEach(([v, a], i) => add('person', 'main', a, { v, z: 2.2, scale: P2, flip: i === 1, pace: 4.2, move: (t) => (i === 1 ? -1 : 1) * clamp((t - 317) * 0.45, 0, 6) }));
@@ -666,8 +666,8 @@ const fwPos = (st, i) => [st.W * [0.3, 0.62, 0.45, 0.76, 0.24, 0.55, 0.7][i], st
   // out at sea: a junk steering by compass
   for (let a = 1290; a < 1312; a += 4) add('wave', 'main', a, { v: (R() * 4) | 0, z: 4, loud: 0.2, ground: false, y: -2 });
   for (let a = 1288; a < 1314; a += 6) add('wave', 'front', a, { v: (R() * 4) | 0, scale: 1.6, ground: false, loud: 0.2 });
-  add('junk', 'main', 1300, { v: 0, z: 3, ground: false, y: 10, move: (t) => (t - 338) * 0.35 });
-  add('junk', 'mid', 1306, { v: 1, scale: 0.5, ground: false, y: 4, move: (t) => (t - 338) * 0.3 });
+  add('junk', 'main', 1300, { v: 0, z: 3, ground: false, y: 10, move: (t) => clamp((t - 338) * 0.35, 0, 5) });
+  add('junk', 'mid', 1306, { v: 1, scale: 0.5, ground: false, y: 4, move: (t) => clamp((t - 338) * 0.3, 0, 4) });
   // merchants paying in paper
   add('person', 'main', 1318.6, { v: 'merchantA', z: 2, scale: P2, act: (t) => (t > ev('money') - 0.4 && t < ev('money') + 2 ? { front: [-110, -20], lean: 6 } : {}) });
   add('person', 'main', 1323.4, { v: 'merchantB', z: 2, scale: P2, flip: true, act: (t) => (t > ev('money') + 0.6 && t < ev('money') + 2.6 ? { front: [-100, -20], head: 6 } : {}) });
@@ -759,7 +759,7 @@ Object.assign(LOOKS, {
   for (const [a, v] of [[1362, 0], [1370, 1], [1376.4, 0]]) add('yurt', 'main', a, { v, z: 0 });
   for (const [a, v] of [[1366, 1], [1380, 0]]) add('yurt', 'mid', a, { v, scale: 0.55 });
   ['mongolA', 'mongolB', 'mongolA'].forEach((v, i) => add('rider', 'main', 1352 - i * 5, { v, z: 3 + i * 0.1, scale: 0.95, popAt: MG + i * 0.25, move: (t) => clamp((t - MG - i * 0.25) * 6, 0, 30 - i * 2), gait: 'gallop', to: ev('zhu') + 1.5, foldAt: ev('zhu') + 0.4 + i * 0.2 }));
-  add('rider', 'mid', 1372, { v: 'mongolB', scale: 0.65, move: (t) => (t - 355) * 1.6, gait: 'gallop' });
+  add('rider', 'mid', 1372, { v: 'mongolB', scale: 0.65, move: (t) => clamp((t - 355) * 1.6, 0, 22), gait: 'gallop', foldAt: ev('zhu') + 1 });
   add('dais', 'main', 1388, { z: 0.5, scale: 1.1, popAt: ev('kublai') - 0.4 });
   add('person', 'main', 1388, { v: 'kublai', z: 1, scale: P2 * 1.06, y: 44, popAt: ev('kublai') });
   add('hall', 'main', 1398, { v: 1, z: 0, wide: 20, popAt: ev('kublai') + 0.6 });
@@ -779,8 +779,8 @@ Object.assign(LOOKS, {
   const ZH = ev('zhenghe');
   for (let a = 1480; a < 1526; a += 4.2) add('wave', 'main', a, { v: (R() * 4) | 0, z: 4, loud: 0.2, ground: false, y: -2 });
   for (let a = 1478; a < 1528; a += 6) add('wave', 'front', a, { v: (R() * 4) | 0, scale: 1.6, ground: false, loud: 0.2 });
-  add('treasureship', 'main', 1494, { z: 3, ground: false, y: 12, scale: 0.8, popAt: ZH, loud: 2, move: (t) => Math.max(0, t - ZH) * 1.4 });
-  for (const [a, s, L] of [[1486, 0.55, 'mid'], [1500, 0.5, 'mid'], [1510, 0.45, 'mid'], [1490, 0.3, 'far'], [1504, 0.3, 'far'], [1516, 0.28, 'far']]) add(a % 2 ? 'junk' : 'treasureship', L, a, { v: 1, scale: s, ground: false, y: 4, popAt: ZH + 0.6 + (a % 7) * 0.1, move: (t) => Math.max(0, t - ZH) * 1.1 });
+  add('treasureship', 'main', 1494, { z: 3, ground: false, y: 12, scale: 0.8, popAt: ZH, loud: 2, move: (t) => clamp((t - ZH) * 1.4, 0, 22) });
+  for (const [a, s, L] of [[1486, 0.55, 'mid'], [1500, 0.5, 'mid'], [1510, 0.45, 'mid'], [1490, 0.3, 'far'], [1504, 0.3, 'far'], [1516, 0.28, 'far']]) add(a % 2 ? 'junk' : 'treasureship', L, a, { v: 1, scale: s, ground: false, y: 4, popAt: ZH + 0.6 + (a % 7) * 0.1, move: (t) => clamp((t - ZH) * 1.1, 0, 17) });
   for (const [a, v] of [[1530, 0], [1538, 1]]) add('baobab', 'main', a, { v, z: 0 });
   for (const a of [1533.4, 1542]) add('palm', 'main', a, { v: 0, z: 0.5, scale: 0.85 });
   add('person', 'main', 1535.6, { v: 'swahili', z: 2, scale: P2, flip: true });
@@ -1077,8 +1077,9 @@ const SPARK = [[2214, 150], [2220, 150], [2226, 150], [2232, 150], [2238, 150], 
   for (let a = 2088, i = 0; a < 2136; a += 2.6, i++) add('tower', 'far', a, { v: (i * 3) % 7, scale: 0.42, popAt: SZ + 1.4 + i * 0.08, loud: 0.3 });
   add('crane', 'main', 2109.5, { z: 0.1, scale: 0.85, popAt: SZ + 0.4, hoist: (t) => sramp(t, SZ + 1.2, SZ + 7) });
   // 1989: a square at dusk, a column of tanks, one man standing in front of them
-  add('person', 'main', 2182, { v: 'tankman', z: 2.5, scale: P2, popAt: T89 - 3.0, act: (t) => ({ walk: undefined, head: 0, front: [-6, -6], back: [4, -4] }) });
-  for (let i = 0; i < 3; i++) add('tank', 'main', 2188 + i * 6.4, { z: 2.2 - i * 0.1, scale: 1.05, flip: true, popAt: T89 - 2.4 + i * 0.3, loud: 1.2, move: (t) => -Math.min(clamp((t - T89 + 2) * 1.2, 0, 3.2), 3.2) });
+  add('person', 'main', 2180, { v: 'tankman', z: 2.5, scale: P2, popAt: T89 - 3.0, foldAt: T89 + 6.2, act: (t) => ({ walk: undefined, head: 0, front: [-6, -6], back: [4, -4] }) });
+  // the column halts with its gun a few paces short of him; a tank-length between tanks; one more further back
+  [[2191.3, 'main', 1.05, 2.2], [2203.4, 'main', 1.05, 2.1], [2198, 'mid', 0.7, 0]].forEach(([a, L, sc, z], i) => add('tank', L, a, { z, scale: sc, flip: true, popAt: T89 - 2.4 + i * 0.3, foldAt: T89 + 5.4 + i * 0.2, loud: L === 'main' ? 1.2 : 0.5, move: (t) => -clamp((t - T89 + 2) * 1.2, 0, 3.0) }));
   // light reaches the farthest villages
   for (const [a, v, i] of [[2211, 0, 0], [2217, 1, 1], [2223, 2, 2], [2229, 0, 3], [2235, 1, 4], [2241, 2, 5]]) add('farmhouse', 'main', a, { v, z: 0.4, winOn: (t, w) => sramp(t, SP + i * 0.8, SP + 0.2 + i * 0.8) * 0.9 });
   for (const [a] of SPARK) add('pole', 'main', a + 3, { z: 0.5, scale: 0.9 });
@@ -1156,7 +1157,8 @@ const CANYON = 2472, TOK = 2502, QS = [2519, 2546], STAGE = 2556, FACT = 2603;
   for (const a of [2279, 2296.4, 2310]) add('lamp', 'main', a, { v: 1, z: 1, lit: () => 1 });
   // the line through the karst, on piers, under its wire
   for (let a = 2312; a < 2352; a += 3.4) add('hsrpier', 'main', a, { z: 1 });
-  add('fuxing', 'main', 2306, { z: 1.4, scale: 0.72, y: 96 * 1 - 2, ground: false, wide: 34, cars: 5, from: TR - 0.6, to: TR + 10, prof: () => 0, move: (t) => Math.max(0, t - TR + 0.5) * 6.8 });
+  add('portal', 'main', 2309, { z: 1.6, scale: 1.0 });
+  add('fuxing', 'main', 2306, { z: 1.4, scale: 0.72, y: 96 * 1 - 2, ground: false, wide: 34, cars: 5, from: TR - 0.6, to: TR + 10, prof: () => 0, portal: 2311.4, move: (t) => Math.max(0, t - TR + 0.5) * 6.8 });
   for (const [a, v, s] of [[2318, 1, 0.95], [2326, 4, 1.05], [2336, 2, 0.9], [2346, 0, 1]]) add('karst', 'far', a, { v, scale: s });
   for (const [a, v] of [[2322, 2], [2338, 0], [2348, 4]]) add('karst', 'mid', a, { v, scale: 0.5 });
   // Wenchang: the pad by the sea, a Long March 5
@@ -1196,8 +1198,8 @@ const CANYON = 2472, TOK = 2502, QS = [2519, 2546], STAGE = 2556, FACT = 2603;
   for (let i = 0; i < 5; i++) add('humanoid', 'main', STAGE - 7.2 + i * 3.6, { v: i % 2, z: 1 + i * 0.01, scale: 1.25, y: 30 * 0.85, popAt: ev('robots') - 0.6 + i * 0.12, loud: 0.8, ph: i * 0.15, dance: (t) => sramp(t, ev('robots'), ev('robots') + 0.6) });
   add('finisharch', 'main', 2581, { z: 0.6, scale: 1.1 });
   const RUN = ev('marathon');
-  [[2563, 0, 'humanoid'], [2566.4, 1, 'humanoid'], [2569.6, 0, 'humanoid']].forEach(([a, v, k], i) => add(k, 'main', a, { v, z: 2 + i * 0.1, scale: 1.2, popAt: RUN - 1.2 + i * 0.2, ph: i * 1.3, run: (t) => (i === 1 && t > RUN + 1.6 && t < RUN + 3.2 ? 0 : 1), fall: i === 1 ? (t) => sramp(t, RUN + 1.6, RUN + 2.0) * (1 - sramp(t, RUN + 2.6, RUN + 3.2)) : undefined, move: (t) => Math.max(0, t - RUN + 1) * 1.6 - (i === 1 ? clamp(t - RUN - 1.6, 0, 1.6) * 1.6 : 0) }));
-  add('person', 'main', 2561, { v: 'runner', z: 2.3, scale: P2, popAt: RUN - 0.8, pace: 9, move: (t) => Math.max(0, t - RUN + 0.6) * 1.7 });
+  [[2563, 0, 'humanoid'], [2566.4, 1, 'humanoid'], [2569.6, 0, 'humanoid']].forEach(([a, v, k], i) => add(k, 'main', a, { v, z: 2 + i * 0.1, scale: 1.2, popAt: RUN - 1.2 + i * 0.2, ph: i * 1.3, run: (t) => (i === 1 && t > RUN + 1.6 && t < RUN + 3.2 ? 0 : 1), fall: i === 1 ? (t) => sramp(t, RUN + 1.6, RUN + 2.0) * (1 - sramp(t, RUN + 2.6, RUN + 3.2)) : undefined, move: (t) => Math.min(13.5 + i * 0.4, Math.max(0, t - RUN + 1) * 1.6 - (i === 1 ? clamp(t - RUN - 1.6, 0, 1.6) * 1.6 : 0)), foldAt: ev('factory') + 1.2 + i * 0.1 }));
+  add('person', 'main', 2561, { v: 'runner', z: 2.3, scale: P2, popAt: RUN - 0.8, pace: 9, move: (t) => clamp((t - RUN + 0.6) * 1.7, 0, 21.6), act: (t) => (t > RUN + 12.1 ? { walk: undefined, front: [-170, -20], back: [170, -20] } : {}), foldAt: ev('factory') + 1.4 });
   for (const a of [2560, 2576]) add('lamp', 'main', a, { v: 1, z: 0.5, lit: () => 1 });
   // the dark factory
   const DF = ev('factory');
@@ -1217,7 +1219,7 @@ const CANYON = 2472, TOK = 2502, QS = [2519, 2546], STAGE = 2556, FACT = 2603;
   for (let a = 2641, i = 0; a < 2666; a += 2.2, i++) add('solar', 'mid', a, { scale: 0.72, popAt: SOL + 0.3 + i * 0.07, loud: 0.3 });
   for (const [a, sp, sc, i] of [[2646, 0.6, 0.9, 0], [2652, 0.75, 0.8, 1], [2658, 0.5, 0.95, 2], [2664, 0.7, 0.85, 3]]) add('turbine', 'mid', a, { speed: sp, scale: sc, popAt: SOL + 0.6 + i * 0.25, loud: 0.6 });
   add('uhv', 'main', 2662, { v: 0, z: 0.6, scale: 0.8, popAt: SOL + 1 });
-  add('ev', 'main', 2638, { z: 3, scale: 0.9, from: SOL - 1, move: (t) => (t - SOL) * 2.6 });
+  add('ev', 'main', 2638, { z: 3, scale: 0.9, from: SOL - 1, to: ev('pull', 718.6) - 0.4, move: (t) => clamp((t - SOL) * 2.6, 0, 46) });
   // trees against the desert, row after row; and a panda, unbothered
   const TREE = ev('trees');
   for (let a = 2668, i = 0; a < 2690; a += 2.4, i++) add('poplar', 'main', a, { v: i % 3, z: 1, popAt: TREE + i * 0.16, loud: 0.5 });
@@ -1334,7 +1336,8 @@ function damSpray(g, st, t) {
 // Wenchang: the Long March 5 leaves in a great cloud of steam and exhaust, lit from beneath.
 function launchCloud(g, st, t) {
   const LA = ev('launch'); if (t < LA - 0.2 || t > LA + 7) return;
-  const u = st.eu, age = t - LA, k = sramp(t, LA - 0.1, LA + 0.4) * (1 - sramp(t, LA + 5, LA + 7));
+  // (gone before the far side of the Moon fills the screen: it must not show through that card)
+  const u = st.eu, age = t - LA, k = sramp(t, LA - 0.1, LA + 0.4) * (1 - sramp(t, ev('farside') - 0.3, ev('farside') + 0.2));
   g.save();
   const puffs = st.fx.steam;
   for (let i = 0; i < 56; i++) {

@@ -275,7 +275,7 @@ export class Stage {
     if (!e.parts) e.parts = this.partsOf(e); // needed now and not cut yet: cut it now
     const prof = this.film.profile[e.layer];
     const tau = t - e.tPop;
-    if (e.popAt !== undefined && tau < -6 && e.repopAt === undefined) return; // things due much later are not lying about yet
+    if (e.popAt !== undefined && tau < -2.5 && e.repopAt === undefined) return; // things due later are not lying about yet: a timed piece lies flat only just before it springs up
     let p = spring(tau, 10.5, 0.46), wob = tau > 0 ? Math.exp(-2.1 * tau) * Math.sin(8.2 * tau) * 11 : 0;
     const fold = e.foldAt ?? e.to;
     if (fold !== undefined && t > fold) { const k = clamp((t - fold) / 0.26); p *= 1 - k * k; wob = 0; }
