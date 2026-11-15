@@ -117,14 +117,16 @@ KINDS.fuxing = {
   },
   draw(g, P, t, e, env) {
     const sc = e.scale || 1, a0 = e.a + (e.move ? e.move(t) : 0), pr = e.prof || (() => 0), lift = e.y || 0, r0 = 1000 + pr(a0) + lift;
-    for (let k = 1; k <= (e.cars ?? 5); k++) { const off = -230 * k + 8, dr = (off * sc) / r0, r1 = 1000 + pr(a0 + dr / DEG) + lift; g.save(); g.translate((Math.sin(dr) * r1) / sc, (r0 - Math.cos(dr) * r1) / sc); g.rotate(dr); put(g, P.car, env.sh, 2, 3); g.restore(); }
-    put(g, P.nose, env.sh, 2, 3);
+    // cars still inside the tunnel (behind e.portal) are not drawn: the train slides out of the mountain
+    const out = (off) => e.portal === undefined || a0 + ((off + 120) * sc) / r0 / DEG > e.portal;
+    for (let k = 1; k <= (e.cars ?? 5); k++) { const off = -230 * k + 8; if (!out(off)) continue; const dr = (off * sc) / r0, r1 = 1000 + pr(a0 + dr / DEG) + lift; g.save(); g.translate((Math.sin(dr) * r1) / sc, (r0 - Math.cos(dr) * r1) / sc); g.rotate(dr); put(g, P.car, env.sh, 2, 3); g.restore(); }
+    if (out(40)) put(g, P.nose, env.sh, 2, 3);
   },
   glow(g, P, t, e, env, p) {
     if (p < 0.6) return; const k = e.lit ? e.lit(t) : 1; if (k < 0.01) return;
     const sc = e.scale || 1, a0 = e.a + (e.move ? e.move(t) : 0), pr = e.prof || (() => 0), lift = e.y || 0, r0 = 1000 + pr(a0) + lift;
     g.globalCompositeOperation = 'lighter'; g.fillStyle = `rgba(255,240,210,${0.85 * k})`;
-    for (let c = 0; c <= (e.cars ?? 5); c++) { const off = -230 * c + (c ? 8 : 0), dr = (off * sc) / r0, r1 = 1000 + pr(a0 + dr / DEG) + lift; g.save(); g.translate((Math.sin(dr) * r1) / sc, (r0 - Math.cos(dr) * r1) / sc); g.rotate(dr); for (const [x, y, w, h] of P.win) if (c || x < 18) g.fillRect(x, y, w, h); g.restore(); }
+    for (let c = 0; c <= (e.cars ?? 5); c++) { const off = -230 * c + (c ? 8 : 0); if (e.portal !== undefined && a0 + ((off + 120) * sc) / r0 / DEG <= e.portal) continue; const dr = (off * sc) / r0, r1 = 1000 + pr(a0 + dr / DEG) + lift; g.save(); g.translate((Math.sin(dr) * r1) / sc, (r0 - Math.cos(dr) * r1) / sc); g.rotate(dr); for (const [x, y, w, h] of P.win) if (c || x < 18) g.fillRect(x, y, w, h); g.restore(); }
     // the headlight, throwing a long beam ahead into the dark
     const gr = g.createLinearGradient(160, -10, 420, 0); gr.addColorStop(0, `rgba(255,248,220,${0.55 * k})`); gr.addColorStop(1, 'rgba(255,248,220,0)');
     g.fillStyle = gr; g.beginPath(); g.moveTo(160, -12); g.lineTo(420, -40); g.lineTo(420, 20); g.lineTo(160, -6); g.fill();
@@ -535,4 +537,16 @@ KINDS.ev = {
     g.fillStyle = 'rgba(210,240,255,.85)'; g.fillRect(58, -42, 12, 2.4); g.fillStyle = 'rgba(255,60,50,.8)'; g.fillRect(-66, -40, 8, 2.4);
     g.globalCompositeOperation = 'source-over';
   },
+};
+
+// A tunnel mouth in a karst hill: the high-speed line comes out of the mountain onto its viaduct.
+KINDS.portal = {
+  bake(mk) {
+    const sh = mk('portal', [-170, -330, 80, 6]);
+    sh.piece([[-160, 4], [-150, -120], [-120, -240], [-80, -310], [-40, -300], [-10, -230], [20, -170], [44, -150], [50, -80], [56, 4]], '#6e7e70', { round: 10, rough: 1.6, paint: (g) => { g.fillStyle = 'rgba(40,60,40,.35)'; for (let i = 0; i < 26; i++) { g.beginPath(); g.ellipse(-140 + (i * 37) % 180, -40 - ((i * 53) % 250), 10 + (i % 4) * 4, 6, 0, 0, 7); g.fill(); } } });
+    // the portal: a concrete arch, dark inside
+    sh.piece([[18, -88], [18, -150], [30, -168], [58, -168], [70, -150], [70, -88]], '#c8c6be', { round: 3, lift: 1.4, paint: (g) => { g.fillStyle = '#121418'; g.beginPath(); g.moveTo(28, -88); g.lineTo(28, -146); g.quadraticCurveTo(44, -160, 60, -146); g.lineTo(60, -88); g.closePath(); g.fill(); } });
+    return { spr: sh.finish({ shadowBlur: 5 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 4, 5); },
 };
