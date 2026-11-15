@@ -14,8 +14,9 @@ dark factories, solar, wind and forests); and the long thread.
 
 ## Watch it
 
-Built to be opened anywhere, including from an Instagram DM on iPhone and Android. To publish it on
-GitHub Pages, run `tools/publish_pages.sh` (it pushes to the `gh-pages` branch).
+**https://tinyurl.com/the-long-thread** (with sound), which redirects to
+https://raycoding1-collab.github.io/China-/. Built to be opened anywhere, including from an Instagram DM
+on iPhone and Android. It is published from the `gh-pages` branch: run `tools/publish_pages.sh` to update it.
 
 ## Watch it locally
 
