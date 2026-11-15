@@ -785,6 +785,16 @@ def ambience(dur, EV):
     m, tv = tvec(4.0); at(lp(rs.randn(m), 900) * env_ar(m, 0.5, 1.5) * 0.02, EV['coal'] + 0.4, 1, 0.3)    # steam
     for k in range(6): at(whoosh(1.8, 120, 500) * 0.05, EV['solar'] + 0.5 + k * 1.2, 1, -0.6 + k * 0.2)  # turbine blades
     at(whoosh(4.0, 100, 700) * 0.10, EV['pull'] - 0.2, 1, 0)                                              # lifting away from the ground
+    # the drone swarm rising over the river front: a soft rush of air, then a low hum while the dragon flies
+    at(whoosh(2.6, 90, 500) * 0.06, EV['today'] - 0.2, 1, 0)
+    m, tv = tvec(6.2); at(lp(np.sin(TAU * 110 * tv) * 0.3 + np.sin(TAU * 165 * tv) * 0.15 + lp(rs.randn(m), 400) * 0.6, 600) * env_ar(m, 1.2, 1.6) * 0.03, EV['today'] + 0.4, 1, 0)
+    # the rail map dropping in on its thread; confetti over the gala
+    at(flutter(1.0) * 0.05, EV['hsr'] + 1.6, 1, 0.4)
+    for i in range(14): at(flutter(0.4) * 0.025, EV['robots'] + 0.2 + i * 0.35 + rs.rand() * 0.2, 1, rs.rand() - 0.5)
+    # the factory's lamps going off, one by one
+    for i in range(8): at(thud(0.07, 85), 690.4 + i * 0.22, 1, -0.5 + i * 0.14); at(clank(0.025, 170), 690.4 + i * 0.22, 1, -0.5 + i * 0.14)
+    # the rocket's cloud rolling out over the pad
+    m, tv = tvec(4.5); at(lp(rs.randn(m), 260) * env_ar(m, 0.3, 2.5) * 0.08, EV['launch'] + 0.4, 1, 0.1)
     return reverb(out, rt=0.9, wet=0.08, bright=4000, seed=9)
 
 
