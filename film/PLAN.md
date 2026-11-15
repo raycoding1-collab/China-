@@ -20,6 +20,7 @@ The narration (77 lines) is final in `film/film.json`; timings come from
 - [x] Review rounds + all automated checks (scan 1,002 frames 0 errors; playtest, endtest, in-app iPhone/Android, memory 96–137 MB on phones)
 - [x] Atmosphere pass: an era look over the base sky for every age (`ERAS` in `src/film.js`), weather (`WX`: petals, sand, dust, mist along the curve, ginkgo leaves, snow on the northern wall), the bronze pour and Sanxingdui reworked, the Qin army under a storm
 - [x] Modern era made spectacular: drone dragon over Shanghai, the high-speed network drawn onto a paper map 2008→2025, Tiangong overhead, the Long March 5's steam cloud, spray and a rainbow at the Three Gorges, white dolphins by the HZMB, a sea of cloud in the Huajiang gorge, field lines in EAST, gala spotlights and confetti, the dark factory's lamps going out, villages lighting up across the hills, glints on the solar fields
+- [x] Weak parts fixed: the oracle-bone night (fire glow, embers, glowing signs), the 1950s school and clinic (blackboard, loudspeaker, red cross, life-expectancy card 35→65), the famine (cracked fields, empty bowls, dust), the Cultural Revolution (flags, loudspeaker, a crowd of red books, harsher light), the quantum night (Milky Way, orbit, city glow), an electric car with a green plate, the drone dragon framed for phones
 - [x] Published: https://tinyurl.com/the-long-thread → https://raycoding1-collab.github.io/China-/ (`sh tools/publish_pages.sh`)
 - [x] Share image (Zheng He's fleet), icon, title text, README
 
