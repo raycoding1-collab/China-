@@ -321,12 +321,20 @@ KINDS.foundry = {
     g.globalCompositeOperation = 'lighter';
     let gr = g.createRadialGradient(-64, -20, 0, -64, -20, 46); gr.addColorStop(0, `rgba(255,190,90,${0.95 * f})`); gr.addColorStop(0.3, `rgba(255,120,40,${0.5 * f})`); gr.addColorStop(1, 'rgba(255,90,20,0)');
     g.fillStyle = gr; g.fillRect(-110, -66, 92, 92);
+    // the crucible, white-hot inside
+    if (k > 0.02) { g.save(); g.translate(2, -100); g.rotate((8 + k * 10) * DEG); g.translate(66, 2); g.rotate((-8 - k * 10 + k * 64) * DEG); const cg = g.createRadialGradient(1, 2, 0, 1, 2, 34); cg.addColorStop(0, `rgba(255,220,140,${0.85 * f})`); cg.addColorStop(0.35, `rgba(255,150,60,${0.4 * f})`); cg.addColorStop(1, 'rgba(255,110,40,0)'); g.fillStyle = cg; g.fillRect(-34, -32, 70, 70); g.restore(); }
     if (k > 0.35) {
-      // the stream of bronze, from the lip of the crucible to the mouth of the mould
-      const s = sramp(k, 0.35, 0.55) * (1 - sramp(k, 0.97, 1));
-      g.strokeStyle = `rgba(255,214,120,${s})`; g.lineWidth = 3.4; g.lineCap = 'round';
-      g.beginPath(); g.moveTo(80, -84); g.quadraticCurveTo(66, -80, 57, -66); g.stroke();
-      gr = g.createRadialGradient(58, -68, 0, 58, -68, 30); gr.addColorStop(0, `rgba(255,200,100,${0.8 * s})`); gr.addColorStop(1, 'rgba(255,120,40,0)'); g.fillStyle = gr; g.fillRect(28, -98, 60, 60);
+      // the stream of bronze, from the lip of the crucible to the mouth of the mould (for as long as the crucible is tipped)
+      const s = sramp(k, 0.35, 0.6);
+      const wob = Math.sin(t * 23) * 1.2;
+      g.strokeStyle = `rgba(255,170,70,${0.6 * s})`; g.lineWidth = 9; g.lineCap = 'round'; g.beginPath(); g.moveTo(80, -84); g.quadraticCurveTo(66 + wob, -80, 57, -66); g.stroke();
+      g.strokeStyle = `rgba(255,236,160,${s})`; g.lineWidth = 3.6; g.beginPath(); g.moveTo(80, -84); g.quadraticCurveTo(66 + wob, -80, 57, -66); g.stroke();
+      gr = g.createRadialGradient(58, -68, 0, 58, -68, 70); gr.addColorStop(0, `rgba(255,214,120,${0.95 * s})`); gr.addColorStop(0.3, `rgba(255,150,60,${0.45 * s})`); gr.addColorStop(1, 'rgba(255,120,40,0)'); g.fillStyle = gr; g.fillRect(-12, -138, 140, 140);
+      // sparks spraying out of the mould's mouth
+      for (let i = 0; i < 26; i++) {
+        const ph = (t * 1.5 + hash(i * 7.3)) % 1, vx = (hash(i * 3.1) - 0.5) * 150, vy = -50 - hash(i * 5.7) * 110, x = 58 + vx * ph, y = -66 + vy * ph + 190 * ph * ph;
+        g.fillStyle = `rgba(255,${190 + ((hash(i) * 60) | 0)},110,${s * (1 - ph) * 0.95})`; g.beginPath(); g.arc(x, y, 1.4 + (1 - ph) * 1.2, 0, 7); g.fill();
+      }
     }
     g.globalCompositeOperation = 'source-over';
   },
@@ -360,7 +368,7 @@ KINDS.ding = {
 // Sanxingdui, far to the southwest: a bronze face with eyes on stalks, seen from the side so the stalks show.
 KINDS.sxmask = {
   bake(mk) {
-    const P = {}, c = '#8a7a52';
+    const P = {}, c = '#a2803c';
     P.post = mk('sx-post', [-14, -150, 14, 6]).piece([[-10, 4], [10, 4], [6, -146], [-6, -146]], '#5a4030', { round: 2 }).piece([[-22, 4], [22, 4], [16, -10], [-16, -10]], '#6a5040', { round: 2, lift: 1 }).finish({ shadowBlur: 3 });
     P.face = mk('sx-face', [-80, -90, 50, 70], { pad: 8 })
       // the great ear, swept back like a wing
@@ -368,7 +376,7 @@ KINDS.sxmask = {
       // the face in profile: a high brow, a hooked nose, a long mouth that runs back to the ear
       .piece([[-30, -70], [10, -74], [16, -50], [14, -34], [36, -20], [26, -12], [18, -10], [24, 2], [16, 10], [24, 24], [10, 40], [-30, 44], [-34, 0]], c, { round: 5, lift: 1.6, paint: (g) => { g.strokeStyle = 'rgba(40,30,18,.75)'; g.lineWidth = 2; g.beginPath(); g.moveTo(22, 14); g.lineTo(-24, 22); g.stroke(); g.beginPath(); g.moveTo(-10, -44); g.quadraticCurveTo(4, -50, 14, -44); g.stroke(); g.fillStyle = 'rgba(110,140,110,.35)'; for (let i = 0; i < 20; i++) { g.beginPath(); g.arc(-28 + Math.random() * 50, -60 + Math.random() * 90, 2 + Math.random() * 4, 0, 7); g.fill(); } } })
       .finish({ shadowBlur: 5 });
-    P.eye = mk('sx-eye', [-4, -12, 62, 12], { pad: 5 }).piece([[0, -6], [44, -6], [46, -9], [58, -10], [60, 0], [58, 10], [46, 9], [44, 6], [0, 6]], '#9a8a5e', { round: 3, paint: (g) => { g.strokeStyle = 'rgba(40,30,18,.6)'; g.lineWidth = 1.2; for (const x of [12, 26, 40]) { g.beginPath(); g.moveTo(x, -6); g.lineTo(x, 6); g.stroke(); } g.fillStyle = 'rgba(40,30,18,.8)'; g.beginPath(); g.ellipse(59, 0, 2, 7, 0, 0, 7); g.fill(); } }).finish({ shadowBlur: 3 });
+    P.eye = mk('sx-eye', [-4, -12, 62, 12], { pad: 5 }).piece([[0, -6], [44, -6], [46, -9], [58, -10], [60, 0], [58, 10], [46, 9], [44, 6], [0, 6]], '#b8924a', { round: 3, paint: (g) => { g.strokeStyle = 'rgba(40,30,18,.6)'; g.lineWidth = 1.2; for (const x of [12, 26, 40]) { g.beginPath(); g.moveTo(x, -6); g.lineTo(x, 6); g.stroke(); } g.fillStyle = 'rgba(40,30,18,.8)'; g.beginPath(); g.ellipse(59, 0, 2, 7, 0, 0, 7); g.fill(); } }).finish({ shadowBlur: 3 });
     return P;
   },
   draw(g, P, t, e, env) {
@@ -378,25 +386,43 @@ KINDS.sxmask = {
     g.save(); g.translate(-6 + k * 4, -34); g.scale(0.3 + 0.7 * k, 1); g.rotate(Math.sin(t * 9) * Math.exp(-Math.max(0, t - (e.eyesAt ?? 0)) * 2) * 6 * DEG); put(g, P.eye, env.sh * 0.5, 2, 3); g.restore();
     put(g, P.face, env.sh, 3, 4);
   },
+  // torchlight moving over polished bronze
+  glow(g, P, t, e, env, p) {
+    if (p < 0.6) return;
+    const f = 0.55 + 0.45 * fbm(t * 4.4, 11), k = e.eyesAt !== undefined ? clamp(spring(t - e.eyesAt, 9, 0.32), 0, 1.4) : 1;
+    g.save(); g.translate(4, -186); g.globalCompositeOperation = 'lighter';
+    const gr = g.createRadialGradient(4, -26, 0, 4, -26, 74); gr.addColorStop(0, `rgba(255,196,120,${0.26 * f})`); gr.addColorStop(1, 'rgba(255,150,70,0)'); g.fillStyle = gr; g.fillRect(-80, -100, 160, 150);
+    g.fillStyle = `rgba(255,226,160,${0.55 * f})`; g.beginPath(); g.ellipse(12, -46, 9, 2.2, -0.2, 0, 7); g.fill();
+    const ex = -6 + k * 4 + 58 * (0.3 + 0.7 * k); g.fillStyle = `rgba(255,232,170,${0.7 * f})`; g.beginPath(); g.arc(ex, -34, 3.2, 0, 7); g.fill();
+    g.restore();
+  },
 };
 KINDS.sxfigure = {
   bake(mk) {
-    const c = '#8a7a52', sh = mk('sx-figure', [-40, -300, 50, 6]);
+    const c = '#9c7c40', sh = mk('sx-figure', [-40, -300, 50, 6]);
     sh.piece([[-36, 4], [36, 4], [30, -40], [-30, -40]], '#6a5a3c', { round: 2, paint: (g) => { g.strokeStyle = 'rgba(30,20,10,.5)'; g.lineWidth = 1.4; g.beginPath(); g.moveTo(-28, -20); g.lineTo(28, -20); g.stroke(); } });
     sh.piece([[-16, -40], [16, -40], [18, -170], [12, -196], [-12, -196], [-18, -170]], c, { round: 4, lift: 1.4, paint: (g) => { g.strokeStyle = 'rgba(40,30,18,.5)'; g.lineWidth = 1.2; for (let y = -60; y > -180; y -= 18) { g.beginPath(); g.moveTo(-17, y); g.lineTo(17, y - 4); g.stroke(); taotie(0, y - 8, 0.25)(g); } } });
     sh.piece([[-10, -196], [14, -196], [24, -214], [20, -232], [-8, -238], [-12, -214]], c, { round: 4, lift: 1.4, paint: (g) => { g.fillStyle = 'rgba(40,30,18,.8)'; g.fillRect(4, -222, 12, 3); } });
     sh.piece([[-12, -236], [-16, -262], [-6, -278], [8, -268], [18, -280], [16, -252], [20, -236]], shade(c, 0.05), { round: 3, lift: 1.2 });
+    // a face of beaten gold foil, as some Sanxingdui heads still wear
+    sh.piece([[-4, -199], [16, -199], [23, -213], [20, -233], [-4, -236], [-8, -216]], '#e0b44a', { round: 2.5, lift: 1.8, paint: (g) => { g.fillStyle = 'rgba(70,40,10,.85)'; g.fillRect(6, -222, 12, 2.6); g.strokeStyle = 'rgba(120,70,20,.6)'; g.lineWidth = 1; g.beginPath(); g.moveTo(4, -228); g.quadraticCurveTo(12, -231, 20, -227); g.stroke(); g.beginPath(); g.moveTo(18, -214); g.lineTo(23, -209); g.stroke(); g.fillStyle = 'rgba(255,240,190,.35)'; g.fillRect(-2, -232, 4, 26); } });
     // the huge hands, held out in front, gripping something long since gone
     sh.piece([[12, -150], [42, -148], [46, -136], [40, -126], [14, -130]], c, { round: 4, lift: 1.6, paint: (g) => { g.fillStyle = 'rgba(30,20,10,.85)'; g.beginPath(); g.arc(36, -138, 5, 0, 7); g.fill(); } });
     sh.piece([[10, -176], [40, -184], [44, -172], [38, -162], [12, -160]], shade(c, 0.06), { round: 4, lift: 1.8, paint: (g) => { g.fillStyle = 'rgba(30,20,10,.85)'; g.beginPath(); g.arc(34, -172, 5, 0, 7); g.fill(); } });
     return { spr: sh.finish({ shadowBlur: 6 }) };
   },
   draw(g, P, t, e, env) { put(g, P.spr, env.sh, 4, 5); },
+  glow(g, P, t, e, env, p) {
+    if (p < 0.6) return;
+    const f = 0.55 + 0.45 * fbm(t * 4.1 + 3, 12); g.globalCompositeOperation = 'lighter';
+    let gr = g.createRadialGradient(8, -218, 0, 8, -218, 46); gr.addColorStop(0, `rgba(255,220,130,${0.45 * f})`); gr.addColorStop(1, 'rgba(255,170,80,0)'); g.fillStyle = gr; g.fillRect(-40, -266, 96, 96);
+    gr = g.createRadialGradient(30, -156, 0, 30, -156, 40); gr.addColorStop(0, `rgba(255,190,120,${0.2 * f})`); gr.addColorStop(1, 'rgba(255,150,70,0)'); g.fillStyle = gr; g.fillRect(-10, -196, 80, 80);
+  },
 };
 // A bronze tree with birds on its branch tips (Sanxingdui's sacred trees stood nearly four metres tall).
 KINDS.sxtree = {
   bake(mk) {
-    const c = '#7a7a54', r = rng(2200), sh = mk('sx-tree', [-110, -330, 110, 6]);
+    const c = '#8c7a40', r = rng(2200), sh = mk('sx-tree', [-110, -330, 110, 6]);
     sh.piece([[-30, 4], [30, 4], [20, -24], [-20, -24]], '#5a5038', { round: 3 });
     sh.piece(strip(0, -20, 0, -320, 7, 4), c, { round: 1.5, lift: 1.2 });
     for (let tier = 0; tier < 3; tier++) for (const s of [-1, 1]) {
@@ -405,8 +431,8 @@ KINDS.sxtree = {
       const top = pts.map(([x, y]) => [x, y - 2.4]), bot = pts.slice().reverse().map(([x, y]) => [x, y + 2.4]);
       sh.piece([...top, ...bot], c, { round: 1.2, lift: 1 });
       const [bx, by] = pts[10];
-      sh.piece([[bx - 6, by + 2], [bx - 4, by - 10], [bx + 4, by - 14], [bx + 10, by - 10], [bx + 8, by - 4], [bx + s * 14, by - 8], [bx + 6, by + 2]], '#8a8a5c', { round: 2, lift: 1.2 });
-      sh.piece(ellipse(bx, by + 10, 4, 6, 8), '#6a6a48', { round: 1.5, lift: 0.8 });
+      sh.piece([[bx - 6, by + 2], [bx - 4, by - 10], [bx + 4, by - 14], [bx + 10, by - 10], [bx + 8, by - 4], [bx + s * 14, by - 8], [bx + 6, by + 2]], '#b09048', { round: 2, lift: 1.2 });
+      sh.piece(ellipse(bx, by + 10, 4, 6, 8), '#8a6a38', { round: 1.5, lift: 0.8 });
     }
     sh.piece([[-6, -326], [6, -326], [10, -340], [0, -348], [-10, -340]], '#8a8a5c', { round: 2, lift: 1 });
     return { spr: sh.finish({ shadowBlur: 6 }) };

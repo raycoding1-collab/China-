@@ -324,6 +324,14 @@ KINDS.tokamak = {
     g.strokeStyle = `rgba(255,150,230,${0.55 * k * fl})`; g.lineWidth = 9; g.beginPath(); g.ellipse(0, -170 + wob, 92, 18, 0, Math.PI * 1.05, Math.PI * 1.95); g.stroke();
     g.strokeStyle = `rgba(255,230,255,${0.6 * k * fl})`; g.lineWidth = 3; g.beginPath(); g.ellipse(0, -170 + wob, 92, 18, 0, Math.PI * 1.05, Math.PI * 1.95); g.stroke();
     const gr = g.createRadialGradient(0, -170, 0, 0, -170, 220); gr.addColorStop(0, `rgba(220,120,255,${0.16 * k})`); gr.addColorStop(1, 'rgba(220,120,255,0)'); g.fillStyle = gr; g.fillRect(-220, -390, 440, 440);
+    // the magnetic cage: field lines wound round the plasma, and ions racing along them
+    for (const s of [-1, 1]) {
+      const cx = s * 74, cy = -170 + wob;
+      g.lineWidth = 1.3; g.setLineDash([5, 7]);
+      for (let j = 0; j < 3; j++) { g.lineDashOffset = -t * (40 + j * 14) * s; g.strokeStyle = `rgba(${j === 1 ? '150,220,255' : '210,170,255'},${0.55 * k})`; g.beginPath(); g.ellipse(cx, cy, 31 - j * 7, 57 - j * 12, Math.sin(t * 0.7 + j) * 0.12, 0, Math.PI * 2); g.stroke(); }
+      g.setLineDash([]);
+      for (let i = 0; i < 10; i++) { const a = t * (3 + (i % 3)) * s + i * 0.63, rr = 0.55 + (i % 4) * 0.12; g.fillStyle = `rgba(255,240,255,${0.85 * k})`; g.beginPath(); g.arc(cx + Math.cos(a) * 31 * rr, cy + Math.sin(a) * 57 * rr, 1.6, 0, 7); g.fill(); }
+    }
     g.globalCompositeOperation = 'source-over';
   },
 };
@@ -462,7 +470,23 @@ KINDS.agv = {
 // The factory hall, cut away: steel trusses overhead, no windows lit.
 KINDS.factoryhall = {
   bake(mk) { const sh = mk('factoryhall', [-240, -300, 240, 6]); sh.piece(rect(-236, 4, 236, -270), '#2e3036', { round: 2, paint: (g) => { g.strokeStyle = 'rgba(90,96,108,.6)'; g.lineWidth = 2; g.beginPath(); g.moveTo(-236, -230); g.lineTo(236, -230); g.stroke(); for (let x = -230; x < 236; x += 30) { g.beginPath(); g.moveTo(x, -230); g.lineTo(x + 15, -266); g.lineTo(x + 30, -230); g.stroke(); } g.fillStyle = 'rgba(60,64,72,.6)'; for (let x = -220; x < 230; x += 70) g.fillRect(x, -200, 40, 18); } }); sh.piece([[-244, -266], [0, -300], [244, -266], [244, -258], [-244, -258]], '#3a3c44', { round: 2, lift: 1.4 }); return { spr: sh.finish({ shadowBlur: 6 }) }; },
-  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+  draw(g, P, t, e, env) {
+    put(g, P.spr, env.sh, 3, 4);
+    // the lamp housings under the roof
+    for (let i = 0; i < 8; i++) { const x = -196 + i * 56; g.fillStyle = '#4a4e58'; g.fillRect(x - 12, -230, 24, 6); }
+  },
+  glow(g, P, t, e, env, p) {
+    if (p < 0.6 || !e.lamp) return;
+    g.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 8; i++) {
+      const k = e.lamp(t, i); if (k < 0.01) continue;
+      const x = -196 + i * 56, fl = 0.94 + 0.06 * Math.sin(t * 40 + i);
+      g.fillStyle = `rgba(255,248,230,${0.95 * k * fl})`; g.fillRect(x - 11, -225, 22, 3);
+      const gr = g.createLinearGradient(0, -224, 0, 0); gr.addColorStop(0, `rgba(255,240,210,${0.32 * k})`); gr.addColorStop(1, 'rgba(255,240,210,0)');
+      g.fillStyle = gr; g.beginPath(); g.moveTo(x - 10, -224); g.lineTo(x + 10, -224); g.lineTo(x + 40, 0); g.lineTo(x - 40, 0); g.closePath(); g.fill();
+    }
+    g.globalCompositeOperation = 'source-over';
+  },
 };
 
 // A coal power station's stack: tall, banded red and white, a platform near the top.
