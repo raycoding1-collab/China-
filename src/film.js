@@ -1317,9 +1317,45 @@ function landLights(g, st, t) {
   g.restore();
 }
 
+// Chinese white dolphins (pink, in fact) leaping beside the sea bridge whose pylons are shaped like them.
+function dolphins(g, st, t) {
+  const T0 = ev('hzmb') + 1.2; if (t < T0 || t > 633) return;
+  const pu = Math.max(st.eu, Math.min(st.W, st.H) / 820), k = sramp(t, T0, T0 + 0.5) * (1 - sramp(t, 631, 633));
+  for (let i = 0; i < 3; i++) {
+    const per = 2.9 + i * 0.4, ph = ((t - T0) / per + i * 0.37) % 1, j = clamp(ph / 0.42); if (ph > 0.6) continue;
+    const a0 = 2426 + i * 5.2 + Math.floor((t - T0) / per + i * 0.37) * 0.7, a = a0 + j * 2.4, h = -10 + Math.sin(j * Math.PI) * 40, [x, y, rel] = st.place('front', a, h, t);
+    const [x2, y2] = st.place('front', a0 + Math.min(1, j + 0.02) * 2.4, -10 + Math.sin(Math.min(1, j + 0.02) * Math.PI) * 40, t), ang = Math.atan2(y2 - y, x2 - x);
+    if (j > 0 && j < 1) {
+      g.save(); g.translate(x, y); g.rotate(ang); g.scale(pu * 1.6, pu * 1.6); g.globalAlpha = k;
+      g.fillStyle = '#f0c2c4'; g.strokeStyle = 'rgba(150,90,96,.7)'; g.lineWidth = 0.8;
+      g.beginPath(); [[-22, 0], [-10, -6], [8, -7], [18, -4], [25, -1], [18, 1.5], [8, 5], [-10, 5], [-22, 2]].forEach(([px, py], n) => (n ? g.lineTo(px, py) : g.moveTo(px, py))); g.closePath(); g.fill(); g.stroke();
+      g.beginPath(); g.moveTo(1, -6.5); g.lineTo(-6, -14); g.lineTo(-8, -6); g.closePath(); g.fill(); g.stroke();
+      g.beginPath(); g.moveTo(-21, 1); g.lineTo(-30, -6); g.lineTo(-27, 1); g.lineTo(-30, 7); g.closePath(); g.fill(); g.stroke();
+      g.fillStyle = 'rgba(255,255,255,.55)'; g.beginPath(); g.ellipse(4, -3.5, 10, 1.6, 0, 0, 7); g.fill(); g.fillStyle = '#2a1c1e'; g.beginPath(); g.arc(17, -2.6, 0.9, 0, 7); g.fill();
+      g.restore();
+    }
+    // splashes where it leaves and re-enters the water
+    for (const [sa, s0] of [[a0, 0], [a0 + 2.4, 0.42]]) { const sk = clamp(1 - Math.abs(ph - s0) / 0.1); if (sk <= 0) continue; for (let n = 0; n < 6; n++) { const [sx, sy] = st.place('front', sa + (n - 2.5) * 0.12, -8 + sk * (6 + hash(n + i) * 10), t); g.fillStyle = `rgba(245,250,255,${0.85 * sk * k})`; g.beginPath(); g.arc(sx, sy, 1.6 * pu, 0, 7); g.fill(); } }
+  }
+  g.globalAlpha = 1;
+}
+// sun glinting off the solar fields
+function solarGlints(g, st, t) {
+  const S0 = ev('solar'); if (t < S0 + 0.8 || t > 709) return;
+  const pu = Math.max(st.eu, Math.min(st.W, st.H) / 820), k = sramp(t, S0 + 0.8, S0 + 1.6) * (1 - sramp(t, 707, 709));
+  g.save(); g.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 7; i++) {
+    const f = Math.max(0, Math.sin(t * 1.6 + i * 2.3)) ** 14; if (f < 0.02) continue;
+    const [x, y] = st.place('main', 2643.6 + i * 3, 34, t), r = 14 * pu * f;
+    g.strokeStyle = `rgba(255,250,225,${0.9 * f * k})`; g.lineWidth = Math.max(1, pu); g.beginPath(); g.moveTo(x - r, y); g.lineTo(x + r, y); g.moveTo(x, y - r); g.lineTo(x, y + r); g.stroke();
+    st.stamp(g, st.dot(255, 240, 200, '255,255,240'), x, y, r * 0.6, 0.8 * f * k);
+  }
+  g.restore();
+}
+
 hook({
   sky(g, st, t) { droneShow(g, st, t); const mk = sramp(t, 563, 566) * (1 - sramp(t, 572, 575)); if (mk > 0.01) milkyWay(g, st, t, mk * 0.55, 0); },
-  over(g, st, t, S) { landLights(g, st, t); hsrMap(g, st, t); damSpray(g, st, t); launchCloud(g, st, t); galaFx(g, st, t); },
+  over(g, st, t, S) { landLights(g, st, t); hsrMap(g, st, t); damSpray(g, st, t); launchCloud(g, st, t); dolphins(g, st, t); galaFx(g, st, t); solarGlints(g, st, t); },
 });
 
 // ======================================================= 15. The long thread ===
@@ -1787,7 +1823,7 @@ function shadowDx(e, a, t, S) {
 }
 
 // flocks of paper birds at dusk and dawn
-const FLOCKS = [[1.5, 10, -1, 0.3, 9], [27, 36, 1, 0.24, 7]];
+const FLOCKS = [[1.5, 10, -1, 0.3, 9], [27, 36, 1, 0.24, 7], [259.6, 267.6, -1, 0.28, 7], [385, 392.5, -1, 0.22, 6], [707.6, 716.4, 1, 0.26, 13]];
 function birds(g, st, t) {
   const { W, H } = st, u = st.eu * 1.1;
   for (const [t0, t1, dir, yf, n] of FLOCKS) {
