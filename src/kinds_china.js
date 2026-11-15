@@ -70,25 +70,25 @@ KINDS.roundhut = {
 };
 
 // The red-crowned crane: white body, black neck and bustle, a red cap. It can stand, preen and dance.
-KINDS.crane = {
+KINDS.redcrane = {
   bake(mk, v = 0) {
     const P = {};
-    P.legs = mk('crane-legs', [-10, -56, 14, 4], { pad: 4 })
+    P.legs = mk('rcrane-legs', [-10, -56, 14, 4], { pad: 4 })
       .piece(strip(-2, -52, -4, 1, 2.6, 2), '#3a3a3c', { round: 0.8, thick: 0.5 })
       .piece(strip(4, -52, 7, 1, 2.6, 2), '#4a4a4c', { round: 0.8, thick: 0.5, lift: 0.6 })
       .piece([[-8, 1], [0, 1], [-1, 3], [-9, 3]], '#3a3a3c', { round: 0.8, lift: 0.4 }).piece([[2, 1], [11, 1], [10, 3], [2, 3]], '#4a4a4c', { round: 0.8, lift: 0.4 })
       .finish({ shadowBlur: 2 });
-    P.body = mk('crane-body', [-40, -24, 34, 16], { pad: 5 })
+    P.body = mk('rcrane-body', [-40, -24, 34, 16], { pad: 5 })
       .piece([[-26, 2], [-34, -2], [-38, 6], [-30, 10], [-18, 8]], '#262426', { round: 3, rough: 1.2 })
       .piece([[-30, 0], [-22, -14], [-4, -20], [16, -18], [30, -8], [28, 4], [10, 10], [-14, 10]], '#f1ede4', { round: 7, rough: 0.8, lift: 1.4, paint: (g) => { g.strokeStyle = 'rgba(150,140,130,.35)'; g.lineWidth = 0.9; for (let i = 0; i < 6; i++) { g.beginPath(); g.moveTo(-20 + i * 6, -10); g.quadraticCurveTo(-14 + i * 6, -2, -22 + i * 6, 8); g.stroke(); } } })
       .piece([[-30, -2], [-40, 2], [-38, 12], [-28, 14], [-18, 10], [-20, 2]], '#2a2729', { round: 4, rough: 1.4, lift: 1.4, paint: (g) => { g.strokeStyle = 'rgba(255,255,255,.12)'; g.lineWidth = 0.8; for (let k = 0; k < 5; k++) { g.beginPath(); g.moveTo(-22 - k * 3, 2); g.lineTo(-34 - k * 1.4, 12); g.stroke(); } } })
       .finish({ shadowBlur: 3 });
-    P.neck = mk('crane-neck', [-6, -62, 30, 6], { pad: 4 })
+    P.neck = mk('rcrane-neck', [-6, -62, 30, 6], { pad: 4 })
       .piece([[-4, 4], [-2, -16], [4, -34], [6, -50], [12, -58], [18, -58], [20, -53], [12, -48], [10, -34], [6, -14], [6, 4]], '#262426', { round: 3, paint: (g) => { g.fillStyle = '#efebe2'; g.beginPath(); g.moveTo(-2, -24); g.quadraticCurveTo(2, -40, 6, -48); g.lineTo(8, -44); g.quadraticCurveTo(4, -30, 2, -18); g.fill(); } })
       .piece(ellipse(14, -58.5, 4.4, 2.4, 10), '#c8282a', { round: 1, lift: 0.6 })
       .piece([[18, -56], [30, -53], [18, -52]], '#8a8670', { round: 0.6, lift: 0.6 })
       .finish({ shadowBlur: 2 });
-    const wing = (n) => mk('crane-wing' + n, [-6, -66, 46, 8], { pad: 4 })
+    const wing = (n) => mk('rcrane-wing' + n, [-6, -66, 46, 8], { pad: 4 })
       .piece([[0, 2], [6, -24], [16, -48], [30, -62], [36, -60], [42, -50], [38, -40], [40, -30], [32, -16], [20, -4], [8, 4]], '#f3efe6', { round: 4, rough: 0.8, paint: (g) => { g.fillStyle = '#242224'; g.beginPath(); g.moveTo(30, -62); g.lineTo(42, -50); g.lineTo(38, -40); g.lineTo(40, -30); g.lineTo(32, -16); g.lineTo(26, -26); g.lineTo(30, -40); g.closePath(); g.fill(); g.strokeStyle = 'rgba(140,130,120,.4)'; g.lineWidth = 0.8; for (let k = 0; k < 5; k++) { g.beginPath(); g.moveTo(6 + k * 3, -6 - k * 6); g.lineTo(28 + k * 2, -22 - k * 7); g.stroke(); } } })
       .finish({ shadowBlur: 3 });
     P.wingF = wing('F'); P.wingB = wing('B');

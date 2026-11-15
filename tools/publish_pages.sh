@@ -1,5 +1,5 @@
 #!/bin/sh
-# Publish the film to GitHub Pages: https://raycoding1-collab.github.io/Globe/
+# Publish the film to GitHub Pages: https://raycoding1-collab.github.io/China-/
 # Copies the website files onto the gh-pages branch and pushes it. Run from anywhere.
 set -e
 cd "$(dirname "$0")/.."
@@ -19,4 +19,4 @@ git -C "$DIR" add -A
 if git -C "$DIR" diff --cached --quiet; then echo "GitHub Pages already up to date"; exit 0; fi
 git -C "$DIR" commit -q -m "Publish the film from $(git rev-parse --short HEAD)"
 git -C "$DIR" push -q origin gh-pages
-echo "Published to https://raycoding1-collab.github.io/Globe/"
+echo "Published to https://raycoding1-collab.github.io/China-/"

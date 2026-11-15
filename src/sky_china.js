@@ -285,6 +285,19 @@ fxGroup(['c4', 'yutu', 'ascender'], (mk) => ({
   ascender: mk('ascender', [-16, -30, 16, 4], { pad: 4 }).piece([[-12, 2], [-12, -18], [-6, -26], [6, -26], [12, -18], [12, 2]], '#c9a24a', { round: 2 }).piece(rect(-14, -12, -10, -4), '#2a3a6a', { round: 0.5, lift: 0.6 }).piece(rect(10, -12, 14, -4), '#2a3a6a', { round: 0.5, lift: 0.6 }).finish({ shadowBlur: 2 }),
 }));
 
+// Tiangong, China's space station, seen from below: the two laboratory modules make the bar of a T
+// with the core module as its stem, long solar wings at both ends, a cargo ship docked underneath.
+fxGroup(['tiangong'], (mk) => {
+  const sp = mk('tiangong', [-96, -74, 96, 84], { pad: 6 }), wing = (x0, x1, y0, y1) => sp.piece(rect(x0, y0, x1, y1), '#24345e', { round: 0.8, lift: 0.8, paint: (g) => { g.strokeStyle = 'rgba(150,180,225,.55)'; g.lineWidth = 0.6; for (let y = Math.min(y0, y1) + 4; y < Math.max(y0, y1); y += 4) { g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.stroke(); } g.beginPath(); g.moveTo((x0 + x1) / 2, y0); g.lineTo((x0 + x1) / 2, y1); g.stroke(); } });
+  for (const sx of [-1, 1]) { sp.piece(rect(sx * 84 - 1, -70, sx * 84 + 1, 70), '#8c8e94', { round: 0.3 }); wing(sx * 84 - 9, sx * 84 + 9, -70, -10); wing(sx * 84 - 9, sx * 84 + 9, 10, 70); }
+  sp.piece([[-80, -7], [80, -7], [82, -4], [82, 4], [80, 7], [-80, 7], [-82, 4], [-82, -4]], '#dcd9d0', { round: 2, lift: 1.2, paint: (g) => { g.fillStyle = 'rgba(120,120,120,.35)'; for (const x of [-60, -40, -18, 18, 40, 60]) g.fillRect(x, -7, 2, 14); g.fillStyle = 'rgba(200,160,60,.6)'; g.fillRect(-30, -7, 10, 14); g.fillRect(20, -7, 10, 14); } });
+  sp.piece(ellipse(0, 0, 11, 11, 14), '#cfccc2', { round: 2, lift: 1.6 });
+  sp.piece([[-8, 8], [8, 8], [9, 48], [-9, 48]], '#dcd9d0', { round: 2, lift: 1.4, paint: (g) => { g.fillStyle = 'rgba(120,120,120,.35)'; for (const y of [18, 30, 40]) g.fillRect(-9, y, 18, 2); } });
+  for (const sx of [-1, 1]) wing(sx * 10, sx * 38, 26, 32);
+  sp.piece([[-7, 50], [7, 50], [7, 72], [0, 80], [-7, 72]], '#e8e4d8', { round: 2, lift: 1.2, paint: (g) => { g.fillStyle = 'rgba(200,40,40,.7)'; g.fillRect(-7, 58, 14, 3); } });
+  return { tiangong: sp.finish({ shadowBlur: 4 }) };
+});
+
 // ------------------------------------------------------------ breakthroughs ---
 fxGroup(['stopwatch', 'micius', 'qkey', 'qfridge', 'pandafarm'], (mk) => {
   const S = {};

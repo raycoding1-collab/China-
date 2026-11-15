@@ -57,8 +57,10 @@ export class Stage {
     // a rotated phone bakes everything again: give the old cut-outs' memory back first
     if (this.baked) { for (const spr of this.baked) { release(spr.img); release(spr.shadow); } }
     const u = this.u * 1.6 * this.zm, cache = new Map(); // oversize, so the camera can push in close
-    const list = new Set(), seen = new Set(), walk = (o, d) => { if (!o || typeof o !== 'object' || seen.has(o) || d > 6) return; seen.add(o); if (o.sprite) { list.add(o); return; } if (o instanceof HTMLCanvasElement) return; for (const k in o) walk(o[k], d + 1); };
+    const list = new Set(), seen = new Set(), walk = (o, d, out) => { if (!o || typeof o !== 'object' || seen.has(o) || d > 6) return; seen.add(o); if (o.sprite) { list.add(o); if (out) out.push(o); return; } if (o instanceof HTMLCanvasElement) return; for (const k in o) walk(o[k], d + 1, out); };
     this.baked = list; // every sprite made, so the next bake can free them
+    // which cut-outs share each baked set of parts, so a set can be freed once all of them are far behind
+    const owners = new Map(); this.partSets = owners; this.partCache = cache; this.lastEvict = -1e9;
     this.partsOf = (e) => {
       const L = LAYERS[e.layer], blur = e.sharp ? 0 : L.blur;
       // scales are shared in third-of-an-octave steps, so a field of grass is a few bakes, not a hundred
@@ -68,9 +70,10 @@ export class Stage {
       const key = `${e.kind}|${e.v ?? 0}|${sc}|${blur}|${lu}`;
       if (!cache.has(key)) {
         const mk = (name, box, o = {}) => new BlurSheet(name + key, box, lu * sc, o, blur / sc * (lu / u), e.sharp ? 0 : L.tint || 0);
-        const v = KINDS[e.kind].bake(mk, e.v ?? 0);
-        cache.set(key, v); walk(v, 0);
+        const v = KINDS[e.kind].bake(mk, e.v ?? 0), sprites = [];
+        cache.set(key, v); walk(v, 0, sprites); owners.set(key, { sprites, ents: new Set() });
       }
+      owners.get(key).ents.add(e); e.partKey = key; e.evicted = false;
       return cache.get(key);
     };
     // Cut-outs are made lazily: nothing waits for the whole world to be cut before the first frame.
@@ -116,19 +119,39 @@ export class Stage {
   stamp(g, dot, x, y, rad, alpha) { if (alpha <= 0.004 || rad <= 0) return; const a = g.globalAlpha; g.globalAlpha = Math.min(1, alpha); g.drawImage(dot, x - rad, y - rad, rad * 2, rad * 2); g.globalAlpha = a; }
 
   // Cut a few more of the cut-outs the film will need next, within a time budget (ms).
+  // Only the next minute and a half is cut ahead: a long film never holds all of its cut-outs at once.
   bakeAhead(t, budget) {
-    if (!this.queueLeft) return;
-    const q = this.queue, t0 = performance.now();
-    // first the cut-outs due from now on, soonest first; then any from earlier in the film
-    let i = 0, lo = 0, hi = q.length; while (lo < hi) { const m = (lo + hi) >> 1; q[m].t < t - 4 ? (lo = m + 1) : (hi = m); } i = lo;
+    this.evictBehind(t);
+    const q = this.queue, t0 = performance.now(), AHEAD = 90, BACK = 40;
+    const at = (x) => { let lo = 0, hi = q.length; while (lo < hi) { const m = (lo + hi) >> 1; q[m].t < x ? (lo = m + 1) : (hi = m); } return lo; };
+    // first the cut-outs due from now on, soonest first; then any from the last few seconds (after a seek)
+    const i = at(t - 4), j = at(t - BACK);
     for (let pass = 0; pass < 2; pass++) {
-      for (let k = pass ? 0 : i; k < (pass ? i : q.length); k++) {
-        const it = q[k]; if (it.e.parts) continue;
-        it.e.parts = this.partsOf(it.e); this.queueLeft--;
+      for (let k = pass ? j : i; k < (pass ? i : q.length); k++) {
+        const it = q[k]; if (!pass && it.t > t + AHEAD) break;
+        if (it.e.parts) continue;
+        it.e.parts = this.partsOf(it.e);
         if (performance.now() - t0 > budget) return;
       }
     }
-    this.queueLeft = 0;
+  }
+
+  // Free the cut-outs the camera has left far behind (a quarter turn and more past the edge of even
+  // the widest view): the camera only ever moves on, and a seek back simply cuts them again.
+  evictBehind(t, force) {
+    if (!this.partSets || (!force && t - this.lastEvict < 1.5 && t >= this.lastEvict)) return;
+    this.lastEvict = t;
+    const c = this.film.cam(t), KEEP = 250;
+    for (const [key, info] of this.partSets) {
+      let gone = true;
+      for (const e of info.ents) {
+        if (e.move || e.inside || (e.tPop ?? 0) > t - 20 || LAYERS[e.layer].sf * (c - e.a) < KEEP + (e.wide || 0)) { gone = false; break; }
+      }
+      if (!gone) continue;
+      for (const spr of info.sprites) { release(spr.img); release(spr.shadow); this.baked.delete(spr); }
+      for (const e of info.ents) { e.parts = undefined; e.evicted = true; }
+      this.partCache.delete(key); this.partSets.delete(key);
+    }
   }
 
   // -- when does each cut-out spring up? ------------------------------------

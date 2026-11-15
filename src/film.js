@@ -124,8 +124,8 @@ const flick = (t, s) => 0.84 + 0.16 * fbm(t * 7.3 + s, 60) + 0.05 * Math.sin(t *
   // the marsh beside the village: reeds, and two cranes
   for (const [a, z, s] of [[9.6, 1, 1.1], [11.4, 4, 0.7], [16.2, 1, 0.9], [19.8, 4, 0.75], [21.4, 1, 1.2], [23, 4, 0.8]]) add('reeds', 'main', a, { v: (R() * 4) | 0, z, scale: s, loud: 0.3 });
   for (let a = 9.6; a < 22; a += 2.6) add('ripple', 'main', a, { v: 2, z: 3.5, y: -4, scale: 0.7 });
-  add('crane', 'main', 13.6, { z: 3, scale: 1.25, dance: (t) => sramp(t, T_FLUTE + 1.2, T_FLUTE + 2.4) * (1 - sramp(t, T_STOP, T_STOP + 1.2)) });
-  add('crane', 'main', 18.6, { z: 2, scale: 1.0, flip: true });
+  add('redcrane', 'main', 13.6, { z: 3, scale: 1.25, dance: (t) => sramp(t, T_FLUTE + 1.2, T_FLUTE + 2.4) * (1 - sramp(t, T_STOP, T_STOP + 1.2)) });
+  add('redcrane', 'main', 18.6, { z: 2, scale: 1.0, flip: true });
   for (const a of [-44, 31.5]) add('bamboo', 'main', a, { v: a > 0 ? 1 : 0, z: 0 });
   for (const [a, v] of [[-50, 0], [-12, 1], [10, 2], [40, 0]]) add('oak', 'mid', a, { v, scale: 0.5 });
   for (const a of [-34, 4, 28]) add('bamboo', 'mid', a, { v: 2, scale: 0.55 });
@@ -995,7 +995,7 @@ const SPARK = [[2214, 150], [2220, 150], [2226, 150], [2232, 150], [2238, 150], 
   [[2095, 'tower', 4, 0.8], [2100, 'kk100', 0, 0.72], [2106, 'pingan', 0, 0.66], [2112, 'bamboo400', 0, 0.72], [2117, 'tower', 5, 0.8], [2122, 'tower', 1, 0.75]].forEach(([a, k, v, sc], i) => add(k, 'main', a, { v, z: 0.2, scale: sc, popAt: SZ + 0.7 + i * 0.3, loud: 1.4, wide: 6, winOn: (t, w) => (hash(w + i * 9) < 0.5 ? 0 : sramp(t, 551 + hash(w) * 4, 551.4 + hash(w) * 4) * 0.7) }));
   for (let a = 2090, i = 0; a < 2132; a += 3.2, i++) add('tower', 'mid', a, { v: i % 7, scale: 0.55, popAt: SZ + 1 + i * 0.12, loud: 0.5 });
   for (let a = 2088, i = 0; a < 2136; a += 2.6, i++) add('tower', 'far', a, { v: (i * 3) % 7, scale: 0.42, popAt: SZ + 1.4 + i * 0.08, loud: 0.3 });
-  add('crane', 'main', 2112, { z: 0.1, scale: 0.9, popAt: SZ + 0.4 });
+  add('crane', 'main', 2109.5, { z: 0.1, scale: 0.85, popAt: SZ + 0.4, hoist: (t) => sramp(t, SZ + 1.2, SZ + 7) });
   // 1989: a square at dusk, a column of tanks, one man standing in front of them
   add('person', 'main', 2182, { v: 'tankman', z: 2.5, scale: P2, popAt: T89 - 3.0, act: (t) => ({ walk: undefined, head: 0, front: [-6, -6], back: [4, -4] }) });
   for (let i = 0; i < 3; i++) add('tank', 'main', 2188 + i * 6.4, { z: 2.2 - i * 0.1, scale: 1.05, flip: true, popAt: T89 - 2.4 + i * 0.3, loud: 1.2, move: (t) => -Math.min(clamp((t - T89 + 2) * 1.2, 0, 3.2), 3.2) });
@@ -1384,6 +1384,13 @@ function sky(g, st, t, S) {
     const k = drop(t, t0, t1), sx = W * (st.aspectK > 0.4 ? 0.16 : 0.2), sy = H * lerp(-0.25, 0.13, k);
     g.globalCompositeOperation = 'screen'; const gl = g.createRadialGradient(sx, sy, 0, sx, sy, 300 * u); gl.addColorStop(0, `rgba(255,236,190,${0.35 * clamp(k)})`); gl.addColorStop(1, 'rgba(255,230,180,0)'); g.fillStyle = gl; g.fillRect(sx - 300 * u, sy - 300 * u, 600 * u, 600 * u); g.globalCompositeOperation = 'source-over';
     st.hang(g, st.fx.sun, sx, sy, 0.75, Math.sin(t * 0.4) * 1.2 * DEG, 1, t * 0.03);
+  }
+  // Tiangong crosses the night sky above the trains (it is not named: it is simply up there)
+  if (t > 582 && t < 593.5) {
+    const k = (t - 582.2) / 11, por = st.aspectK > 0.4 ? 0 : 1, x = W * lerp(-0.12, 1.12, k), y = H * (por ? 0.13 : 0.15) + Math.sin(k * Math.PI) * -H * 0.03;
+    st.hang(g, st.fx.tiangong, x, y, por ? 0.42 : 0.55, Math.sin(t * 0.6) * 1.4 * DEG, 1, -0.18 + k * 0.1);
+    const [bx, by] = [x + Math.cos(-0.18) * 0, y - 8 * u], on = (t * 0.9) % 1 < 0.18;
+    if (on) { g.globalCompositeOperation = 'lighter'; st.stamp(g, st.dot(255, 240, 220, '255,255,250'), x, y, 7 * u, 0.9); g.globalCompositeOperation = 'source-over'; }
   }
   for (const f of HOOK.sky) f(g, st, t, S);
 }

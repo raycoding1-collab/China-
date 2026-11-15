@@ -1,6 +1,7 @@
 // Canvas memory on phone-sized screens, counted the way iPhones count it (a canvas counts until it is freed).
-// atStartMB: before Begin; allBuiltMB: once every cut-out is made; peak*: highest at any moment; bakeMs: a rebuild (rotation).
-// Keep allBuiltMB and peaks under ~200 MB for in-app browsers on older iPhones.
+// atStartMB: before Begin; peakPlayMB: highest while the whole film plays through (cut-outs are cut ~90 s ahead
+// and freed far behind the camera); peakRebakeMB: a rebuild (rotation); bakeMs: how long that rebuild takes.
+// Keep the peaks under ~200 MB for in-app browsers on older iPhones.
 // usage: node tools/memory.mjs [port=8766]
 import { chromium } from 'playwright';
 const UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 330.0.0.0 (iPhone14,7; iOS 17_5; en_US; en; scale=3.00; 1170x2532; 0)';
@@ -26,10 +27,14 @@ for (const [name, w, h, dpr] of [['iPhone 14, Instagram', 390, 664, 3], ['iPhone
   const r = await p.evaluate(() => {
     const s = window.__stage, seen = new Set(); let live = 0, n = 0;
     const walk = (o, d = 0) => { if (!o || typeof o !== 'object' || seen.has(o) || d > 8) return; seen.add(o); if (o instanceof HTMLCanvasElement) { live += o.width * o.height * 4; n++; return; } if (o instanceof CanvasRenderingContext2D || o instanceof Node || o instanceof Window) return; for (const k in o) { try { walk(o[k], d + 1); } catch (e) {} } };
-    walk(s); for (const e of s.film.entities) walk(e.parts);
-    const atStart = window.__live; s.bakeAhead(0, 1e9); live = 0; seen.clear(); walk(s); for (const e of s.film.entities) walk(e.parts); const peak1 = window.__peak; window.__peak = window.__live; window.__atStart = atStart;
+    const atStart = window.__live; window.__peak = window.__live;
+    // play the whole film through: cut-outs are cut ahead of the camera and freed far behind it
+    let peakAt = 0, peakSeen = 0;
+    for (let t = 0; t <= s.film.duration; t += 1.5) { s.bakeAhead(t, 1e9); if (Math.round(t / 1.5) % 2 === 0) window.__renderAt(t); if (window.__peak > peakSeen) { peakSeen = window.__peak; peakAt = t; } }
+    const peakPlay = window.__peak; live = 0; seen.clear(); walk(s); for (const e of s.film.entities) walk(e.parts);
+    window.__peak = window.__live;
     const t1 = performance.now(); s.W = 0; s.resize(); const bake = performance.now() - t1;
-    return { atStartMB: +(window.__atStart / 1e6).toFixed(0), allBuiltMB: +(live / 1e6).toFixed(0), canvases: n, peakFirstMB: +(peak1 / 1e6).toFixed(0), peakRebakeMB: +(window.__peak / 1e6).toFixed(0), unfreedAfterRebakeMB: +(window.__live / 1e6).toFixed(0), W: s.W, H: s.H, dpr: +s.dpr.toFixed(2), bakeMs: Math.round(bake) };
+    return { atStartMB: +(atStart / 1e6).toFixed(0), peakPlayMB: +(peakPlay / 1e6).toFixed(0), peakAt, atEndMB: +(live / 1e6).toFixed(0), canvasesAtEnd: n, peakRebakeMB: +(window.__peak / 1e6).toFixed(0), unfreedAfterRebakeMB: +(window.__live / 1e6).toFixed(0), W: s.W, H: s.H, dpr: +s.dpr.toFixed(2), bakeMs: Math.round(bake) };
   });
   console.log(name.padEnd(30), JSON.stringify(r), 'first frame ms', load, errs.length ? 'ERR ' + errs[0] : '');
   await ctx.close();

@@ -1,22 +1,24 @@
 # The Long Thread — production plan
 
 A paperfilm (see the `paperfilm` skill in `raycoding1-collab/Globe`, branch `ccr-f077ed5e-n128tc`,
-folder `skill/paperfilm/`) about the whole history of China, about 11 minutes long.
+folder `skill/paperfilm/`) about the whole history of China, 12.5 minutes long.
 Title: **The Long Thread** — kicker: *a history of China, in paper*.
 The motif: one shining silk thread, unwound from a cocoon in chapter 1, that runs on through the
 Silk Road, trade and modern networks, and at the end is seen wrapped around the whole little planet.
 
-The narration (68 lines, ~644 s of film) is final in `film/film.json`; timings come from
-`tools/narrate.py`. Duration 662 s. Respellings of Chinese names live in `SAY` in `tools/narrate.py`.
+The narration (77 lines) is final in `film/film.json`; timings come from
+`tools/narrate.py`. Duration 750 s. Respellings of Chinese names live in `SAY` in `tools/narrate.py`.
 
 ## Status
 - [x] Template copied, tools installed (Playwright symlink, Kokoro venv in /home/user/tts)
 - [x] Research + script + narration timing
-- [ ] Chapter 1 built and judged (desktop, phone, phone sideways)
-- [ ] All chapters built (`src/film.js`, new cut-outs in `src/kinds_china.js`, close-ups in `src/sky_china.js`, new looks in `src/people.js`)
-- [ ] Score + ambience rewritten in `tools/build_audio.py` (pentatonic theme, dizi/erhu/guzheng-like voices), mix checked, 3–8 kHz check
+- [x] Chapter 1 built and judged (desktop, phone, phone sideways)
+- [x] All chapters built (`src/film.js`, cut-outs in `src/kinds_china.js` and `src/kinds_modern_china.js`, close-ups in `src/sky_china.js`, looks in `src/people.js`)
+- [x] Breakthroughs chapter (607.8–715.7, angles 2345..2700): Three Gorges, HZMB, Huajiang bridge, EAST tokamak, Micius + quantum computer, robot gala + marathon, dark factory, coal/solar/wind, forests
+- [x] Ending: the whole timeline (7.6 laps of the globe) wound into a ball of red thread
+- [x] Score + ambience rewritten in `tools/build_audio.py` (guzheng, erhu, dizi, xiao, guqin, pipa, bianzhong, gong, sheng; bone-flute theme returns at the end)
 - [ ] Review rounds + all automated checks
-- [ ] Share image, icon, title text, README; commit; push
+- [x] Share image (Zheng He's fleet), icon, title text, README
 
 ## Globe layout (angle ranges) and scenes
 
@@ -35,8 +37,9 @@ The narration (68 lines, ~644 s of film) is final in `film/film.json`; timings c
 | War and revolution | 457–483 | 1805..1890 | Shanghai Bund, tram, rickshaw; warlords. 1937: bombers, the town folds, fires on the horizon (restraint, no melody). 1949: red flag rises over the gate, crowds. |
 | Mao's China | 483–524 | 1905..2045 | Village school, barefoot doctor, an old woman. Backyard furnaces glow; crops fold; dim light; paper figures fold. Wall of paper posters; students turn their backs on a teacher. Tu Youyou in a lab, an old book hangs, sweet wormwood grows; people pop back up: millions saved. |
 | Opening up | 524–574 | 2060..2260 | Red gates swing open; container ships, cranes. Shenzhen: fishing huts fold as towers spring up. Doll chain: nine of ten grey → all coloured. 1989: dusk, a column of tanks, one person stands; the tanks stop (restraint). Night: power line over karst hills, a spark runs pole to pole, village windows light one by one, then the whole hillside. |
-| Today | 574–628 | 2275..2470 | Night city: Oriental Pearl–style tower, twisted tower, lit windows, phones. High-speed train (bent along the curve) on viaducts through karst. Rocket from a gantry; close-up card: far side of the Moon — no Earth in the sky, the relay satellite instead; lander, rover tracks; 2024 scoop and ascent. Coal plant cooling towers + smoke; solar fields and turbines spring up; EVs. Poplar rows spring up across dunes. |
-| The long thread | 628–662 | 2485..2700 | Pull back to the whole planet: the golden thread runs round all of history. Blank board and a blank scroll with a resting brush rise ahead. Title at ~648. |
+| Today | 574–608 | 2275..2345 | Night city: Oriental Pearl–style tower, twisted tower, lit windows, phones. High-speed train (bent along the curve) on viaducts through karst. Rocket from a gantry; close-up card: far side of the Moon — no Earth in the sky, the relay satellite instead; lander, rover tracks; 2024 scoop and ascent. Coal plant cooling towers + smoke; solar fields and turbines spring up; EVs. Poplar rows spring up across dunes. |
+| Breakthroughs | 608–716 | 2345..2700 | See status. |
+| The long thread | 716–750 | 2695..2900 | Pull back to the whole planet; the thread winds the globe into a ball. Blank boards rise ahead. Title at 735.6. |
 
 ## Light
 fire → bronze pour → oil lamps/candles → Tang lanterns → Song fireworks → Ming palace lanterns →
@@ -44,7 +47,9 @@ gas lamps in treaty ports → wartime dark → village electrification (big mome
 LED city and train lights → dawn over uncut board.
 
 ## Score
-Pentatonic theme (D gong: D E F# A B). Opens on a lone bone-flute (flute voice) by the fire;
-bronze bells (lowpassed, low register) and drums for Shang; plucked zither (pluck) for the
-thinkers; reed (suona-like, soft) for the Silk Road; bowed (erhu-like) for Li Bai; full
-arrangement by Today. Hard moments: no melody, timpani and low strings only.
+Pentatonic theme (D gong: D E F# A B). Opens on a lone bone flute (11.6 s); guzheng for the first
+fields; bronze bells and drums for the Shang; guqin and xiao for the thinkers; gong, sheng and war
+drums for Qin; the whole ensemble (dizi, erhu, pipa, guzheng) on the Silk Road; erhu for the long
+division; xiao and guqin under Li Bai's poem; piano, pulses and pads join from 1978. Hard moments
+(opium wars, 1937, famine, Cultural Revolution, 1989): no melody, low strings and a drone only.
+The bone flute returns at 713 s, before the pull-back.
