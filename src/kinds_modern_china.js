@@ -506,3 +506,33 @@ KINDS.bamboo400 = {
     return { spr: sh.finish({ shadowBlur: 6 }), windows: win }; },
   draw(g, P, t, e, env) { put(g, P.spr, env.sh, 4, 5); }, glow: glowRects,
 };
+
+// A Chinese electric car: pearl body, glass roof, light bars front and back, and the green number plate of a new-energy vehicle.
+KINDS.ev = {
+  bake(mk) {
+    const P = {};
+    P.body = mk('ev', [-72, -56, 76, 6])
+      .piece([[-66, -12], [-66, -26], [-48, -32], [-28, -50], [14, -52], [36, -34], [64, -28], [72, -18], [70, -10], [-64, -8]], '#e6e7ea', { round: 9, paint: (g) => {
+        g.fillStyle = 'rgba(28,34,44,.9)'; g.beginPath(); g.moveTo(-24, -34); g.lineTo(-14, -48); g.lineTo(12, -49); g.lineTo(30, -34); g.closePath(); g.fill();
+        g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(-10, -47, 18, 3);
+        g.fillStyle = 'rgba(120,130,140,.5)'; g.fillRect(-60, -20, 128, 1.6);
+        // the green new-energy plate
+        const pg = g.createLinearGradient(0, -22, 0, -15); pg.addColorStop(0, '#f2f6ee'); pg.addColorStop(1, '#3a9a5a'); g.fillStyle = pg; g.fillRect(56, -22, 12, 7); g.fillStyle = 'rgba(20,30,20,.8)'; g.fillRect(58, -19.5, 8, 1.4);
+      } })
+      .piece([[-72, -12], [-52, -24], [-34, -12]], '#2a2e34', { round: 4, lift: 1 })
+      .piece([[30, -12], [48, -26], [66, -12]], '#2a2e34', { round: 4, lift: 1 })
+      .finish({ shadowBlur: 4 });
+    P.wheel = mk('ev-w', [-14, -14, 14, 14], { pad: 4 }).piece(ellipse(0, 0, 11, 11, 14), '#1e1c1c', { round: 3, paint: (g) => { g.fillStyle = '#c8ccd2'; g.beginPath(); g.arc(0, 0, 6, 0, 7); g.fill(); g.strokeStyle = 'rgba(60,64,70,.7)'; g.lineWidth = 1; for (let i = 0; i < 5; i++) { const a = i * 1.2566; g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(a) * 6, Math.sin(a) * 6); g.stroke(); } } }).finish({ shadowBlur: 2 });
+    return P;
+  },
+  draw(g, P, t, e, env) {
+    const d = e.move ? e.move(t) * DEG * 1000 : 0;
+    g.translate(0, -12 + Math.sin(t * 13) * 0.3); put(g, P.body, env.sh, 3, 4);
+    for (const x of [-44, 48]) { g.save(); g.translate(x, -2); g.rotate(d / 11); put(g, P.wheel, 0); g.restore(); }
+  },
+  glow(g, P, t, e, env, p) {
+    if (p < 0.6) return; g.globalCompositeOperation = 'lighter';
+    g.fillStyle = 'rgba(210,240,255,.85)'; g.fillRect(58, -42, 12, 2.4); g.fillStyle = 'rgba(255,60,50,.8)'; g.fillRect(-66, -40, 8, 2.4);
+    g.globalCompositeOperation = 'source-over';
+  },
+};

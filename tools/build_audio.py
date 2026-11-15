@@ -785,6 +785,14 @@ def ambience(dur, EV):
     m, tv = tvec(4.0); at(lp(rs.randn(m), 900) * env_ar(m, 0.5, 1.5) * 0.02, EV['coal'] + 0.4, 1, 0.3)    # steam
     for k in range(6): at(whoosh(1.8, 120, 500) * 0.05, EV['solar'] + 0.5 + k * 1.2, 1, -0.6 + k * 0.2)  # turbine blades
     at(whoosh(4.0, 100, 700) * 0.10, EV['pull'] - 0.2, 1, 0)                                              # lifting away from the ground
+    # village loudspeakers: a muffled broadcast, a voice-like murmur with syllables but no words, tinny and far
+    def broadcast(t0, dur, g, pan):
+        m, tv = tvec(dur); syl = (0.5 + 0.5 * np.sin(TAU * 5.2 * tv + 3 * np.sin(TAU * 0.7 * tv))) ** 2 * (slow_noise(m, 3, rs.randint(1e6)) > 0.3)
+        y = bp(rs.randn(m), 450, 1700) * syl + bp(np.sin(TAU * np.cumsum(170 * (1 + 0.15 * np.sin(TAU * 1.3 * tv))) / SR), 400, 1800) * syl * 0.6
+        y = lp(y + bp(y, 850, 1000) * 2.0, 1900)
+        at(y * env_ar(m, 0.3, 0.6) * g, t0, 1, pan)
+    broadcast(483.2, 6.4, 0.020, -0.5)
+    broadcast(EV['cultural'] + 0.1, 8.6, 0.032, 0.3)
     # the drone swarm rising over the river front: a soft rush of air, then a low hum while the dragon flies
     at(whoosh(2.6, 90, 500) * 0.06, EV['today'] - 0.2, 1, 0)
     m, tv = tvec(6.2); at(lp(np.sin(TAU * 110 * tv) * 0.3 + np.sin(TAU * 165 * tv) * 0.15 + lp(rs.randn(m), 400) * 0.6, 600) * env_ar(m, 1.2, 1.6) * 0.03, EV['today'] + 0.4, 1, 0)

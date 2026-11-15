@@ -1243,3 +1243,43 @@ KINDS.panda = {
     g.save(); g.translate(10, -60); g.rotate(fbm(t * 0.4, 3) * 0.08 + chew); g.scale(1, 1 + chew); put(g, P.head, env.sh * 0.6); g.restore();
   },
 };
+
+// ======================================================= Mao's China props ===
+// A village blackboard on an easel, a child's first characters in chalk: 人 口 手 山.
+KINDS.blackboard = {
+  bake(mk) {
+    const sh = mk('blackboard', [-46, -110, 46, 6]);
+    sh.piece(strip(-30, 4, -24, -96, 4, 3), '#6a4a30', { round: 1 }).piece(strip(30, 4, 24, -96, 4, 3), '#6a4a30', { round: 1 })
+      .piece(rect(-42, -98, 42, -44), '#6a4a30', { round: 2, lift: 1 })
+      .piece(rect(-38, -94, 38, -48), '#2e3a34', { round: 1.5, lift: 1.2, paint: (g) => {
+        g.strokeStyle = 'rgba(240,240,230,.9)'; g.lineWidth = 1.7; g.lineCap = 'round';
+        g.beginPath(); g.moveTo(-25, -86); g.lineTo(-30, -66); g.moveTo(-26, -78); g.lineTo(-19, -65); g.stroke();
+        g.strokeRect(-12, -84, 12, 14);
+        g.beginPath(); g.moveTo(9, -87); g.lineTo(20, -89); g.moveTo(8, -81); g.lineTo(21, -81); g.moveTo(7, -75); g.lineTo(22, -75); g.moveTo(15, -89); g.lineTo(15, -65); g.lineTo(12, -67); g.stroke();
+        g.beginPath(); g.moveTo(26, -84); g.lineTo(26, -66); g.lineTo(36, -66); g.lineTo(36, -84); g.moveTo(31, -89); g.lineTo(31, -66); g.stroke();
+        g.fillStyle = 'rgba(255,255,255,.07)'; g.fillRect(-38, -94, 76, 12);
+      } })
+      .piece(rect(-40, -46, 40, -42), '#7a5a3a', { round: 1, lift: 1.4 });
+    return { spr: sh.finish({ shadowBlur: 4 }) };
+  },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+};
+// A village clinic's sign: a red cross on a white board.
+KINDS.redcross = {
+  bake(mk) { return { spr: mk('redcross', [-22, -122, 22, 6]).piece(strip(0, 4, 0, -90, 4, 3), '#6a5a48', { round: 1 }).piece(rect(-20, -118, 20, -84), '#efece4', { round: 2, lift: 1.2, paint: (g) => { g.fillStyle = '#c8282a'; g.fillRect(-4, -112, 8, 22); g.fillRect(-11, -105, 22, 8); } }).finish({ shadowBlur: 3 }) }; },
+  draw(g, P, t, e, env) { put(g, P.spr, env.sh, 3, 4); },
+};
+// The village loudspeaker on its pole; while e.blare(t) it throws out rings of sound.
+KINDS.loudspeaker = {
+  bake(mk) {
+    return { spr: mk('loudspeaker', [-32, -232, 34, 6]).piece(strip(0, 4, 0, -200, 5, 4), '#5a4a3a', { round: 1 }).piece(rect(-8, -204, 8, -194), '#4a4a4e', { round: 1, lift: 1 })
+      .piece([[3, -214], [30, -228], [30, -194], [3, -204]], '#a4aaa8', { round: 2, lift: 1.4, paint: (g) => { g.fillStyle = 'rgba(40,40,44,.65)'; g.fillRect(26, -226, 4, 30); } })
+      .piece([[-3, -214], [-28, -226], [-28, -196], [-3, -204]], '#949a98', { round: 2, lift: 1.2 }).finish({ shadowBlur: 3 }) };
+  },
+  draw(g, P, t, e, env) {
+    put(g, P.spr, env.sh, 3, 4);
+    const k = e.blare ? e.blare(t) : 0; if (k < 0.01) return;
+    g.lineWidth = 1.6; g.lineCap = 'round';
+    for (const s of [-1, 1]) for (let j = 0; j < 3; j++) { const r = 10 + ((t * 34 + j * 13) % 40); g.strokeStyle = `rgba(40,30,30,${0.7 * k * (1 - r / 52)})`; g.beginPath(); g.arc(s * 30, -211, r, s > 0 ? -0.55 : Math.PI - 0.55, s > 0 ? 0.55 : Math.PI + 0.55); g.stroke(); }
+  },
+};

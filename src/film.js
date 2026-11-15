@@ -10,7 +10,7 @@ import './kinds_built.js';
 import './kinds_modern.js';
 import './kinds_china.js';
 import './kinds_modern_china.js';
-import { makeFx, hang2, glyph, crack, SEIS_DRAGONS, TEAR, burst } from './sky_china.js';
+import { makeFx, hang2, glyph, crack, SEIS_DRAGONS, TEAR, burst, GLYPH } from './sky_china.js';
 import { BlurSheet } from './engine.js';
 import { EV, DURATION } from './timeline.js';
 
@@ -180,6 +180,28 @@ Object.assign(LOOKS, {
   sxPriest: { skin: 3, top: 'robe', topCol: '#6a4a2a', legs: 'robe', legCol: '#6a4a2a', sleeve: '#6a4a2a', hat: 'band', hatCol: '#c9a24a', hair: 'bun', pose: 'stand' },
 });
 const FOUNDRY_A = 153;
+// Behind the oracle bone: the diviner's fire glowing up from below, embers, and the old signs drifting in the dark like sparks.
+const ORACLE_SIGNS = ['bu', 'zhen', 'xun', 'wang', 'huo', 'o_ri', 'o_yue', 'o_ren', 'o_mu', 'o_shan', 'bu', 'o_ren'];
+function oracleNight(g, st, t, veil) {
+  const { W, H } = st, por = st.aspectK > 0.4 ? 0 : 1, m = Math.min(W, H), f = 0.85 + 0.15 * fbm(t * 5, 21);
+  g.save(); g.globalCompositeOperation = 'lighter';
+  const gr = g.createRadialGradient(W * 0.5, H * 1.08, 0, W * 0.5, H * 1.08, H * 0.85); gr.addColorStop(0, `rgba(255,140,60,${0.42 * veil * f})`); gr.addColorStop(0.5, `rgba(200,80,30,${0.14 * veil * f})`); gr.addColorStop(1, 'rgba(160,60,20,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  for (let i = 0; i < 46; i++) {
+    const ph = (t * (0.06 + hash(i * 3) * 0.06) + hash(i * 7)) % 1, x = W * (0.5 + (hash(i * 5) - 0.5) * 0.9) + Math.sin(t * 1.3 + i) * m * 0.02, y = H * (1.04 - ph * 1.1);
+    st.stamp(g, st.dot(255, 160, 70, '255,230,170'), x, y, m * 0.006 * (1 - ph * 0.5), veil * (1 - ph) * Math.min(1, ph * 8) * (0.6 + 0.4 * Math.sin(t * 9 + i)));
+  }
+  // the signs, glowing faintly at the edges of the dark, drifting upward as if carried on the heat
+  ORACLE_SIGNS.forEach((name, i) => {
+    const side = i % 2 ? 1 : -1, ph = (t * 0.018 + hash(i * 11)) % 1, edge = por ? 0.5 + side * (0.2 + hash(i) * 0.22) : 0.5 + side * (0.31 + hash(i) * 0.14);
+    const x = W * edge, y = por ? H * (ph < 0.5 ? 0.06 + ph * 0.36 : 0.62 + (ph - 0.5) * 0.6) : H * (1.0 - ph * 1.05), s = m * (0.0016 + hash(i * 2) * 0.0008), a = 0.32 * veil * Math.sin(Math.PI * ph) * (0.75 + 0.25 * Math.sin(t * 2 + i));
+    if (a < 0.01) return;
+    g.save(); g.translate(x, y); g.rotate((hash(i * 9) - 0.5) * 0.5 + Math.sin(t * 0.3 + i) * 0.1); g.scale(s * 1.2, s * 1.2); g.lineCap = 'round'; g.lineJoin = 'round';
+    for (const [w, c] of [[6, `rgba(255,120,50,${a * 0.5})`], [2.4, `rgba(255,214,150,${a})`]]) { g.strokeStyle = c; g.lineWidth = w; for (const p of GLYPH[name]) { g.beginPath(); p.forEach(([px, py], n) => (n ? g.lineTo(px, py) : g.moveTo(px, py))); g.stroke(); } }
+    g.restore();
+  });
+  g.restore();
+}
 {
   add('shanghall', 'main', 139.6, { z: 0, wide: 16, popAt: ev('king') - 0.6, loud: 2, winOn: (t) => 0.75 * sramp(t, 49, 51.5) * (0.9 + 0.1 * fbm(t * 5, 2)) });
   add('person', 'main', 131.4, { v: 'shangKing', z: 2, scale: P2, popAt: ev('king'), act: (t) => ({ head: t > ev('vessels') ? 8 + Math.sin(t) * 2 : -2, front: [-30 + Math.sin(t * 0.5) * 4, -30] }) });
@@ -243,6 +265,7 @@ const FOUNDRY_A = 153;
       if (t < ev('oracle') - 0.2 || t > ev('oracleOut') + 1.6) return;
       const up = clamp(spring(t - ev('oracle'), 5.2, 0.55), 0, 1.3), out = sramp(t, ev('oracleOut'), ev('oracleOut') + 1.1), veil = clamp(up) * (1 - out);
       g.fillStyle = `rgba(10,6,4,${0.5 * veil})`; g.fillRect(0, 0, W, H);
+      oracleNight(g, st, t, veil);
       const wide = W > H, evo = sramp(t, EV.signs[0] - 1.6, EV.signs[0] - 0.3), base = Math.min(W * 0.62, H * 0.56) / 270;
       const cx = lerp(W * 0.5, W * (wide ? 0.27 : 0.5), evo), cy = lerp(H * 0.44, H * (wide ? 0.44 : 0.27), evo), s = base * lerp(wide ? 1.0 : 0.9, wide ? 0.78 : 0.5, evo);
       g.save(); g.translate(cx, cy + (1 - Math.min(1, up)) * H * 0.9 + out * H * 0.9); g.rotate((1 - Math.min(1, up)) * 0.25 - 0.04); g.scale(s, s);
@@ -935,27 +958,58 @@ Object.assign(LOOKS, {
   redguardB: { skin: 3, top: 'coat', topCol: '#5a6a3a', sleeve: '#5a6a3a', legs: 'trousers', legCol: '#4a5030', hair: 'bob', pose: 'stand', item: 'redbook' },
   teacherCR: { skin: 4, top: 'coat', topCol: '#4a4a50', sleeve: '#4a4a50', legs: 'trousers', legCol: '#3a3a40', hair: 'short', hairCol: '#8c8378', pose: 'stand' },
   tuYouyou: { skin: 4, top: 'coat', topCol: '#efece4', sleeve: '#efece4', legs: 'trousers', legCol: '#3a3a40', hair: 'bob', pose: 'stand' },
+  hungry: { skin: 3, top: 'coat', topCol: '#6a6a66', sleeve: '#6a6a66', legs: 'trousers', legCol: '#3a3a38', hair: 'short', pose: 'stand', item: 'bowl' },
+  hungryKid: { skin: 4, top: 'shirt', topCol: '#8a8478', sleeve: '#8a8478', legs: 'trousers', legCol: '#4a4a44', hair: 'bob', pose: 'stand', small: 0.66, item: 'bowl' },
+  nurse50: { skin: 4, top: 'coat', topCol: '#efece4', sleeve: '#efece4', legs: 'trousers', legCol: '#3a4a5a', hair: 'bob', pose: 'stand', item: 'medbox' },
   saved70: { skin: 3, top: 'shirt', topCol: '#d8b860', sleeve: '#d8b860', legs: 'trousers', legCol: '#3a4a5a', hair: 'curly', pose: 'stand' },
   saved70b: { skin: 0, top: 'dress', topCol: '#5a8a7a', legs: 'skirt', legCol: '#5a8a7a', hair: 'long', pose: 'stand' },
 });
 const LAB_A = 2010;
+// the famine's cracks in the fields, worked out once: each a short jagged line down into the soil, with one branch
+const FAM_CRACKS = (() => { const r = rng(1959); return Array.from({ length: 24 }, () => { const a0 = 1939 + r() * 28, n = 5 + Math.floor(r() * 4), da = (r() - 0.5) * 0.5, pts = [[a0, -3]]; let a = a0, h = -3; for (let j = 0; j < n; j++) { a += da + (r() - 0.5) * 0.35; h -= 5 + r() * 7; pts.push([a, h]); } return { pts, br: r() > 0.5 ? 0.6 : -0.6 }; }); })();
+function lifeCard(g, st, t, LG) {
+  const { W, H } = st, por = st.aspectK > 0.4 ? 0 : 1, k = drop(t, LG, LG + 4.4), cw = Math.min(por ? W * 0.62 : W * 0.22, H * 0.4), ch = cw * 0.86;
+  const x = W * (por ? 0.5 : 0.76), y = H * lerp(-0.6, por ? 0.06 : 0.06, k) + ch / 2, grow = smooth(clamp((t - LG - 0.7) / 1.4));
+  g.save(); g.strokeStyle = 'rgba(200,190,175,0.32)'; g.lineWidth = 1; g.beginPath(); g.moveTo(x, 0); g.lineTo(x, y - ch / 2); g.stroke();
+  g.translate(x, y); g.rotate(Math.sin(t * 0.7) * 1.4 * DEG);
+  g.fillStyle = 'rgba(0,0,0,.3)'; g.fillRect(-cw / 2 + 5, -ch / 2 + 7, cw, ch); g.fillStyle = '#efe6d2'; g.fillRect(-cw / 2, -ch / 2, cw, ch); g.strokeStyle = 'rgba(120,100,70,.5)'; g.lineWidth = 1.4; g.strokeRect(-cw / 2 + 4, -ch / 2 + 4, cw - 8, ch - 8);
+  g.fillStyle = '#5a4a3a'; g.textAlign = 'center'; g.font = `italic 400 ${Math.round(cw * 0.075)}px Fraunces, Georgia, serif`; g.fillText('a life, on average', 0, -ch / 2 + cw * 0.12);
+  const base = ch / 2 - cw * 0.17, full = ch * 0.56;
+  for (const [i, yr, n, col] of [[0, '1949', 35, '#9a8a72'], [1, '1980', 65, '#3a8a5a']]) {
+    const bx = (i ? 1 : -1) * cw * 0.2, bh = full * (n / 70) * (i ? grow : Math.min(1, grow * 3)), num = Math.round(n * (i ? grow : Math.min(1, grow * 3)));
+    g.fillStyle = col; g.fillRect(bx - cw * 0.09, base - bh, cw * 0.18, bh);
+    g.fillStyle = '#3a2a20'; g.font = `400 ${Math.round(cw * 0.1)}px Fraunces, Georgia, serif`; g.fillText(String(num), bx, base - bh - cw * 0.03);
+    g.font = `400 ${Math.round(cw * 0.07)}px Fraunces, Georgia, serif`; g.fillText(yr, bx, base + cw * 0.09);
+  }
+  g.font = `400 ${Math.round(cw * 0.055)}px Fraunces, Georgia, serif`; g.fillStyle = '#7a6a5a'; g.fillText('years', 0, base + cw * 0.09);
+  g.restore();
+}
 {
   // schools and clinics
   add('hall', 'main', 1912, { v: 6, z: 0, wide: 10 });
+  add('blackboard', 'main', 1913.6, { z: 1.8, scale: 1.1 });
+  add('loudspeaker', 'main', 1907.6, { z: 0.6, scale: 0.9, blare: (t) => sramp(t, 482.8, 483.4) * (1 - sramp(t, 489, 490)) });
   add('person', 'main', 1916.4, { v: 'teacher50', z: 2, scale: P2, act: (t) => ({ front: [-110 + Math.sin(t * 1.4) * 10, -20] }) });
+  [['pupil50b', 1927.4, 0], ['pupil50', 1929.2, 1]].forEach(([v, a, i]) => add('person', 'main', a, { v, z: 2.3, scale: P2, flip: true, pace: 5.4, move: (t) => -clamp((t - 483.2 - i * 0.4) * 1.5, 0, 2.6), act: (t) => (t > 485.4 + i * 0.4 ? { walk: undefined } : {}) }));
+  add('redcross', 'main', 1931.2, { z: 0.6, scale: 0.9, popAt: 485.6, loud: 0.8 });
+  add('person', 'main', 1933.4, { v: 'pupil50b', z: 2.1, scale: P2, flip: true, popAt: 486.4, act: (t) => ({ head: 6, back: [-30, -20] }) });
   [['pupil50', 1919.4], ['pupil50b', 1921.4], ['pupil50', 1923.4]].forEach(([v, a], i) => add('person', 'main', a, { v, z: 2, scale: P2, flip: true, act: (t) => ({ head: -4 + Math.sin(t * 0.8 + i) * 3, front: t > 486 + i * 0.4 && t < 488 + i * 0.4 ? [-160, -10] : [-14, -16] }) }));
   add('person', 'main', 1928, { v: 'barefoot', z: 2.2, scale: P2, pace: 4.4, move: (t) => clamp((t - 483) * 0.9, 0, 4.4), act: (t) => (t > 488 ? { walk: undefined, lean: 8, front: [-60, -20] } : {}) });
   add('person', 'main', 1934.6, { v: 'elder50', z: 2, scale: P2, flip: true, popAt: ev('longer') });
   add('person', 'main', 1937, { v: 'granny', z: 2, scale: P2, flip: true, popAt: ev('longer') + 0.3, screenAt: 1e9 });
   // the Great Leap: furnaces in every yard, the harvest left in the fields, then hunger
-  const GL = ev('leap'), FAM = ev('famine');
+  const GL = ev('leap'), FAM = ev('famine'), CR_START = ev('cultural');
   for (const [a, i] of [[1944, 0], [1950, 1], [1956, 2]]) add('bfurnace', 'main', a, { z: 1, scale: 1.2, popAt: GL + 0.3 + i * 0.4, loud: 1, lit: (t) => 1 - sramp(t, FAM + 3, FAM + 5) });
   ['commune', 'commune2', 'commune'].forEach((v, i) => add('person', 'main', 1946.4 + i * 6, { v, z: 2, scale: P2, popAt: GL + 0.6 + i * 0.3, foldAt: FAM + 0.6 + i * 0.5 }));
   [1960, 1962.4, 1964.8].forEach((a, i) => add('millet', 'main', a, { v: i, z: 1, scale: 1.4, foldAt: GL + 3 + i * 0.4 }));
   for (let a = 1940, i = 0; a < 1966; a += 1.4, i++) add('person', 'mid', a, { v: ['commune', 'commune2'][i % 2], scale: P2 * 0.62, popAt: GL + 1 + i * 0.04, foldAt: FAM + 0.4 + hash(i * 3) * 3 });
+  [['hungry', 1959.6, 0], ['hungryKid', 1961.2, 1], ['hungry', 1963.4, 2]].forEach(([v, a, i]) => add('person', 'main', a, { v, z: 2.1, scale: P2, flip: i !== 2, popAt: FAM + 1.4 + i * 0.4, foldAt: CR_START - 1.2, act: (t) => ({ head: 16, lean: 6, front: [-50, -30] }) }));
   // the Cultural Revolution: posters, a teacher alone, students turning away
   const CR = ev('cultural'), TURN = ev('turn');
   add('posterwall', 'main', 1976, { z: 0, wide: 10, popAt: CR - 0.6, loud: 1.2 });
+  for (const [a, i] of [[1967.6, 0], [1984.4, 1]]) add('flag', 'main', a, { z: 0.4, scale: 0.85, popAt: CR - 0.8 + i * 0.3, foldAt: TURN + 6.5, loud: 1 });
+  add('loudspeaker', 'main', 1982.2, { z: 0.5, scale: 1, popAt: CR - 0.4, foldAt: TURN + 6.5, blare: (t) => sramp(t, CR, CR + 0.4) * (1 - sramp(t, TURN + 5, TURN + 6)) });
+  for (let a = 1965, i = 0; a < 1990; a += 1.5, i++) add('person', 'mid', a, { v: i % 2 ? 'redguardB' : 'redguard', scale: P2 * 0.6, popAt: CR + hash(i * 3) * 0.9, foldAt: TURN + 5.5 + hash(i) * 0.8, act: (t) => ({ front: [-165 + Math.sin(t * 4 + i) * 12, -10] }) });
   add('person', 'main', 1971.4, { v: 'teacherCR', z: 2, scale: P2, popAt: CR - 0.2, act: (t) => ({ lean: 10 + sramp(t, TURN, TURN + 1) * 10, head: 14 + sramp(t, TURN, TURN + 1) * 8, front: [-10, -10], back: [10, -10] }) });
   [['redguard', 1975.2], ['redguardB', 1977.6], ['redguard', 1980]].forEach(([v, a], i) => {
     add('person', 'main', a, { v, z: 2.2, scale: P2, flip: true, popAt: CR + 0.2 + i * 0.2, foldAt: TURN + i * 0.2, act: (t) => ({ front: [-150 + Math.sin(t * 5 + i) * 10, -10] }) });
@@ -979,7 +1033,19 @@ const LAB_A = 2010;
       if (near(1950, c, 60) && t > GL && t < FAM + 6) for (const [a, i] of [[1944, 0], [1950, 1], [1956, 2]]) { const k = sramp(t, GL + 0.3 + i * 0.4, GL + 0.8 + i * 0.4) * (1 - sramp(t, FAM + 3, FAM + 5)); L.push({ a, h: 30, r: 340, k: 0.8 * k, color: [255, 150, 80] }); Sm.push({ a: a + 0.3, h: 120, t0: GL + i * 0.4, t1: FAM + 3, size: 1.1, life: 5, every: 0.5, rise: 220, drift: 4, alpha: 0.6 }); }
       if (near(LAB_A, c, 60) && t > TU - 1) { L.push({ a: LAB_A, h: 70, r: 420, k: 0.8 * sramp(t, ev('cure'), ev('cure') + 0.5), color: [200, 255, 180] }); L.push({ a: LAB_A + 8, h: 60, r: 300, k: 0.5, color: [230, 240, 255] }); }
     },
+    ground(g, st, t, S, G) {
+      // the famine: the fields crack open
+      if (!near(1953, G.c, 60) || t < FAM - 0.4 || t > CR_START + 1) return;
+      FAM_CRACKS.forEach(({ pts, br }, i) => {
+        const k = sramp(t, FAM + 0.2 + i * 0.09, FAM + 1.2 + i * 0.09) * (1 - sramp(t, CR_START - 0.6, CR_START + 0.8)); if (k <= 0) return;
+        const shown = pts.slice(0, 2 + Math.floor((pts.length - 2) * k)).map(([a, h]) => G.rad(a, h));
+        g.strokeStyle = `rgba(36,24,16,${0.8 * k})`; g.lineWidth = 2.4; g.beginPath(); shown.forEach(([x, y], j) => (j ? g.lineTo(x, y) : g.moveTo(x, y))); g.stroke();
+        if (shown.length > 2) { const [bx, by] = shown[1], [ex, ey] = G.rad(pts[0][0] + br, -14); g.lineWidth = 1; g.beginPath(); g.moveTo(bx, by); g.lineTo(ex, ey); g.stroke(); }
+      });
+    },
     over(g, st, t, S) {
+      // lives grew longer: a small card, 1949 and 1980
+      const LG = ev('longer'); if (t > LG - 0.3 && t < LG + 4.8) lifeCard(g, st, t, LG);
       const GH = ev('gehong');
       if (t > GH - 0.3 && t < GH + 7) { const k = drop(t, GH, GH + 6), por = st.aspectK > 0.4 ? 0 : 1; st.hang(g, st.fx.gehong, st.W * (por ? 0.5 : 0.34), st.H * lerp(-0.3, por ? 0.24 : 0.19, k), por ? 1.0 : 1.5, Math.sin(t * 0.6) * 1.5 * DEG); }
     },
@@ -1151,7 +1217,7 @@ const CANYON = 2472, TOK = 2502, QS = [2519, 2546], STAGE = 2556, FACT = 2603;
   for (let a = 2641, i = 0; a < 2666; a += 2.2, i++) add('solar', 'mid', a, { scale: 0.72, popAt: SOL + 0.3 + i * 0.07, loud: 0.3 });
   for (const [a, sp, sc, i] of [[2646, 0.6, 0.9, 0], [2652, 0.75, 0.8, 1], [2658, 0.5, 0.95, 2], [2664, 0.7, 0.85, 3]]) add('turbine', 'mid', a, { speed: sp, scale: sc, popAt: SOL + 0.6 + i * 0.25, loud: 0.6 });
   add('uhv', 'main', 2662, { v: 0, z: 0.6, scale: 0.8, popAt: SOL + 1 });
-  add('car', 'main', 2638, { z: 3, scale: 0.9, from: SOL - 1, move: (t) => (t - SOL) * 2.6, lit: () => 0 });
+  add('ev', 'main', 2638, { z: 3, scale: 0.9, from: SOL - 1, move: (t) => (t - SOL) * 2.6 });
   // trees against the desert, row after row; and a panda, unbothered
   const TREE = ev('trees');
   for (let a = 2668, i = 0; a < 2690; a += 2.4, i++) add('poplar', 'main', a, { v: i % 3, z: 1, popAt: TREE + i * 0.16, loud: 0.5 });
@@ -1181,7 +1247,7 @@ const DRAGON = (() => {
 })();
 function droneShow(g, st, t) {
   const T0 = ev('today') - 0.2, T1 = T0 + 6.6; if (t < T0 || t > T1 + 1.2) return;
-  const { W, H } = st, por = st.aspectK > 0.4 ? 0 : 1, S = Math.min(W * (por ? 0.92 : 0.46), H * 0.84), ox = W * 0.48, oy = H * (por ? 0.22 : 0.22);
+  const { W, H } = st, por = st.aspectK > 0.4 ? 0 : 1, S = Math.min(W * (por ? 0.64 : 0.46), H * 0.84), ox = W * (por ? 0.43 : 0.48), oy = H * (por ? 0.2 : 0.22);
   const form = smooth(clamp((t - T0 - 0.6) / 1.6)), leave = smooth(clamp((t - T1 + 0.6) / 1.4)), fade = 1 - sramp(t, T1 + 0.2, T1 + 1.2);
   const wv = (s) => 0.12 * Math.sin(s * Math.PI * 3.2 - t * 2.4) * (0.5 + 0.5 * s), bx = (s) => -0.62 + 1.12 * s, by = (s) => wv(s);
   const pd = st.pd || (st.pd = Math.max(2.2, Math.min(W, H) / 260));
@@ -1353,8 +1419,21 @@ function solarGlints(g, st, t) {
   g.restore();
 }
 
+// The quantum night: a clear sky, the satellite's orbit drawn across it, the glow of the two far-apart cities.
+function quantumSky(g, st, t) {
+  const Q = ev('quantum'); if (t < Q - 1.5 || t > 676) return;
+  const { W, H } = st, k = sramp(t, Q - 1.2, Q + 0.6) * (1 - sramp(t, 673, 676)), por = st.aspectK > 0.4 ? 0 : 1;
+  milkyWay(g, st, t, 0.6 * k, por);
+  const sy = H * (por ? 0.14 : 0.12) + 34 * st.eu * (por ? 0.9 : 1.2);
+  g.save(); g.setLineDash([3, 9]); g.lineDashOffset = -t * 14; g.strokeStyle = `rgba(200,220,255,${0.35 * k})`; g.lineWidth = Math.max(1, st.eu * 1.2);
+  g.beginPath(); g.moveTo(-W * 0.05, H * 0.62); g.quadraticCurveTo(W * 0.5, sy * 2 - H * 0.62 * 0.5 - H * 0.04, W * 1.05, H * 0.62); g.stroke(); g.setLineDash([]);
+  g.globalCompositeOperation = 'lighter';
+  QS.forEach((a, i) => { const [x, y] = st.place('far', a + (i ? 6 : -6), 30, t); st.stamp(g, st.dot(255, 190, 120), x, y, 120 * st.eu, 0.22 * k); });
+  g.restore();
+}
+
 hook({
-  sky(g, st, t) { droneShow(g, st, t); const mk = sramp(t, 563, 566) * (1 - sramp(t, 572, 575)); if (mk > 0.01) milkyWay(g, st, t, mk * 0.55, 0); },
+  sky(g, st, t) { droneShow(g, st, t); quantumSky(g, st, t); const mk = sramp(t, 563, 566) * (1 - sramp(t, 572, 575)); if (mk > 0.01) milkyWay(g, st, t, mk * 0.55, 0); },
   over(g, st, t, S) { landLights(g, st, t); hsrMap(g, st, t); damSpray(g, st, t); launchCloud(g, st, t); dolphins(g, st, t); galaFx(g, st, t); solarGlints(g, st, t); },
 });
 
@@ -1580,6 +1659,7 @@ const ERAS = [
   [393.8, 404.2, LOOK(['#5d8ec0', '#a6bcc4', '#efcf98', '#f8bc6c'], [255, 236, 200], [255, 175, 100, 0.14], { rays: 0.7, motes: 0.8 })],           // Africa and the giraffe: warm savanna
   [404.2, 428, LOOK(['#6888ae', '#a7b0b8', '#e2c69a', '#eeb878'], [255, 232, 200], [255, 170, 100, 0.15], { rays: 0.6, motes: 0.7, mote: [255, 210, 150] })], // the Qing: an autumn afternoon
   [476.6, 490.4, LOOK(['#6a92c0', '#a8bccc', '#e4dccc', '#f0d8b0'], [255, 244, 228], [255, 200, 150, 0.1], { motes: 0.5 })],                        // 1949 and the new schools
+  [499.6, 509.4, LOOK(['#4e464c', '#6e6062', '#9a8074', '#b08c76'], [206, 186, 176], [200, 100, 80, 0.2], { motes: 0.3, mote: [255, 190, 170] })],      // the Cultural Revolution: a harsh, reddened grey
   [527.6, 550.4, LOOK(['#7a98b8', '#b4c0c8', '#e6dccc', '#eed6b4'], [255, 242, 226], [255, 205, 160, 0.1], { motes: 0.6 })],                        // opening up: the haze of a building site
   [613.6, 639.4, LOOK(['#4a86c4', '#8cbcdc', '#d6e8ec', '#eef0e4'], [250, 252, 255], [210, 230, 255, 0.07], { motes: 0.3 })],                       // the great structures: big, clear air
   [701.6, 713.6, LOOK(['#5a96cc', '#9cc4dc', '#dcece4', '#f0eed8'], [255, 252, 240], [235, 245, 210, 0.08], { motes: 0.5, mote: [240, 255, 210] })], // sun, wind and new forests
@@ -1735,7 +1815,7 @@ function threadBall(g, st, t, S) {
 const WX = [
   ['mist', 86.6, 97.6, [255, 168, 110], 0.16], ['petals', 117.4, 131.8], ['mist', 123.8, 132, [238, 236, 230], 0.3], ['dust', 141, 146.4, [196, 180, 160]],
   ['sand', 199.6, 216.2, [224, 192, 140]], ['mist', 258.6, 268.6, [240, 236, 230], 0.36], ['dust', 356.6, 366.4, [214, 206, 192]],
-  ['mist', 384.4, 394, [236, 244, 250], 0.26], ['leaves', 405.4, 427.8], ['mist', 433.4, 447, [150, 130, 120], 0.22], ['mist', 464, 472.6, [140, 120, 110], 0.22],
+  ['mist', 384.4, 394, [236, 244, 250], 0.26], ['leaves', 405.4, 427.8], ['mist', 433.4, 447, [150, 130, 120], 0.22], ['mist', 464, 472.6, [140, 120, 110], 0.22], ['dust', 495, 503.4, [168, 158, 146]],
 ];
 const LEAF_COL = ['#e0a640', '#c8742a', '#d89a3a', '#b8582a'];
 function weather(g, st, t) {
