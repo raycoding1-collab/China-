@@ -117,16 +117,18 @@ KINDS.fuxing = {
   },
   draw(g, P, t, e, env) {
     const sc = e.scale || 1, a0 = e.a + (e.move ? e.move(t) : 0), pr = e.prof || (() => 0), lift = e.y || 0, r0 = 1000 + pr(a0) + lift;
-    // cars still inside the tunnel (behind e.portal) are not drawn: the train slides out of the mountain
-    const out = (off) => e.portal === undefined || a0 + ((off + 120) * sc) / r0 / DEG > e.portal;
-    for (let k = 1; k <= (e.cars ?? 5); k++) { const off = -230 * k + 8; if (!out(off)) continue; const dr = (off * sc) / r0, r1 = 1000 + pr(a0 + dr / DEG) + lift; g.save(); g.translate((Math.sin(dr) * r1) / sc, (r0 - Math.cos(dr) * r1) / sc); g.rotate(dr); put(g, P.car, env.sh, 2, 3); g.restore(); }
-    if (out(40)) put(g, P.nose, env.sh, 2, 3);
+    // only what is between the two tunnel mouths is drawn: the train slides out of one mountain and into the next
+    const at = (x) => a0 + ((x * sc) / r0) / DEG, shown = (x0, x1) => (e.portal === undefined || at(x1) > e.portal) && (e.portalEnd === undefined || at(x0) < e.portalEnd);
+    for (let k = 1; k <= (e.cars ?? 5); k++) { const off = -230 * k + 8; if (!shown(off - 114, off + 114)) continue; const dr = (off * sc) / r0, r1 = 1000 + pr(a0 + dr / DEG) + lift; g.save(); g.translate((Math.sin(dr) * r1) / sc, (r0 - Math.cos(dr) * r1) / sc); g.rotate(dr); put(g, P.car, env.sh, 2, 3); g.restore(); }
+    if (shown(-110, 166)) put(g, P.nose, env.sh, 2, 3);
   },
   glow(g, P, t, e, env, p) {
     if (p < 0.6) return; const k = e.lit ? e.lit(t) : 1; if (k < 0.01) return;
     const sc = e.scale || 1, a0 = e.a + (e.move ? e.move(t) : 0), pr = e.prof || (() => 0), lift = e.y || 0, r0 = 1000 + pr(a0) + lift;
     g.globalCompositeOperation = 'lighter'; g.fillStyle = `rgba(255,240,210,${0.85 * k})`;
-    for (let c = 0; c <= (e.cars ?? 5); c++) { const off = -230 * c + (c ? 8 : 0); if (e.portal !== undefined && a0 + ((off + 120) * sc) / r0 / DEG <= e.portal) continue; const dr = (off * sc) / r0, r1 = 1000 + pr(a0 + dr / DEG) + lift; g.save(); g.translate((Math.sin(dr) * r1) / sc, (r0 - Math.cos(dr) * r1) / sc); g.rotate(dr); for (const [x, y, w, h] of P.win) if (c || x < 18) g.fillRect(x, y, w, h); g.restore(); }
+    const inside = (x) => { const a = a0 + ((x * sc) / r0) / DEG; return (e.portal !== undefined && a < e.portal) || (e.portalEnd !== undefined && a > e.portalEnd); };
+    for (let c = 0; c <= (e.cars ?? 5); c++) { const off = -230 * c + (c ? 8 : 0), dr = (off * sc) / r0, r1 = 1000 + pr(a0 + dr / DEG) + lift; g.save(); g.translate((Math.sin(dr) * r1) / sc, (r0 - Math.cos(dr) * r1) / sc); g.rotate(dr); for (const [x, y, w, h] of P.win) if ((c || x < 18) && !inside(off + x + w / 2)) g.fillRect(x, y, w, h); g.restore(); }
+    if (inside(166)) { g.globalCompositeOperation = 'source-over'; return; }
     // the headlight, throwing a long beam ahead into the dark
     const gr = g.createLinearGradient(160, -10, 420, 0); gr.addColorStop(0, `rgba(255,248,220,${0.55 * k})`); gr.addColorStop(1, 'rgba(255,248,220,0)');
     g.fillStyle = gr; g.beginPath(); g.moveTo(160, -12); g.lineTo(420, -40); g.lineTo(420, 20); g.lineTo(160, -6); g.fill();

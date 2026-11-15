@@ -1156,14 +1156,15 @@ const CANYON = 2472, TOK = 2502, QS = [2519, 2546], STAGE = 2556, FACT = 2603;
   [['cityA', 2283.6], ['cityB', 2285.8], ['cityKid', 2291.4], ['cityC', 2293.2], ['cityD', 2299], ['cityB', 2306.4]].forEach(([v, a], i) => add('person', 'main', a, { v, z: 2.4, scale: P2, flip: i % 2 === 1, screenAt: NOW + 0.3 + i * 0.25, pace: 4.2, move: v === 'cityA' ? (t) => clamp((t - 574) * 0.5, 0, 6) : undefined }));
   for (const a of [2279, 2296.4, 2310]) add('lamp', 'main', a, { v: 1, z: 1, lit: () => 1 });
   // the line through the karst, on piers, under its wire
-  for (let a = 2312; a < 2352; a += 3.4) add('hsrpier', 'main', a, { z: 1 });
+  for (let a = 2312; a < 2339; a += 3.4) add('hsrpier', 'main', a, { z: 1 });
   add('portal', 'main', 2309, { z: 1.6, scale: 1.0 });
-  add('fuxing', 'main', 2306, { z: 1.4, scale: 0.72, y: 96 * 1 - 2, ground: false, wide: 34, cars: 5, from: TR - 0.6, to: TR + 10, prof: () => 0, portal: 2311.4, move: (t) => Math.max(0, t - TR + 0.5) * 6.8 });
+  add('portal', 'main', 2343, { z: 1.6, scale: 1.0, flip: true });
+  add('fuxing', 'main', 2306, { z: 1.4, scale: 0.72, y: 96 * 1 - 2, ground: false, wide: 34, cars: 5, from: TR - 0.6, to: TR + 12.6, prof: () => 0, portal: 2311.4, portalEnd: 2340.6, move: (t) => Math.max(0, t - TR + 0.5) * 6.8 });
   for (const [a, v, s] of [[2318, 1, 0.95], [2326, 4, 1.05], [2336, 2, 0.9], [2346, 0, 1]]) add('karst', 'far', a, { v, scale: s });
   for (const [a, v] of [[2322, 2], [2338, 0], [2348, 4]]) add('karst', 'mid', a, { v, scale: 0.5 });
   // Wenchang: the pad by the sea, a Long March 5
   add('lm5', 'main', GANTRY_A, { z: 1, popAt: LA - 2.6, loud: 1.4, launch: LA, wide: 6 });
-  for (const a of [2350.6, 2362, 2365.4]) add('palm', 'main', a, { v: 1, z: 0.6, scale: 0.8 });
+  for (const a of [2353.2, 2362, 2365.4]) add('palm', 'main', a, { v: 1, z: 0.6, scale: 0.8 });
   grassRun(2312, 2370, 3.6, 'main', { skip: (a) => a > 2352 && a < 2360 });
 
   // ========== Breakthroughs ==========
