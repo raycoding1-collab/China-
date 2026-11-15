@@ -184,10 +184,10 @@ const FOUNDRY_A = 153;
   add('shanghall', 'main', 139.6, { z: 0, wide: 16, popAt: ev('king') - 0.6, loud: 2, winOn: (t) => 0.75 * sramp(t, 49, 51.5) * (0.9 + 0.1 * fbm(t * 5, 2)) });
   add('person', 'main', 131.4, { v: 'shangKing', z: 2, scale: P2, popAt: ev('king'), act: (t) => ({ head: t > ev('vessels') ? 8 + Math.sin(t) * 2 : -2, front: [-30 + Math.sin(t * 0.5) * 4, -30] }) });
   add('person', 'main', 128.2, { v: 'shangLady', z: 1.5, scale: P2, popAt: ev('king') + 0.3 });
-  add('foundry', 'main', FOUNDRY_A, { z: 1, scale: 1.15, popAt: 50.6, loud: 1.4, pour: (t) => sramp(t, ev('pour') - 0.9, ev('pour')) * (1 - sramp(t, ev('pour') + 2.6, ev('pour') + 3.4)) });
-  add('person', 'main', 147.6, { v: 'caster', z: 2, scale: P2, popAt: 51, act: (t) => ({ lean: 14, head: 8, front: [-100 + Math.sin(t * 2.4) * 12, -30], back: [-90 + Math.sin(t * 2.4) * 12, -30] }) });
-  add('person', 'main', 156.4, { v: 'caster2', z: 2, scale: P2, flip: true, popAt: 51.3, act: (t) => ({ lean: 6, head: 10, front: [-150, -20], back: [-130, -20] }) });
-  [[161.6, 0, 1.25], [166.4, 1, 1.05], [169.8, 2, 0.62], [172.2, 3, 0.62], [175.2, 1, 0.8]].forEach(([a, v, s], i) => add('ding', 'main', a, { v, z: 1.5, scale: s, popAt: ev('vessels') + i * 0.32, loud: 1.2 }));
+  add('foundry', 'main', FOUNDRY_A, { z: 1, scale: 1.4, popAt: 50.6, loud: 1.4, pour: (t) => sramp(t, ev('pour') - 0.9, ev('pour')) * (1 - sramp(t, ev('pour') + 2.6, ev('pour') + 3.4)) });
+  add('person', 'main', 152.3, { v: 'caster', z: 0.5, scale: P2, popAt: 51, act: (t) => ({ lean: 14, head: 8, front: [-100 + Math.sin(t * 2.4) * 12, -30], back: [-90 + Math.sin(t * 2.4) * 12, -30] }) });
+  add('person', 'main', 160.2, { v: 'caster2', z: 2, scale: P2, flip: true, popAt: 51.3, act: (t) => ({ lean: 6, head: 10, front: [-150, -20], back: [-130, -20] }) });
+  [[163.4, 0, 1.25], [168.2, 1, 1.05], [171.6, 2, 0.62], [174, 3, 0.62], [177, 1, 0.8]].forEach(([a, v, s], i) => add('ding', 'main', a, { v, z: 1.5, scale: s, popAt: ev('vessels') + i * 0.32, loud: 1.2 }));
   for (const [a, v] of [[122, 1], [145, 2], [181, 0]]) add('oak', 'mid', a, { v, scale: 0.55 });
   for (const a of [126, 150, 172]) add('shanghall', 'far', a, { v: 1, scale: 0.4 });
   grassRun(118, 182, 3.4, 'main', { skip: (a) => a > 124 && a < 178 });
@@ -202,6 +202,7 @@ const FOUNDRY_A = 153;
   add('sxfigure', 'main', 241.2, { z: 1, popAt: 87.8, loud: 1.6 });
   add('sxmask', 'main', 247.4, { z: 1.2, popAt: 88.6, loud: 1.4, eyesAt: ev('eyes') });
   add('sxtree', 'main', 256.4, { z: 0.8, popAt: 89.4, loud: 1.6 });
+  add('logs', 'main', 244.6, { z: 2.5, scale: 0.75, popAt: 87.4 });
   add('person', 'main', 252.8, { v: 'sxPriest', z: 2, scale: P2, flip: true, popAt: 89.8, act: (t) => ({ head: t > ev('eyes') && t < ev('eyes') + 2.4 ? -12 : 4, lean: t > ev('eyes') && t < ev('eyes') + 2.4 ? -6 : 2 }) });
   for (const a of [228, 244, 266]) add('bamboo', 'mid', a, { v: (a | 0) % 3, scale: 0.55 });
   for (const [a, v, s] of [[236, 3, 0.7], [250, 1, 0.6], [264, 4, 0.75]]) add('karst', 'far', a, { v, scale: s });
@@ -209,17 +210,27 @@ const FOUNDRY_A = 153;
   grassRun(214, 300, 7, 'front', { s: 2 });
 
   hook({
-    lights(t, c, L, Em) {
+    lights(t, c, L, Em, Sm) {
       if (near(FOUNDRY_A, c, 60) && t > 46 && t < 80) {
-        L.push({ a: FOUNDRY_A - 4.2, h: 24, r: 760, k: 1.1 * flick(t, 2), color: [255, 150, 70] });
+        L.push({ a: FOUNDRY_A - 5.1, h: 28, r: 820, k: 1.25 * flick(t, 2), color: [255, 150, 70] });
+        // the furnace roars in its mouth, and smokes from its chimney
+        const fk = sramp(t, 50.8, 51.6); Em.push({ a: FOUNDRY_A - 5.13, h: 22, scale: 0.42, small: 1, lit: fk, litAt: 50.8, seed: 8 });
+        Sm.push({ a: FOUNDRY_A - 5.2, layer: 'main', h: 165, t0: 50.8, size: 1.15, life: 5.5, every: 0.45, rise: 170, drift: 3.5, alpha: 0.42 });
         const p = sramp(t, ev('pour') - 0.4, ev('pour')) * (1 - sramp(t, ev('pour') + 2.6, ev('pour') + 3.4)); if (p > 0) L.push({ a: FOUNDRY_A + 3.8, h: 80, r: 420, k: 1.1 * p, color: [255, 190, 90] });
         L.push({ a: 139.6, h: 60, r: 420, k: 0.7 * sramp(t, 49, 51.5), color: [255, 170, 90] });
-        for (const [a, i] of [[161.6, 0], [166.4, 1], [170.4, 2], [173.6, 3]]) { const k = sramp(t, ev('vessels') + i * 0.32, ev('vessels') + 0.6 + i * 0.32); if (k > 0) L.push({ a, h: 50, r: 200, k: 0.55 * k, color: [255, 200, 120] }); }
+        for (const [a, i] of [[163.4, 0], [168.2, 1], [172.2, 2], [175.4, 3]]) { const k = sramp(t, ev('vessels') + i * 0.32, ev('vessels') + 0.6 + i * 0.32); if (k > 0) L.push({ a, h: 50, r: 200, k: 0.55 * k, color: [255, 200, 120] }); }
       }
       if (near(190, c, 60) && t > 56 && t < 100) {
         const k = sramp(t, 57.8, 58.6);
         L.push({ a: 190.4, h: 30, r: 640, k: 1.1 * k * flick(t, 3), color: [255, 150, 74] });
         Em.push({ a: 190.4, h: 4, scale: 0.6, lit: k, litAt: 57.8, seed: 3 });
+      }
+      if (near(248, c, 60) && t > 86.8 && t < 99) {
+        // a ritual fire among the bronzes
+        const rk = sramp(t, 87.6, 88.4) * (1 - sramp(t, 97, 99));
+        L.push({ a: 244.6, h: 30, r: 700, k: 1.3 * rk * flick(t, 9), color: [255, 140, 64] });
+        Em.push({ a: 244.6, h: 4, scale: 0.72, lit: rk, litAt: 87.6, seed: 9 });
+        Sm.push({ a: 244.6, layer: 'main', h: 90, t0: 88, t1: 97.5, size: 0.9, life: 5, every: 0.55, rise: 150, drift: 3, alpha: 0.3 });
       }
       if (near(248, c, 60) && t > 84) for (const [a, n] of [[234.6, 4], [250.8, 5], [262.4, 6]]) {
         const k = sramp(t, 86.6 + (a - 234) * 0.02, 87.4 + (a - 234) * 0.02) * (1 - sramp(t, 97, 99)); if (k <= 0) continue;
@@ -269,6 +280,7 @@ Object.assign(LOOKS, {
   zhouSoldier: { skin: 3, top: 'coat', topCol: '#5a4a3a', sleeve: '#5a4a3a', legs: 'trousers', legCol: '#3a3028', hat: 'helmet', hatCol: '#4a4038', pose: 'stand', item: 'ge' },
   zhouSoldierW: { skin: 4, top: 'coat', topCol: '#6a5038', sleeve: '#6a5038', legs: 'trousers', legCol: '#3a3028', hat: 'helmet', hatCol: '#4a4038', pose: 'walk', item: 'ge' },
   redSoldier: { skin: 3, top: 'coat', topCol: '#8a3a2a', sleeve: '#8a3a2a', legs: 'trousers', legCol: '#3a2a24', hat: 'helmet', hatCol: '#5a3a2a', pose: 'stand', item: 'ge' },
+  qinSoldierW: { skin: 3, top: 'coat', topCol: '#2a2628', sleeve: '#2a2628', legs: 'trousers', legCol: '#1e1c1e', hat: 'helmet', hatCol: '#3a3436', pose: 'walk', item: 'ge' },
   redSoldierW: { skin: 4, top: 'coat', topCol: '#8a3a2a', sleeve: '#8a3a2a', legs: 'trousers', legCol: '#3a2a24', hat: 'helmet', hatCol: '#5a3a2a', pose: 'walk', item: 'ge' },
   confucius: { skin: 4, top: 'robe', topCol: '#3a4a5a', legs: 'robe', legCol: '#3a4a5a', sleeve: '#3a4a5a', hat: 'topknot', beard: 1, beardCol: '#c8c0b0', hairCol: '#c8c0b0', pose: 'sit' },
   pupil: { skin: 3, top: 'robe', topCol: '#c8b890', legs: 'robe', legCol: '#c8b890', sleeve: '#c8b890', hat: 'topknot', pose: 'kneel', item: 'scroll' },
@@ -350,6 +362,8 @@ KINDS.tchead = {
 {
   // the last rivals fall; the black banner of Qin goes up; the First Emperor
   [[486.4, 1, 'main'], [490.2, 2, 'mid'], [493.4, 3, 'main'], [497.2, 4, 'mid'], [501.6, 5, 'main'], [505.4, 7, 'mid']].forEach(([a, v, L], i) => add('banner', L, a, { v, z: 1, scale: L === 'mid' ? 0.9 : 1, popAt: 139.4 + i * 0.15, foldAt: EV.conquer[i], loud: 0.8 }));
+  // the black-clad army of Qin marches in under the storm
+  for (let i = 0; i < 8; i++) add('person', i % 2 ? 'mid' : 'main', 478.6 + i * 1.9, { v: 'qinSoldierW', z: 2.2, scale: i % 2 ? P2 * 0.85 : P2, popAt: 140.8 + i * 0.12, pace: 4.4, move: (t) => clamp((t - 141.2) * 1.5, 0, 8.4), foldAt: ev('emperor') - 0.8 + i * 0.05 });
   add('banner', 'main', 498.6, { v: 0, z: 1.2, scale: 1.4, popAt: ev('qin') - 0.3, raise: (t) => sramp(t, ev('qin'), ev('qin') + 1.4), foldAt: ev('qinEnd') + 30, loud: 1.4 });
   add('hall', 'main', 508, { v: 0, z: 0, wide: 20, popAt: ev('emperor') - 1.2, loud: 2.2 });
   add('person', 'main', 504.2, { v: 'qinEmperor', z: 2.5, scale: P2 * 1.06, popAt: ev('emperor'), loud: 1.2, act: (t) => ({ head: -4 + Math.sin(t * 0.5) * 2, lean: -2, front: [-20, -40] }) });
@@ -1336,6 +1350,50 @@ const SUNS = [[-1, 11, -430, -78, 170], [24, 31, 430, 170, -60], [45, 52, -430, 
 const NIGHTS = [[7, 27], [50, 99], [296, 319], [330, 341], [510, 526], [559, 610], [642, 699], [716, 744]];
 const ZOOM = [[8, 12, 19.5, 24, 0.36], [26.5, 28.5, 34, 36, 0.12], [36.5, 38.5, 43.5, 46, 0.22], [50.5, 52.5, 56.5, 58.5, 0.2], [90, 92.4, 95.5, 98, 0.3], [146.5, 148.5, 150.5, 152.5, 0.22], [168, 170.5, 173, 175, 0.12], [175.5, 177.5, 180.5, 182.5, 0.42], [287, 289, 292.5, 294.5, 0.2], [299, 303, 314, 317, 0.45], [325, 326.5, 328.5, 330, 0.3], [369, 371, 373.5, 375.5, 0.25], [396, 398, 401.5, 403.5, 0.12], [448, 450, 455, 457.5, 0.4], [467, 469, 471.5, 473.5, 0.15], [511, 513, 520, 522.5, 0.2], [553, 555, 558, 560, 0.3], [613, 615.5, 619, 621, 0.12], [633, 635, 639, 641, -0.14], [644, 646, 657, 659, 0.32], [674, 676, 679, 681, 0.18], [683, 685, 692, 694, 0.12]];
 
+// ---- the light of each age, laid over the base sky: no two eras share one day.
+// Each look is [sky top..horizon], ambient light, colour grade [r,g,b,strength], and the air: dust, snow, sun rays.
+const hx = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+const LOOK = (sky, amb, grade, extra = {}) => ({ sky: sky.map(hx), amb, grade, ...extra });
+const ERAS = [
+  [116.5, 139.5, LOOK(['#8aa9c4', '#c2cbcc', '#ecdcbf', '#f4d6a6'], [255, 240, 220], [255, 200, 150, 0.14], { motes: 0.8, mote: [255, 232, 196] })],   // the thinkers: a soft, misty morning
+  [140.6, 146.4, LOOK(['#2f3640', '#4a4e57', '#7a6e60', '#a8865c'], [184, 172, 160], [140, 120, 100, 0.26], { motes: 0.2 })],                      // Qin conquers: a storm sky
+  [146.4, 160.4, LOOK(['#6d8fb6', '#a6b8c6', '#e6d4b0', '#f0c88a'], [255, 236, 206], [255, 190, 120, 0.14], { rays: 0.6, motes: 0.6 })],           // the First Emperor: imperial gold
+  [160.4, 166.8, LOOK(['#7d8ca2', '#a6b0bc', '#c8ccd0', '#d8d6d0'], [214, 222, 238], [170, 190, 225, 0.18], { snow: 0.9, motes: 0 })],              // the wall in the north: snow
+  [166.8, 181.6, LOOK(['#6b7e9c', '#a49e9c', '#dcb98a', '#ecc07c'], [255, 226, 190], [255, 180, 110, 0.18], { rays: 0.8, motes: 1.3, mote: [255, 214, 150] })], // the clay army: dust in amber light
+  [181.6, 187.6, LOOK(['#2e2a48', '#5a3c58', '#b0584a', '#e08a50'], [232, 172, 142], [255, 120, 70, 0.2], { motes: 0.6, mote: [255, 180, 120] })], // fifteen years: the dynasty's sunset
+  [187.6, 199, LOOK(['#5f97d0', '#9cc0dc', '#dfe8e0', '#f2ecd2'], [255, 252, 242], [255, 220, 180, 0.06], { motes: 0.3 })],                         // the Han: a clear spring day
+  [199, 216.2, LOOK(['#5a88b8', '#a2b4bc', '#ecc890', '#f6b866'], [255, 232, 196], [255, 170, 90, 0.17], { rays: 0.9, motes: 1.0, mote: [255, 210, 150] })], // the Silk Road: desert gold
+  [216.2, 238.5, LOOK(['#9ab4c8', '#c6cfd0', '#eae2cc', '#f2e2bc'], [255, 246, 232], [255, 215, 170, 0.1], { motes: 0.5 })],                        // paper and the seismoscope: a calm morning
+  [258.5, 268, LOOK(['#8ea4c0', '#bcc4cc', '#e6dccc', '#f0d8b4'], [244, 236, 226], [220, 210, 200, 0.1], { motes: 0.4 })],                          // the Grand Canal at dawn, in mist
+  [268, 291, LOOK(['#5c86b8', '#9fb2c6', '#efd2a0', '#f7c27a'], [255, 232, 200], [255, 180, 110, 0.15], { rays: 0.8, motes: 0.9, mote: [255, 220, 160] })], // Tang Chang'an: a golden afternoon
+  [318.6, 328.6, LOOK(['#7896b4', '#b0bcc4', '#e4dac4', '#ecd2a8'], [255, 240, 220], [255, 200, 150, 0.1], { motes: 0.6 })],                        // Song Kaifeng: busy, hazy
+  [342.6, 356.4, LOOK(['#6c90b8', '#a8bac6', '#ead6b2', '#f2cc92'], [255, 238, 212], [255, 195, 135, 0.12], { rays: 0.5, motes: 0.6 })],           // compass, money, type: warm afternoon
+  [356.4, 366.6, LOOK(['#6f88a8', '#a4b0bc', '#d2ccbc', '#ddc8a0'], [236, 232, 226], [180, 180, 195, 0.15], { motes: 0.3 })],                       // the steppe: cold wind
+  [366.6, 384.2, LOOK(['#4f8ac8', '#8eb4d6', '#dbe4e4', '#efe6cc'], [255, 250, 240], [255, 215, 175, 0.08], { motes: 0.4 })],                       // the Ming: crisp and clear
+  [384.2, 393.8, LOOK(['#4e8cc4', '#8ec0dc', '#d8ecec', '#eef0e0'], [248, 252, 255], [200, 230, 255, 0.08], { motes: 0.3 })],                       // Zheng He's fleet: sea haze
+  [393.8, 404.2, LOOK(['#5d8ec0', '#a6bcc4', '#efcf98', '#f8bc6c'], [255, 236, 200], [255, 175, 100, 0.14], { rays: 0.7, motes: 0.8 })],           // Africa and the giraffe: warm savanna
+  [404.2, 428, LOOK(['#6888ae', '#a7b0b8', '#e2c69a', '#eeb878'], [255, 232, 200], [255, 170, 100, 0.15], { rays: 0.6, motes: 0.7, mote: [255, 210, 150] })], // the Qing: an autumn afternoon
+  [476.6, 490.4, LOOK(['#6a92c0', '#a8bccc', '#e4dccc', '#f0d8b0'], [255, 244, 228], [255, 200, 150, 0.1], { motes: 0.5 })],                        // 1949 and the new schools
+  [527.6, 550.4, LOOK(['#7a98b8', '#b4c0c8', '#e6dccc', '#eed6b4'], [255, 242, 226], [255, 205, 160, 0.1], { motes: 0.6 })],                        // opening up: the haze of a building site
+  [613.6, 639.4, LOOK(['#4a86c4', '#8cbcdc', '#d6e8ec', '#eef0e4'], [250, 252, 255], [210, 230, 255, 0.07], { motes: 0.3 })],                       // the great structures: big, clear air
+  [701.6, 713.6, LOOK(['#5a96cc', '#9cc4dc', '#dcece4', '#f0eed8'], [255, 252, 240], [235, 245, 210, 0.08], { motes: 0.5, mote: [240, 255, 210] })], // sun, wind and new forests
+];
+const mixA = (a, b, k) => a.map((v, i) => (Array.isArray(v) ? mixA(v, b[i], k) : v + (b[i] - v) * k));
+function eraLook(t, b) {
+  let { sky, amb, grade, mote, motes } = b, snow = 0, rays = 0;
+  for (const [t0, t1, L] of ERAS) {
+    const k = sramp(t, t0 - 1.2, t0 + 1.2) * (1 - sramp(t, t1 - 1.2, t1 + 1.2)); if (k <= 0.001) continue;
+    sky = mixA(sky, L.sky, k); amb = mixA(amb, L.amb, k); grade = mixA(grade, L.grade, k);
+    if (L.mote) mote = mixA(mote, L.mote, k);
+    if (L.motes !== undefined) motes += (L.motes - motes) * k;
+    if (L.snow) snow = Math.max(snow, L.snow * k);
+    if (L.rays) rays = Math.max(rays, L.rays * k);
+  }
+  return { sky, amb, grade, mote, motes, snow, rays };
+}
+// the hanging paper sun's own rays, in the golden scenes (the same place sky() hangs it)
+const PAPER_SUN = [[30.5, 45], [102.5, 106.5], [117, 138], [146.4, 151], [161, 186], [188, 226], [262, 290], [344, 356], [358, 402], [404, 426], [480, 490], [528, 550], [614, 640], [702, 714]];
+
 function state(t, stage) {
   const c = cam(t), lights = [], emitters = [], smoke = [];
   for (const f of HOOK.lights) f(t, c, lights, emitters, smoke, stage);
@@ -1346,13 +1404,18 @@ function state(t, stage) {
   const pull = sramp(t, ev('pull', 718), ev('pull', 718) + 12);
   let zoom = 1;
   for (const [a0, a1, b0, b1, k] of ZOOM) zoom *= 1 + k * sramp(t, a0, a1) * (1 - sramp(t, b0, b1));
+  const lk = eraLook(t, { sky: skyK(t), amb: ambK(t), grade: gradeK(t), mote: moteK(t), motes: 0.4 + 0.25 * nightK });
+  if (!sun && lk.rays > 0.01 && stage && stage.W) {
+    const hung = PAPER_SUN.find(([a, b]) => t > a + 2 && t < b);
+    if (hung) sun = { x: (stage.W * (stage.aspectK > 0.4 ? 0.16 : 0.2) - stage.cx) / stage.u, y: (stage.H * 0.13 - stage.hy) / stage.u, k: lk.rays * sramp(t, hung[0] + 2, hung[0] + 4) * (1 - sramp(t, hung[1] - 2, hung[1])), noDisc: true };
+  }
   return {
     fire: { lit: 0, reach: 0, blow: 0 }, lights, emitters, smoke,
-    sky: skyK(t), ambient: ambK(t), ground: null,
+    sky: lk.sky, ambient: lk.amb, ground: null,
     stars: nightK + pull * lerp(1, 0.22, sramp(t, ev('pull', 718) + 10, ev('pull', 718) + 22)),
-    sun, cloud: 1 - nightK * 0.4, snow: 0,
-    motes: 0.4 + 0.25 * nightK, moteColor: moteK(t),
-    emit: true, screen: 0, blink: sramp(t, 573, 575) * (1 - sramp(t, 607, 610)), bloom: 0.16 + 0.34 * nightK, grade: gradeK(t), rays: 1,
+    sun, cloud: 1 - nightK * 0.4, snow: lk.snow,
+    motes: lk.motes, moteColor: lk.mote,
+    emit: true, screen: 0, blink: sramp(t, 573, 575) * (1 - sramp(t, 607, 610)), bloom: 0.16 + 0.34 * nightK, grade: lk.grade, rays: 1,
     zoom, pull, rustle: Math.exp(-(((t - ev('rustle', -9)) / 0.5) ** 2)) * 0.9, shake: Math.exp(-(((t - ev('quake', -9) + 0.3) / 0.6) ** 2)) * 1.2, threadLift: (a) => threadLift(a, t),
     fade: Math.max(1 - sramp(t, 0.1, 3.4), sramp(t, DURATION - 3.5, DURATION)),
   };
@@ -1379,7 +1442,7 @@ function sky(g, st, t, S) {
     st.hang(g, st.fx.moon, x, y, 1, Math.sin(t * 0.5) * 1.6 * DEG, 1, -0.35);
   }
   // in the long days a paper sun hangs on its thread
-  for (const [t0, t1] of [[30.5, 45], [102.5, 106.5], [117, 138], [140, 151], [161, 186], [188, 226], [262, 290], [344, 356], [358, 402], [404, 426], [480, 490], [528, 550], [614, 640], [702, 714]]) {
+  for (const [t0, t1] of PAPER_SUN) {
     if (t < t0 - 0.5 || t > t1 + 3) continue;
     const k = drop(t, t0, t1), sx = W * (st.aspectK > 0.4 ? 0.16 : 0.2), sy = H * lerp(-0.25, 0.13, k);
     g.globalCompositeOperation = 'screen'; const gl = g.createRadialGradient(sx, sy, 0, sx, sy, 300 * u); gl.addColorStop(0, `rgba(255,236,190,${0.35 * clamp(k)})`); gl.addColorStop(1, 'rgba(255,230,180,0)'); g.fillStyle = gl; g.fillRect(sx - 300 * u, sy - 300 * u, 600 * u, 600 * u); g.globalCompositeOperation = 'source-over';
@@ -1461,9 +1524,69 @@ function threadBall(g, st, t, S) {
   if (last.wind > 0 && p[2] > 0) { g.globalCompositeOperation = 'source-over'; g.globalAlpha = shown; const x = cx + p[0] * R, y = cy + p[1] * R, p2 = pt(last, q - 0.08), ang = Math.atan2(y - (cy + p2[1] * R), x - (cx + p2[0] * R)); g.translate(x, y); g.rotate(ang); g.fillStyle = '#d4d8de'; g.beginPath(); g.moveTo(-R * 0.09, 0); g.lineTo(0, -R * 0.006); g.lineTo(R * 0.012, 0); g.lineTo(0, R * 0.006); g.closePath(); g.fill(); }
   g.restore();
 }
+// ---- weather, in screen space: apricot petals, desert sand, river mist, steppe dust, autumn leaves.
+// Mist is a ring around the planet, so it lies along the curve of the ground.
+const WX = [
+  ['mist', 86.6, 97.6, [255, 168, 110], 0.16], ['petals', 117.4, 131.8], ['mist', 123.8, 132, [238, 236, 230], 0.3], ['dust', 141, 146.4, [196, 180, 160]],
+  ['sand', 199.6, 216.2, [224, 192, 140]], ['mist', 258.6, 268.6, [240, 236, 230], 0.36], ['dust', 356.6, 366.4, [214, 206, 192]],
+  ['mist', 384.4, 394, [236, 244, 250], 0.26], ['leaves', 405.4, 427.8], ['mist', 433.4, 447, [150, 130, 120], 0.22], ['mist', 464, 472.6, [140, 120, 110], 0.22],
+];
+const LEAF_COL = ['#e0a640', '#c8742a', '#d89a3a', '#b8582a'];
+function weather(g, st, t) {
+  const { W, H } = st, u = st.eu, cx = st.cx, cy = st.ecy, R = st.eR, fr = (x) => x - Math.floor(x);
+  // particles keep a readable size on narrow phones, where the planet (and so u) is small
+  const pu = Math.max(u, Math.min(W, H) / 820);
+  for (const [kind, t0, t1, col, amt] of WX) {
+    const k = sramp(t, t0, t0 + 1.6) * (1 - sramp(t, t1 - 1.6, t1)); if (k < 0.01) continue;
+    g.save();
+    if (kind === 'mist') {
+      const [r, gg, b] = col, a = (amt || 0.25) * k;
+      const gr = g.createRadialGradient(cx, cy, Math.max(1, R - 30 * u), cx, cy, R + 190 * u);
+      gr.addColorStop(0, `rgba(${r},${gg},${b},0)`); gr.addColorStop(0.18, `rgba(${r},${gg},${b},${a})`); gr.addColorStop(0.45, `rgba(${r},${gg},${b},${a * 0.45})`); gr.addColorStop(1, `rgba(${r},${gg},${b},0)`);
+      g.fillStyle = gr; g.fillRect(0, 0, W, H);
+      // banks of it drifting along the ground
+      for (let i = 0; i < 7; i++) {
+        const ang = (fr(hash(i * 5) + t * 0.004 * (0.6 + hash(i))) - 0.5) * 1.1, h = 20 + hash(i * 9) * 90, rr = R + h * u, x = cx + Math.sin(ang) * rr, y = cy - Math.cos(ang) * rr, w = (160 + hash(i * 3) * 160) * u;
+        const pg = g.createRadialGradient(x, y, 0, x, y, w); pg.addColorStop(0, `rgba(${r},${gg},${b},${a * 0.7})`); pg.addColorStop(1, `rgba(${r},${gg},${b},0)`);
+        g.fillStyle = pg; g.save(); g.translate(x, y); g.rotate(ang); g.scale(1, 0.32); g.translate(-x, -y); g.fillRect(x - w, y - w, w * 2, w * 2); g.restore();
+      }
+    } else if (kind === 'petals') {
+      for (let i = 0; i < 44; i++) {
+        const sp = 0.6 + hash(i * 3) * 0.8, x = W * (1.15 - fr(hash(i) + t * 0.028 * sp) * 1.3) + Math.sin(t * 1.3 * sp + i) * 14 * u, y = H * fr(hash(i * 7) + t * 0.05 * sp) - 20 * u;
+        g.save(); g.translate(x, y); g.rotate(t * 2.2 * sp + i); g.scale(1, 0.45 + 0.55 * Math.abs(Math.sin(t * 3 * sp + i))); g.globalAlpha = 0.9 * k;
+        g.fillStyle = i % 3 ? '#f6ccd2' : '#fbe2e6'; g.beginPath(); g.ellipse(0, 0, 5.2 * pu, 3.4 * pu, 0, 0, 7); g.fill();
+        g.fillStyle = 'rgba(214,120,140,.5)'; g.beginPath(); g.ellipse(-1.6 * pu, 0, 1.6 * pu, 1.1 * pu, 0, 0, 7); g.fill(); g.restore();
+      }
+    } else if (kind === 'sand' || kind === 'dust') {
+      const [r, gg, b] = col, gy = cy - R, n = kind === 'sand' ? 150 : 90;
+      // long gusts low over the ground
+      for (let i = 0; i < 6; i++) {
+        const x = W * (1.3 - fr(hash(i * 11) + t * 0.12 * (0.7 + hash(i)))) * 1.0, y = gy + (-10 - hash(i * 4) * 150) * u, w = (160 + hash(i) * 200) * u;
+        const pg = g.createRadialGradient(x, y, 0, x, y, w); pg.addColorStop(0, `rgba(${r},${gg},${b},${0.14 * k})`); pg.addColorStop(1, `rgba(${r},${gg},${b},0)`);
+        g.fillStyle = pg; g.save(); g.translate(x, y); g.scale(1, 0.12); g.translate(-x, -y); g.fillRect(x - w, y - w, w * 2, w * 2); g.restore();
+      }
+      g.fillStyle = `rgba(${r},${gg},${b},${0.75 * k})`;
+      for (let i = 0; i < n; i++) {
+        const sp = 0.6 + hash(i * 13) * 0.9, x = W * (1.1 - fr(hash(i * 2) + t * 0.16 * sp) * 1.2), y = gy + (20 - fr(hash(i * 17)) ** 1.6 * 260) * u + Math.sin(t * 3 * sp + i) * 6 * u, s = (0.8 + hash(i * 5) * 1.4) * pu;
+        g.fillRect(x, y, s * 2.4, s);
+      }
+    } else if (kind === 'leaves') {
+      for (let i = 0; i < 26; i++) {
+        const sp = 0.5 + hash(i * 3) * 0.7, x = W * (1.1 - fr(hash(i * 2) + t * 0.022 * sp) * 1.2) + Math.sin(t * 1.1 * sp + i) * 30 * u, y = H * fr(hash(i * 7) + t * 0.04 * sp) - 20 * u;
+        g.save(); g.translate(x, y); g.rotate(Math.sin(t * 1.6 * sp + i) * 0.9 + i); g.globalAlpha = 0.95 * k; g.fillStyle = LEAF_COL[i % 4];
+        // a ginkgo fan
+        const s = (5 + hash(i * 9) * 3) * pu; g.beginPath(); g.moveTo(0, s * 0.9); g.lineTo(-s * 0.9, -s * 0.5); g.quadraticCurveTo(0, -s * 1.1, s * 0.9, -s * 0.5); g.closePath(); g.fill();
+        g.strokeStyle = 'rgba(90,50,20,.6)'; g.lineWidth = Math.max(0.6, 0.5 * pu); g.beginPath(); g.moveTo(0, s * 0.9); g.lineTo(0, s * 1.5); g.stroke(); g.restore();
+      }
+    }
+    g.restore();
+  }
+}
+
 function overFx(g, st, t, S) {
   const { W, H } = st, u = st.eu, c = cam(t);
   g.setTransform(1, 0, 0, 1, 0, 0);
+  weather(g, st, t);
   if (S.pull > 0.02) threadBall(g, st, t, S);
   // It can still be played: the flute itself, as it was found
   if (t > 20 && t < 27) {

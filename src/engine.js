@@ -366,7 +366,7 @@ export class Stage {
       const gl = g.createRadialGradient(sx, sy, 0, sx, sy, 520 * u);
       gl.addColorStop(0, `rgba(255,206,130,${0.55 * S.sun.k})`); gl.addColorStop(0.25, `rgba(255,170,96,${0.22 * S.sun.k})`); gl.addColorStop(1, 'rgba(255,150,80,0)');
       g.fillStyle = gl; g.fillRect(0, 0, W, H);
-      g.save(); g.translate(sx, sy); g.scale(u, u); g.rotate(t * 0.02); put(g, this.fx.sun, 0.25, 4, 6); g.restore();
+      if (!S.sun.noDisc) { g.save(); g.translate(sx, sy); g.scale(u, u); g.rotate(t * 0.02); put(g, this.fx.sun, 0.25, 4, 6); g.restore(); }
       g.globalCompositeOperation = 'screen';
       const g2 = g.createRadialGradient(sx, sy, 0, sx, sy, 90 * u);
       g2.addColorStop(0, `rgba(255,200,120,${0.5 * S.sun.k})`); g2.addColorStop(0.5, `rgba(255,170,90,${0.3 * S.sun.k})`); g2.addColorStop(1, 'rgba(255,150,80,0)');
