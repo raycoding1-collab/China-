@@ -298,6 +298,13 @@ fxGroup(['tiangong'], (mk) => {
   return { tiangong: sp.finish({ shadowBlur: 4 }) };
 });
 
+// White paper puffs for steam and exhaust clouds (the smoke puffs, bleached)
+fxGroup(['steam'], (mk) => {
+  const r = rng(91);
+  return { steam: [0, 1, 2, 3].map((v) => { const pts = []; for (let i = 0; i < 10; i++) { const a = (i / 10) * Math.PI * 2, rr = 17 + r() * 8; pts.push([Math.cos(a) * rr, Math.sin(a) * rr * 0.82]); }
+    return mk('steam' + v, [-28, -26, 28, 26], { pad: 6 }).piece(pts, ['#f2f0ec', '#e6e3de', '#faf8f4', '#dcd8d2'][v], { round: 8, rough: 1.6, seg: 8, rim: 0.3, paint: (g) => { g.fillStyle = 'rgba(150,140,130,.18)'; g.beginPath(); g.ellipse(4, 8, 16, 9, 0, 0, 7); g.fill(); } }).finish({ shadowBlur: 3 }); }) };
+});
+
 // ------------------------------------------------------------ breakthroughs ---
 fxGroup(['stopwatch', 'micius', 'qkey', 'qfridge', 'pandafarm'], (mk) => {
   const S = {};

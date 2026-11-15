@@ -1135,7 +1135,9 @@ const CANYON = 2472, TOK = 2502, QS = [2519, 2546], STAGE = 2556, FACT = 2603;
   for (const a of [2560, 2576]) add('lamp', 'main', a, { v: 1, z: 0.5, lit: () => 1 });
   // the dark factory
   const DF = ev('factory');
-  add('factoryhall', 'main', FACT, { z: 0, scale: 0.95, wide: 16 });
+  // the hall is lit while the robots are introduced; then, lamp by lamp, the lights go off and the machines carry on
+  const LOFF = 690.4, lamp = (t, i) => sramp(t, 681, 682) * (1 - sramp(t, LOFF + i * 0.22, LOFF + 0.08 + i * 0.22));
+  add('factoryhall', 'main', FACT, { z: 0, scale: 0.95, wide: 16, lamp });
   [2593, 2600, 2607].forEach((a, i) => add('robotarm', 'main', a, { z: 1, scale: 1.25, flip: i % 2 === 1, ph: i * 1.7, popAt: DF - 0.8 + i * 0.25, loud: 1 }));
   for (let i = 0; i < 4; i++) add('carbody', 'main', 2588 + i * 6, { v: i % 2, z: 1.1, scale: 0.7, move: (t) => ((t - 680) * 0.9) % 24 });
   add('agv', 'main', 2596, { z: 2, scale: 1, move: (t) => Math.sin((t - 680) * 0.5) * 6 });
@@ -1164,6 +1166,162 @@ const CANYON = 2472, TOK = 2502, QS = [2519, 2546], STAGE = 2556, FACT = 2603;
   grassRun(2370, 2694, 7, 'front', { s: 2, skip: (a) => (a > DECK0 - 4 && a < TUBE1 + 6) || Math.abs(a - CANYON) < 9 });
 }
 
+// ============================================== the modern era, made spectacular ===
+// A drone light show over Shanghai: lights rise off the river front and become a flying dragon.
+const DRAGON = (() => {
+  const pts = [], add = (seg, n, kind) => { let L = 0; const d = []; for (let i = 1; i < seg.length; i++) { L += Math.hypot(seg[i][0] - seg[i - 1][0], seg[i][1] - seg[i - 1][1]); d.push(L); } for (let j = 0; j < n; j++) { const want = (j / Math.max(1, n - 1)) * L; let i = 0; while (i < d.length - 1 && d[i] < want) i++; const l0 = i ? d[i - 1] : 0, f = (want - l0) / Math.max(1e-6, d[i] - l0); pts.push({ kind, x: lerp(seg[i][0], seg[i + 1][0], f), y: lerp(seg[i][1], seg[i + 1][1], f) }); } };
+  for (const side of [-1, -0.33, 0.33, 1]) for (let i = 0; i < 86; i++) pts.push({ kind: 'body', s: i / 85, side });
+  for (let i = 0; i < 22; i++) pts.push({ kind: 'fin', s: 0.08 + i * 0.04 });
+  for (const ls of [0.22, 0.36, 0.62, 0.76]) for (let j = 0; j < 6; j++) pts.push({ kind: 'leg', s: ls, j });
+  add([[0, -0.05], [0.06, -0.062], [0.12, -0.046], [0.17, -0.022], [0.15, 0.0], [0.11, 0.012], [0.16, 0.034], [0.12, 0.054], [0.05, 0.046], [0, 0.04], [0, -0.05]], 34, 'head');
+  add([[0.02, -0.056], [-0.04, -0.1], [-0.08, -0.13]], 7, 'head'); add([[0.05, -0.06], [0.0, -0.11], [-0.02, -0.15]], 7, 'head');
+  add([[0.16, 0.0], [0.22, 0.04], [0.29, 0.02], [0.33, -0.02]], 9, 'whisker'); add([[0.15, 0.034], [0.2, 0.09], [0.27, 0.1], [0.3, 0.07]], 9, 'whisker');
+  pts.push({ kind: 'eye', x: 0.075, y: -0.026 });
+  return pts;
+})();
+function droneShow(g, st, t) {
+  const T0 = ev('today') - 0.2, T1 = T0 + 6.6; if (t < T0 || t > T1 + 1.2) return;
+  const { W, H } = st, por = st.aspectK > 0.4 ? 0 : 1, S = Math.min(W * (por ? 0.92 : 0.46), H * 0.84), ox = W * 0.48, oy = H * (por ? 0.22 : 0.22);
+  const form = smooth(clamp((t - T0 - 0.6) / 1.6)), leave = smooth(clamp((t - T1 + 0.6) / 1.4)), fade = 1 - sramp(t, T1 + 0.2, T1 + 1.2);
+  const wv = (s) => 0.12 * Math.sin(s * Math.PI * 3.2 - t * 2.4) * (0.5 + 0.5 * s), bx = (s) => -0.62 + 1.12 * s, by = (s) => wv(s);
+  const pd = st.pd || (st.pd = Math.max(2.2, Math.min(W, H) / 260));
+  g.save(); g.globalCompositeOperation = 'lighter';
+  const head = [bx(1), by(1)], hd = Math.atan2(by(1) - by(0.97), bx(1) - bx(0.97));
+  DRAGON.forEach((d, i) => {
+    let x, y, col = '255,206,110';
+    if (d.kind === 'body') { const w = 0.036 * (0.25 + 0.75 * Math.sin(Math.min(1, d.s * 1.15) * Math.PI * 0.9)), n = Math.atan2(by(d.s + 0.01) - by(d.s), bx(d.s + 0.01) - bx(d.s)) + Math.PI / 2; x = bx(d.s) + Math.cos(n) * w * d.side; y = by(d.s) + Math.sin(n) * w * d.side; col = d.side > 0.5 ? '255,110,70' : d.side > 0 ? '255,160,80' : '255,210,120'; }
+    else if (d.kind === 'fin') { const n = Math.atan2(by(d.s + 0.01) - by(d.s), bx(d.s + 0.01) - bx(d.s)) - Math.PI / 2, h = 0.05 + 0.02 * Math.sin(i * 1.7); x = bx(d.s) + Math.cos(n) * h; y = by(d.s) + Math.sin(n) * h; col = '255,90,70'; }
+    else if (d.kind === 'leg') { const kick = Math.sin(t * 3 + d.s * 9) * 0.2; x = bx(d.s) + d.j * 0.006 + Math.sin(kick) * d.j * 0.01; y = by(d.s) + 0.04 + d.j * 0.012; col = '255,180,90'; }
+    else { const c = Math.cos(hd), sn = Math.sin(hd); x = head[0] + d.x * c - d.y * sn; y = head[1] + d.x * sn + d.y * c; col = d.kind === 'whisker' ? '150,230,255' : d.kind === 'eye' ? '255,255,255' : '255,214,120'; }
+    // before the dragon forms: a loose swarm rising off the river front
+    const sx = (hash(i * 3.1) - 0.5) * 1.3, sy = 0.6 - hash(i * 7.7) * 0.5 - clamp((t - T0) * 0.4) * 0.3;
+    const fx = lerp(sx, x, form) + leave * 0.9, fy = lerp(sy, y, form) - leave * 0.35;
+    const tw = 0.75 + 0.25 * Math.sin(t * 6 + i);
+    st.stamp(g, st.dot(...col.split(',').map(Number), '255,250,235'), ox + fx * S, oy + fy * S, pd * (d.kind === 'eye' ? 3 : 2.3), fade * tw * sramp(t, T0, T0 + 0.6));
+  });
+  g.restore();
+}
+
+// China's high-speed railways, drawn onto a paper map year by year from 2008.
+const CHINA = [[134.7, 48.3], [131, 42.9], [128, 41.5], [124.4, 40], [121.2, 38.8], [119.6, 39.9], [117.8, 39.1], [118.5, 38], [119.2, 37.2], [122.6, 37.4], [120.3, 36], [119.2, 34.8], [120.9, 32], [121.9, 30.9], [121.5, 29.9], [121, 28], [119.6, 25.9], [118, 24.4], [116.5, 23.1], [114.2, 22.3], [113.3, 22.1], [111, 21.5], [110, 20.3], [109.6, 21.6], [108, 21.5], [106.7, 22.8], [105.3, 23.3], [103.6, 22.7], [101.7, 21.2], [99.3, 22.1], [98.7, 24.1], [97.6, 24.8], [98.6, 27.6], [97.4, 28.3], [95.4, 29], [92, 27.9], [89, 27.3], [86, 28], [82, 30.1], [79.4, 32.5], [78.7, 34.5], [77.8, 35.5], [74.9, 37.2], [73.6, 39.5], [75.6, 40.6], [80.2, 42.2], [80.8, 45], [82.5, 45.5], [83, 47.2], [85.6, 47.1], [87.3, 49.1], [90, 47.9], [91, 46], [95.5, 44.3], [96.4, 42.8], [100.8, 42.7], [105, 41.6], [110.4, 42.8], [111.9, 43.7], [114.5, 44.8], [116.7, 46.4], [117.4, 47.7], [115.6, 47.9], [116, 49.8], [119.5, 50.3], [120.8, 52.5], [123.5, 53.5], [126, 52.8], [127.5, 49.8], [130.6, 48.9], [132.5, 47.7]];
+const HAINAN = [[110, 20], [111, 19.6], [110.6, 18.5], [109.5, 18.2], [108.6, 19], [109.2, 19.9]];
+const HSR_LINES = [
+  [2008, [[116.4, 39.9], [117.2, 39.1]]], [2009, [[114.3, 30.6], [113, 28.2], [113.3, 23.1]]], [2009, [[114.5, 38], [112.5, 37.9]]], [2010, [[113.6, 34.7], [108.9, 34.3]]], [2010, [[118.8, 32.1], [121.5, 31.2], [120.2, 30.3]]], [2010, [[110.3, 20], [110.5, 19.2], [109.5, 18.3]]],
+  [2011, [[116.4, 39.9], [117, 36.7], [117.2, 34.3], [118.8, 32.1], [121.5, 31.2]]], [2011, [[113.3, 23.1], [114.1, 22.5]]], [2012, [[116.4, 39.9], [114.5, 38], [113.6, 34.7], [114.3, 30.6]]], [2012, [[116.4, 39.9], [119.6, 39.9], [123.4, 41.8], [125.3, 43.9], [126.6, 45.8]]],
+  [2013, [[120.2, 30.3], [119.3, 26.1], [118.1, 24.5], [116.7, 23.4], [114.1, 22.5]]], [2014, [[103.8, 36.1], [101.8, 36.6], [98.3, 39.8], [93.5, 42.8], [87.6, 43.8]]], [2014, [[120.2, 30.3], [115.9, 28.7], [113, 28.2], [110, 27.6], [106.7, 26.6], [102.7, 25]]],
+  [2014, [[106.7, 26.6], [110.3, 25.3], [113.3, 23.1]]], [2014, [[112.5, 37.9], [110.9, 35], [108.9, 34.3]]], [2015, [[117.3, 31.9], [118.3, 29.7], [119.3, 26.1]]], [2016, [[113.3, 23.1], [108.3, 22.8], [102.7, 25]]],
+  [2016, [[121.5, 31.2], [118.8, 32.1], [117.3, 31.9], [114.3, 30.6], [111.3, 30.7], [106.5, 29.6], [104.1, 30.7]]], [2017, [[108.9, 34.3], [105.7, 34.6], [103.8, 36.1]]], [2017, [[108.9, 34.3], [107, 33.1], [104.1, 30.7]]],
+  [2018, [[117, 36.7], [120.4, 36.1]]], [2019, [[116.4, 39.9], [114.9, 40.8], [111.7, 40.8]]], [2019, [[104.1, 30.7], [105.4, 28.9], [106.7, 26.6]]], [2022, [[113.6, 34.7], [111.5, 33], [109.5, 31], [106.5, 29.6]]], [2022, [[106.3, 38.5], [103.8, 36.1]]],
+];
+const HSR_KM = [[2008, 0.12], [2010, 8.4], [2012, 9.4], [2014, 16], [2016, 22], [2018, 29], [2020, 37.9], [2022, 42], [2024, 48], [2025, 50]];
+function hsrMap(g, st, t) {
+  const T0 = ev('hsr') + 1.6, T1 = ev('launch') - 1.6; if (t < T0 - 0.5 || t > T1 + 1.5) return;
+  const { W, H } = st, por = st.aspectK > 0.4 ? 0 : 1, k = drop(t, T0, T1);
+  const cw = Math.min(por ? W * 0.84 : W * 0.34, H * 0.62), ch = cw * 0.78, x = W * (por ? 0.5 : 0.74), y = H * lerp(-0.7, por ? 0.06 : 0.05, k) + ch * 0.5, sw = Math.sin(t * 0.6) * 1.2 * DEG;
+  const yr = lerp(2008, 2025, smooth(clamp((t - T0 - 0.8) / 6.2)));
+  g.save(); g.strokeStyle = 'rgba(200,190,175,0.32)'; g.lineWidth = 1; g.beginPath(); g.moveTo(x, 0); g.lineTo(x, y - ch / 2); g.stroke();
+  g.translate(x, y); g.rotate(sw);
+  // the card
+  g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(-cw / 2 + 6, -ch / 2 + 8, cw, ch);
+  g.fillStyle = '#efe6d2'; g.fillRect(-cw / 2, -ch / 2, cw, ch); g.strokeStyle = 'rgba(120,100,70,.5)'; g.lineWidth = 1.5; g.strokeRect(-cw / 2 + 5, -ch / 2 + 5, cw - 10, ch - 10);
+  const mw = cw * 0.84, sc = mw / ((135 - 73) * 0.82), P = ([lo, la]) => [(lo - 104) * 0.82 * sc, -(la - 36) * sc + ch * 0.06];
+  const poly = (pts) => { g.beginPath(); pts.forEach((p, i) => { const [px, py] = P(p); i ? g.lineTo(px, py) : g.moveTo(px, py); }); g.closePath(); };
+  g.fillStyle = '#ddd0b0'; g.strokeStyle = 'rgba(110,90,60,.8)'; g.lineWidth = 1.4; poly(CHINA); g.fill(); g.stroke(); poly(HAINAN); g.fill(); g.stroke();
+  // the lines, each drawn on in the year it opened
+  g.lineCap = 'round'; g.lineJoin = 'round';
+  for (const [Y, pts] of HSR_LINES) {
+    const f = clamp((yr - Y) / 1.2); if (f <= 0) continue;
+    const seg = pts.map(P); let L = 0; const d = [0]; for (let i = 1; i < seg.length; i++) { L += Math.hypot(seg[i][0] - seg[i - 1][0], seg[i][1] - seg[i - 1][1]); d.push(L); }
+    const want = L * f, path = [seg[0]]; for (let i = 1; i < seg.length; i++) { if (d[i] <= want) path.push(seg[i]); else { const q = (want - d[i - 1]) / (d[i] - d[i - 1]); path.push([lerp(seg[i - 1][0], seg[i][0], q), lerp(seg[i - 1][1], seg[i][1], q)]); break; } }
+    const stroke = (w, c) => { g.strokeStyle = c; g.lineWidth = w; g.beginPath(); path.forEach(([px, py], i) => (i ? g.lineTo(px, py) : g.moveTo(px, py))); g.stroke(); };
+    stroke(Math.max(3, cw * 0.012), 'rgba(200,40,36,.95)');
+    if (f < 1) { const [hx, hy] = path[path.length - 1]; g.save(); g.globalCompositeOperation = 'lighter'; st.stamp(g, st.dot(255, 160, 100, '255,240,210'), hx, hy, cw * 0.03, 0.9); g.restore(); }
+  }
+  for (const c of [[116.4, 39.9], [121.5, 31.2], [113.3, 23.1], [104.1, 30.7], [87.6, 43.8], [126.6, 45.8], [102.7, 25], [108.9, 34.3], [114.3, 30.6]]) { const [px, py] = P(c); g.fillStyle = '#3a2a20'; g.beginPath(); g.arc(px, py, Math.max(1.8, cw * 0.007), 0, 7); g.fill(); }
+  // the year, and the kilometres
+  let km = HSR_KM[0][1]; for (let i = 1; i < HSR_KM.length; i++) if (yr >= HSR_KM[i - 1][0]) km = lerp(HSR_KM[i - 1][1], HSR_KM[i][1], clamp((yr - HSR_KM[i - 1][0]) / (HSR_KM[i][0] - HSR_KM[i - 1][0])));
+  g.fillStyle = '#3a2a20'; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+  g.font = `400 ${Math.round(cw * 0.085)}px Fraunces, Georgia, serif`; g.fillText(String(Math.floor(yr)), -cw / 2 + cw * 0.06, ch / 2 - cw * 0.06);
+  g.fillStyle = '#a8282a'; g.font = `400 ${Math.round(cw * 0.05)}px Fraunces, Georgia, serif`; g.textAlign = 'right';
+  g.fillText(`${(Math.round(km * 10) * 100).toLocaleString('en-US')} km`, cw / 2 - cw * 0.06, ch / 2 - cw * 0.06);
+  g.restore();
+}
+
+// The Three Gorges: spray thrown up where the spillways hit the river, and a rainbow standing in it.
+function damSpray(g, st, t) {
+  const TG = ev('gorges'); if (t < TG || t > 625) return;
+  const u = st.eu, k = sramp(t, TG + 0.6, TG + 2.4) * (1 - sramp(t, 622.5, 624.5));
+  g.save();
+  for (let i = 0; i < 54; i++) {
+    const ph = (t * 0.2 + hash(i * 3.3)) % 1, a = DAM[0] + 0.6 + hash(i * 5.1) * (DAM[5] - DAM[0]) + ph * 4, [x, y] = st.place('main', a, 4 + ph * 120 + hash(i) * 24, t);
+    st.stamp(g, st.dot(246, 249, 252), x, y, (18 + ph * 46) * u, 0.55 * k * (1 - ph) * Math.min(1, ph * 6));
+  }
+  // a rainbow standing in the spray at the foot of the spillways
+  const rk = k * sramp(t, TG + 1.6, TG + 3.2); if (rk > 0.01) {
+    const [x, y] = st.place('main', (DAM[1] + DAM[4]) / 2, -40, t), R0 = 170 * u, cols = ['255,70,70', '255,150,60', '255,230,80', '90,210,110', '80,150,255', '140,100,230'];
+    g.globalCompositeOperation = 'screen'; g.lineCap = 'butt';
+    cols.forEach((c, i) => { g.strokeStyle = `rgba(${c},${0.42 * rk})`; g.lineWidth = 5.5 * u; g.beginPath(); g.arc(x, y, R0 - i * 5.2 * u, Math.PI * 1.12, Math.PI * 1.88); g.stroke(); });
+  }
+  g.restore();
+}
+
+// Wenchang: the Long March 5 leaves in a great cloud of steam and exhaust, lit from beneath.
+function launchCloud(g, st, t) {
+  const LA = ev('launch'); if (t < LA - 0.2 || t > LA + 7) return;
+  const u = st.eu, age = t - LA, k = sramp(t, LA - 0.1, LA + 0.4) * (1 - sramp(t, LA + 5, LA + 7));
+  g.save();
+  const puffs = st.fx.steam;
+  for (let i = 0; i < 56; i++) {
+    const side = i % 2 ? 1 : -1, sp = 0.5 + hash(i * 2.7) * 0.9, born = (i % 7) * 0.12, ag = Math.max(0, age - born); if (ag <= 0) continue;
+    const grow = 1 - Math.exp(-ag * sp * 1.3), a = GANTRY_A + side * grow * (1.5 + hash(i) * 8.5), h = 6 + grow * (10 + hash(i * 9) * 60) + ag * 6;
+    const [x, y, rel] = st.place('main', a, h, t), sc = (0.9 + grow * 2.4 + hash(i * 4) * 0.9) * u, hot = Math.exp(-ag * 1.1);
+    g.save(); g.translate(x, y); g.rotate(rel + hash(i * 6) * 6 + ag * 0.2 * side); g.scale(sc, sc); g.globalAlpha = Math.min(1, 0.95 * k * Math.min(1, ag * 4)); put(g, puffs[i % 4], 0); g.restore();
+    if (hot > 0.05) { g.globalCompositeOperation = 'lighter'; st.stamp(g, st.dot(255, 150, 70, '255,210,150'), x, y + 8 * sc, 30 * sc, 0.55 * hot * k); g.globalCompositeOperation = 'source-over'; }
+  }
+  g.globalAlpha = 1; g.restore();
+}
+
+// The New Year gala: sweeping spotlights and a shower of red and gold paper.
+function galaFx(g, st, t) {
+  const R0 = ev('robots'); if (t < R0 - 0.5 || t > R0 + 8) return;
+  const u = st.eu, k = sramp(t, R0 - 0.2, R0 + 0.6) * (1 - sramp(t, R0 + 6.5, R0 + 8));
+  g.save(); g.globalCompositeOperation = 'screen';
+  for (let i = 0; i < 4; i++) {
+    const [sx, sy] = st.place('main', STAGE + (i - 1.5) * 5.4, 300, t), ang = Math.PI / 2 + Math.sin(t * (0.9 + i * 0.2) + i * 1.7) * 0.42, L = 380 * u, w = 0.13;
+    const gr = g.createLinearGradient(sx, sy, sx + Math.cos(ang) * L, sy + Math.sin(ang) * L); gr.addColorStop(0, `rgba(255,236,200,${0.34 * k})`); gr.addColorStop(1, 'rgba(255,220,180,0)');
+    g.fillStyle = gr; g.beginPath(); g.moveTo(sx, sy); g.lineTo(sx + Math.cos(ang - w) * L, sy + Math.sin(ang - w) * L); g.lineTo(sx + Math.cos(ang + w) * L, sy + Math.sin(ang + w) * L); g.closePath(); g.fill();
+  }
+  g.globalCompositeOperation = 'source-over';
+  const pu = Math.max(u, Math.min(st.W, st.H) / 820);
+  for (let i = 0; i < 70; i++) {
+    const ph = ((t - R0) * (0.16 + hash(i * 3) * 0.12) + hash(i * 7)) % 1, a = STAGE - 9 + hash(i * 5) * 18 + Math.sin(t * 2 + i) * 0.4, [x, y] = st.place('main', a, 380 - ph * 380, t);
+    g.save(); g.translate(x, y); g.rotate(t * (3 + hash(i) * 4) + i); g.scale(1, Math.abs(Math.sin(t * 5 + i)) * 0.8 + 0.2); g.globalAlpha = k * Math.min(1, (1 - ph) * 5);
+    g.fillStyle = ['#d8282a', '#f0c040', '#e8462a', '#ffd870'][i % 4]; g.fillRect(-3 * pu, -2 * pu, 6 * pu, 4 * pu); g.restore();
+  }
+  g.restore();
+}
+
+// Light reaches the farthest villages: a wave of tiny windows spreading over the dark hills from the one we saw lit.
+function landLights(g, st, t) {
+  const ALL = ev('allLit'); if (t < ALL - 0.5 || t > 575) return;
+  const k = 1 - sramp(t, 572.5, 575), u = st.eu, pu = Math.max(u, Math.min(st.W, st.H) / 900);
+  g.save(); g.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 264; i++) {
+    // forty-four hamlets of six windows each, on the far and middle ground
+    const v = Math.floor(i / 6), layer = v % 3 ? 'far' : 'mid', a = 2150 + hash(v * 1.37) * 170 + (hash(i * 2.9) - 0.5) * (layer === 'far' ? 2.2 : 1.4), h = (layer === 'far' ? 4 + hash(v * 4.1) * 26 : 3 + hash(v * 4.1) * 10) + hash(i * 5.3) * 7;
+    const on = sramp(t, ALL + Math.abs(a - 2230) * 0.035 + hash(v * 9) * 0.6 + hash(i) * 0.3, ALL + 0.25 + Math.abs(a - 2230) * 0.035 + hash(v * 9) * 0.6 + hash(i) * 0.3); if (on < 0.01) continue;
+    const [x, y] = st.place(layer, a, h, t); if (x < -20 || x > st.W + 20) continue;
+    const tw = 0.7 + 0.3 * Math.sin(t * (1.5 + hash(i) * 2) + i);
+    st.stamp(g, st.dot(255, 196, 120, '255,236,190'), x, y, (layer === 'far' ? 2.6 : 3.6) * pu, on * tw * k);
+  }
+  g.restore();
+}
+
+hook({
+  sky(g, st, t) { droneShow(g, st, t); const mk = sramp(t, 563, 566) * (1 - sramp(t, 572, 575)); if (mk > 0.01) milkyWay(g, st, t, mk * 0.55, 0); },
+  over(g, st, t, S) { landLights(g, st, t); hsrMap(g, st, t); damSpray(g, st, t); launchCloud(g, st, t); galaFx(g, st, t); },
+});
+
 // ======================================================= 15. The long thread ===
 const THREAD_END = 2695;
 {
@@ -1181,6 +1339,7 @@ hook({
     // the tokamak's glow on everything around it; the dark factory's arc-lights; the stage
     if (near(TOK, c, 50) && t > ev('plasma')) L.push({ a: TOK, h: 140, r: 900, k: 0.9 * sramp(t, ev('plasma'), ev('plasma') + 1.4) * (1 - sramp(t, 661, 663)), color: [230, 130, 255] });
     if (near(STAGE, c, 50) && t > 672) L.push({ a: STAGE, h: 160, r: 800, k: 0.8, color: [255, 200, 160] });
+    if (near(FACT, c, 50) && t > 681 && t < 692.5) for (let i = 0; i < 8; i += 2) { const k = sramp(t, 681, 682) * (1 - sramp(t, 690.4 + i * 0.22, 690.48 + i * 0.22)); if (k > 0.01) L.push({ a: FACT + (-196 + i * 56 + 28) * 0.95 / 17.45, h: 120, r: 520, k: 0.85 * k, color: [255, 236, 205] }); }
     if (near(FACT, c, 50) && t > 681) for (let i = 0; i < 3; i++) { const a = [2593, 2600, 2607][i], w = Math.sin(t * 1.3 + i * 1.7) < -0.35; if (w) L.push({ a: a + 4, h: 120, r: 380, k: 0.9, color: [170, 210, 255] }); }
     if (near(2627, c, 60) && t > ev('coal') - 1) for (const [a, L2, h] of [[2622, 'mid', 120], [2627, 'main', 170], [2633, 'main', 150]]) Sm.push({ a, layer: L2, h, t0: ev('coal') - 1, size: 1.6, life: 6, every: 0.45, rise: 200, drift: 5, alpha: 0.5 });
     if (near(2634, c, 60) && t > ev('coal') - 0.4) for (const [a, L2, h, sz] of [[2638.4, 'main', 344, 0.9], [2630, 'mid', 206, 0.6]]) Sm.push({ a, layer: L2, h, t0: ev('coal') - 0.4, size: sz, life: 5, every: 0.35, rise: 160, drift: 6, alpha: 0.55 });
@@ -1271,6 +1430,17 @@ hook({
     // ---- the canyon card, and the bridge drawn across it
     if (near(CANYON, cam(t), 45)) {
       const [x, y, rel] = st.place('main', CANYON, 0, t); g.save(); g.translate(x, y); g.rotate(rel); g.scale(u, u); put(g, st.fx.gorge, 0); g.restore();
+      // a sea of cloud far down in the gorge, between its walls (drawn in the card's own units: 290 deep)
+      const ck = sramp(t, 630.5, 632.5) * (1 - sramp(t, 642.5, 644.5));
+      if (ck > 0.01) {
+        g.save(); g.translate(x, y); g.rotate(rel); g.scale(u, u);
+        const hz = g.createRadialGradient(0, 145, 0, 0, 145, 90); hz.addColorStop(0, `rgba(246,248,250,${0.55 * ck})`); hz.addColorStop(1, 'rgba(246,248,250,0)'); g.save(); g.scale(1, 0.45); g.fillStyle = hz; g.fillRect(-100, 230, 200, 200); g.restore();
+        for (let i = 0; i < 16; i++) {
+          const lay = i % 2, cx = ((hash(i * 3.7) * 130 + t * (5 + lay * 4)) % 130) - 65, cy = 122 + lay * 36 + hash(i * 2.2) * 26 + Math.sin(t * 0.6 + i) * 2.5, sc = 0.7 + hash(i * 5) * 0.5;
+          g.save(); g.translate(cx, cy); g.scale(sc * 1.6, sc); g.globalAlpha = ck * (0.72 - lay * 0.16) * clamp(1 - (Math.abs(cx) - 54) / 20); put(g, st.fx.steam[i % 4], 0); g.restore();
+        }
+        g.restore(); g.globalAlpha = 1;
+      }
       const H0 = ev('huajiang'), T0 = CANYON - 8.4, T1 = CANYON + 8.4, hk = sramp(t, H0 - 0.4, H0 + 1.4), mid = CANYON;
       const P = (a, h) => st.place('main', a, h, t), line = (pts, w, c) => { g.strokeStyle = c; g.lineWidth = w * u; g.beginPath(); pts.forEach(([px, py], i) => (i ? g.lineTo(px, py) : g.moveTo(px, py))); g.stroke(); };
       if (t > H0 - 0.6) {
