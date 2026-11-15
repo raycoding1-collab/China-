@@ -6,7 +6,8 @@ export class Sound {
     this.duration = duration;
     // streamed, so the film can start as soon as the first seconds have arrived
     this.src = src; this.el = new Audio(); this.el.preload = 'auto'; this.el.src = src;
-    this.el.addEventListener('error', () => { this.broken = true; });
+    // a host that will not stream the file gets a second chance: the whole file, played from memory
+    this.el.addEventListener('error', () => { if (this.wholeTried) this.broken = true; });
     this.el.addEventListener('ended', () => { this.ended = true; this.paused = true; });
     this.paused = true; this.ended = false; this.vol = 1;
     // iPhones (and the in-app browsers on them) leave volume to the hardware buttons
@@ -35,8 +36,18 @@ export class Sound {
     catch (e) {
       // refused (no fresh tap): wait for another tap, rather than run the film without its sound
       if (e && e.name === 'NotAllowedError') { this.blocked = true; this.paused = true; }
+      else if (!this.wholeTried) {
+        // the file would not stream here: fetch it whole, then play it from memory
+        try { await this.useWhole(); this.broken = false; await this.el.play(); }
+        catch (e2) { if (e2 && e2.name === 'NotAllowedError') { this.blocked = true; this.paused = true; } else this.broken = true; }
+      }
       else this.broken = true; // no playable audio at all: the film still runs, on its own clock
     }
+  }
+  wholeFile() { return (this.whole = this.whole || fetch(this.src, { cache: 'no-store' }).then((r) => (r.ok ? r.blob() : Promise.reject())).then((b) => URL.createObjectURL(b))); }
+  async useWhole() {
+    this.wholeTried = true; const url = await this.wholeFile();
+    if (this.el.src !== url) await new Promise((ok) => { this.el.addEventListener('loadedmetadata', ok, { once: true }); this.el.src = url; this.el.load(); setTimeout(ok, 8000); });
   }
   // Film time in seconds. Follows the audio element, smoothed with the frame clock.
   time(now) {
@@ -68,8 +79,7 @@ export class Sound {
     // Some hosts cannot serve part of a file, so a streamed soundtrack cannot jump ahead.
     // Fetch it whole, once, and play from memory: the picture waits on the chapter's first frame.
     this.hold = t; el.pause();
-    this.whole = this.whole || fetch(this.src, { cache: 'no-store' }).then((r) => (r.ok ? r.blob() : Promise.reject())).then((b) => URL.createObjectURL(b));
-    this.whole.then((url) => {
+    this.wholeFile().then((url) => {
       if (this.hold !== t) return;
       const go = () => { if (this.hold !== t) return; el.currentTime = t; this.hold = undefined; this.anchorT = t; this.anchorNow = performance.now(); if (!this.paused) el.play().catch(() => {}); };
       if (el.src === url) return go();
