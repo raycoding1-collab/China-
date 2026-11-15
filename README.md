@@ -67,4 +67,7 @@ node tools/play.mjs 390x844 8                           # real-time playback tes
 ## Made with the `paperfilm` skill
 
 This film was made with the `paperfilm` skill and the "Everything So Far" engine from the
-`raycoding1-collab/Globe` repository; the engine files here are that template, extended for China.
+`raycoding1-collab/Globe` repository, extended here. The skill has since been updated with this
+film's lessons and now bundles this film's code as its template: `skill/paperfilm.skill` (a copy;
+the source is `skill/paperfilm/` in the Globe repository, branch `ccr-f077ed5e-n128tc`). Install it
+once in Claude, then in any project say: *make a story with the paperfilm skill about X*.
