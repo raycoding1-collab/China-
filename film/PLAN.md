@@ -17,7 +17,10 @@ The narration (77 lines) is final in `film/film.json`; timings come from
 - [x] Breakthroughs chapter (607.8–715.7, angles 2345..2700): Three Gorges, HZMB, Huajiang bridge, EAST tokamak, Micius + quantum computer, robot gala + marathon, dark factory, coal/solar/wind, forests
 - [x] Ending: the whole timeline (7.6 laps of the globe) wound into a ball of red thread
 - [x] Score + ambience rewritten in `tools/build_audio.py` (guzheng, erhu, dizi, xiao, guqin, pipa, bianzhong, gong, sheng; bone-flute theme returns at the end)
-- [ ] Review rounds + all automated checks
+- [x] Review rounds + all automated checks (scan 1,002 frames 0 errors; playtest, endtest, in-app iPhone/Android, memory 96–137 MB on phones)
+- [x] Atmosphere pass: an era look over the base sky for every age (`ERAS` in `src/film.js`), weather (`WX`: petals, sand, dust, mist along the curve, ginkgo leaves, snow on the northern wall), the bronze pour and Sanxingdui reworked, the Qin army under a storm
+- [x] Modern era made spectacular: drone dragon over Shanghai, the high-speed network drawn onto a paper map 2008→2025, Tiangong overhead, the Long March 5's steam cloud, spray and a rainbow at the Three Gorges, white dolphins by the HZMB, a sea of cloud in the Huajiang gorge, field lines in EAST, gala spotlights and confetti, the dark factory's lamps going out, villages lighting up across the hills, glints on the solar fields
+- [x] Published: https://tinyurl.com/the-long-thread → https://raycoding1-collab.github.io/China-/ (`sh tools/publish_pages.sh`)
 - [x] Share image (Zheng He's fleet), icon, title text, README
 
 ## Globe layout (angle ranges) and scenes
